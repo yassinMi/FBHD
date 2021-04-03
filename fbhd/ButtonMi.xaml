@@ -1,0 +1,120 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:fbhd"
+             xmlns:ee="http://schemas.microsoft.com/expression/2010/effects" x:Name="userControl" x:Class="fbhd.ButtonMi"
+             mc:Ignorable="d" 
+             d:DesignHeight="16" UseLayoutRounding="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="42.525" MouseEnter="userControl_MouseEnter" MouseLeave="userControl_MouseLeave" Loaded="userControl_Loaded" PreviewMouseLeftButtonUp="userControl_PreviewMouseLeftButtonUp">
+    <UserControl.Resources>
+
+        <ControlTemplate x:Key="121" TargetType="{x:Type Button}">
+            <Grid x:Name="grid" Width="16" Height="16" Background="#00040405">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal"/>
+                        <VisualState x:Name="MouseOver">
+                            <Storyboard>
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="grid">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#00333333"/>
+                                </ColorAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="image">
+                                    <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="Pressed"/>
+                        <VisualState x:Name="Disabled"/>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Image x:Name="image" Source="{Binding iconSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ButtonMi}}}" ScrollViewer.VerticalScrollBarVisibility="Hidden" Stretch="None" ClipToBounds="True"  Opacity="0.75"/>
+            </Grid>
+        </ControlTemplate>
+        <ControlTemplate x:Key="buttmicorebutt" TargetType="{x:Type Button}">
+            <Grid x:Name="grid" Width="16" Height="16" Background="#00040405">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <Storyboard>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="image">
+                                    <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="MouseOver">
+                            <Storyboard>
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="grid">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#00333333"/>
+                                </ColorAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="image">
+                                    <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="Pressed"/>
+                        <VisualState x:Name="Disabled"/>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Image x:Name="image" Source="{Binding iconSource, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ButtonMi}}}" ScrollViewer.VerticalScrollBarVisibility="Hidden" Stretch="None" ClipToBounds="True" Opacity="0.75"/>
+            </Grid>
+        </ControlTemplate>
+    </UserControl.Resources>
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Background="#00000000">
+        <Grid.Effect>
+            <ee:BloomEffect x:Name="bloo"    BloomIntensity="1" BaseSaturation="1" BaseIntensity="0" BloomSaturation="1" Threshold="0"/>
+        </Grid.Effect>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="VisualStateGroup">
+                <VisualState x:Name="Hover">
+                    <Storyboard>
+                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="caption">
+                            <EasingColorKeyFrame KeyTime="0" Value="White"/>
+                        </ColorAnimationUsingKeyFrames>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="caption">
+                            <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="coreButton">
+                            <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Normal">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="caption">
+                            <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                    <Storyboard>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="caption">
+                            <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="disabled">
+                    
+                    <Storyboard>
+                        
+                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="caption">
+                            <EasingColorKeyFrame KeyTime="0" Value="#FF656565"/>
+                        </ColorAnimationUsingKeyFrames>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="BloomSaturation" Storyboard.TargetName="bloo">
+                            <EasingDoubleKeyFrame KeyTime="0" Value="0"/>
+                        </DoubleAnimationUsingKeyFrames>
+                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="Opacity" Storyboard.TargetName="coreButton">
+                            <EasingDoubleKeyFrame KeyTime="0" Value="0.4"/>
+                        </DoubleAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <StackPanel Orientation="Horizontal" d:LayoutOverrides="Height" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Button x:Name="coreButton" Content="Button" Template="{DynamicResource buttmicorebutt}" Background="#FF040405" Foreground="#FF7DCD79" Margin="0" SnapsToDevicePixels="True" Tag="mp3" HorizontalAlignment="Left" VerticalAlignment="Center" Click="coreButton_Click" Opacity="0.75"/>
+            <TextBlock x:Name="caption" TextWrapping="Wrap" Text="{Binding textcaption, ElementName=userControl}" Foreground="#FFD5D5D5" d:LayoutOverrides="TopPosition, BottomPosition" Margin="{Binding captionMargin, ElementName=userControl}" Visibility="{Binding captonVisibility, ElementName=userControl}" TextOptions.TextFormattingMode="Display"/>
+
+        </StackPanel>
+
+    </Grid>
+</UserControl>

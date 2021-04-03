@@ -1,0 +1,177 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:fbhd"
+        xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing" xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" xmlns:ee="http://schemas.microsoft.com/expression/2010/effects" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Class="fbhd.SettingsWindow"
+        mc:Ignorable="d"
+        Title="Settings" Height="244.637" Width="301.465" Background="Black" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display" WindowStartupLocation="CenterOwner" Style="{DynamicResource WindowFlat4}" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False">
+    <Window.Resources>
+        <SolidColorBrush x:Key="TabControlNormalBorderBrush" Color="#8C8E94"/>
+        <Style x:Key="flat_tabs" TargetType="{x:Type TabControl}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="Padding" Value="4,4,4,4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource TabControlNormalBorderBrush}"/>
+            <Setter Property="Background" Value="#F9F9F9"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabControl}">
+                        <Grid ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition x:Name="ColumnDefinition0"/>
+                                <ColumnDefinition x:Name="ColumnDefinition1" Width="0"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition x:Name="RowDefinition0" Height="Auto"/>
+                                <RowDefinition x:Name="RowDefinition1" Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TabPanel x:Name="HeaderPanel" Grid.Column="0" IsItemsHost="true" Margin="-6,10,10,0" Grid.Row="1" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1" Height="19.96" VerticalAlignment="Top"/>
+                            <Border x:Name="ContentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Column="0" KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
+                                <TabPanel x:Name="tabPanel" Margin="-74,48.04,0,37" HorizontalAlignment="Left" Width="147"/>
+                            </Border>
+                            <ToolBarOverflowPanel HorizontalAlignment="Stretch" Height="19" Margin="-32,-35,88,0" Grid.RowSpan="1" VerticalAlignment="Top" Width="Auto"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="TabStripPlacement" Value="Bottom">
+                                <Setter Property="Grid.Row" TargetName="HeaderPanel" Value="1"/>
+                                <Setter Property="Grid.Row" TargetName="ContentPanel" Value="0"/>
+                                <Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
+                                <Setter Property="Height" TargetName="RowDefinition1" Value="Auto"/>
+                                <Setter Property="Margin" TargetName="HeaderPanel" Value="2,0,2,2"/>
+                            </Trigger>
+                            <Trigger Property="TabStripPlacement" Value="Left">
+                                <Setter Property="Grid.Row" TargetName="HeaderPanel" Value="0"/>
+                                <Setter Property="Grid.Row" TargetName="ContentPanel" Value="0"/>
+                                <Setter Property="Grid.Column" TargetName="HeaderPanel" Value="0"/>
+                                <Setter Property="Grid.Column" TargetName="ContentPanel" Value="1"/>
+                                <Setter Property="Width" TargetName="ColumnDefinition0" Value="Auto"/>
+                                <Setter Property="Width" TargetName="ColumnDefinition1" Value="*"/>
+                                <Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
+                                <Setter Property="Height" TargetName="RowDefinition1" Value="0"/>
+                                <Setter Property="Margin" TargetName="HeaderPanel" Value="2,2,0,2"/>
+                            </Trigger>
+                            <Trigger Property="TabStripPlacement" Value="Right">
+                                <Setter Property="Grid.Row" TargetName="HeaderPanel" Value="0"/>
+                                <Setter Property="Grid.Row" TargetName="ContentPanel" Value="0"/>
+                                <Setter Property="Grid.Column" TargetName="HeaderPanel" Value="1"/>
+                                <Setter Property="Grid.Column" TargetName="ContentPanel" Value="0"/>
+                                <Setter Property="Width" TargetName="ColumnDefinition0" Value="*"/>
+                                <Setter Property="Width" TargetName="ColumnDefinition1" Value="Auto"/>
+                                <Setter Property="Height" TargetName="RowDefinition0" Value="*"/>
+                                <Setter Property="Height" TargetName="RowDefinition1" Value="0"/>
+                                <Setter Property="Margin" TargetName="HeaderPanel" Value="0,2,2,2"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="TabPanelStyle1" TargetType="{x:Type TabPanel}"/>
+        <ControlTemplate x:Key="WindowTemplateKey" TargetType="{x:Type Window}">
+            <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
+                <Grid>
+                    <AdornerDecorator>
+                        <ContentPresenter/>
+                    </AdornerDecorator>
+                    <ResizeGrip x:Name="WindowResizeGrip" HorizontalAlignment="Right" IsTabStop="false" Visibility="Collapsed" VerticalAlignment="Bottom"/>
+                </Grid>
+            </Border>
+            <ControlTemplate.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="ResizeMode" Value="CanResizeWithGrip"/>
+                        <Condition Property="WindowState" Value="Normal"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Visibility" TargetName="WindowResizeGrip" Value="Visible"/>
+                </MultiTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <Style x:Key="WindowStyleflat" TargetType="{x:Type Window}">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"/>
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Window}">
+                        <Border BorderBrush="#FF9C9C9C" BorderThickness="1">
+                            <Grid Background="{TemplateBinding Background}">
+                                <AdornerDecorator>
+                                    <ContentPresenter/>
+                                </AdornerDecorator>
+                                <Grid x:Name="grd_window_head" Height="20" VerticalAlignment="Top" Margin="0,0,-0.535,0">
+                                    <Button x:Name="x" Content="Button" Template="{DynamicResource butto-dialog-x}" Background="#FF040405" Foreground="#FF7DCD79" Margin="0,0,2,0" SnapsToDevicePixels="True" Tag="mp3" ToolTip="Task type" VerticalAlignment="Center" HorizontalAlignment="Right" RenderTransformOrigin="0.828,0.469"/>
+                                    <TextBlock x:Name="textBlock_Copy" HorizontalAlignment="Left" Margin="5,2,0,0" TextWrapping="Wrap" VerticalAlignment="Center" Foreground="#FFB2AFAF" TextOptions.TextFormattingMode="Display" Text="{TemplateBinding Title}"/>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="ResizeMode" Value="CanResizeWithGrip">
+                    <Setter Property="Template" Value="{StaticResource WindowTemplateKey}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <ControlTemplate x:Key="butto-dialog-x" TargetType="{x:Type Button}">
+            <Grid x:Name="grid" Width="16" Height="16" Background="#00040405">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal"/>
+                        <VisualState x:Name="MouseOver">
+                            <Storyboard>
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="grid">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#00333333"/>
+                                </ColorAnimationUsingKeyFrames>
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="grid1">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#00000000"/>
+                                </ColorAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="Pressed"/>
+                        <VisualState x:Name="Disabled"/>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Image x:Name="image" Source="x-white.png" ScrollViewer.VerticalScrollBarVisibility="Hidden" Stretch="None" ClipToBounds="True" ToolTip="mp3 task"/>
+                <Grid x:Name="grid1" Margin="0" Background="#4C000000"/>
+            </Grid>
+        </ControlTemplate>
+    </Window.Resources>
+    <Grid UseLayoutRounding="True">
+        <i:Interaction.Behaviors>
+            <ei:FluidMoveBehavior/>
+        </i:Interaction.Behaviors>
+        <ToggleButton x:Name="toggleButton" Content="Show ffmpeg window" VerticalAlignment="Top" Margin="30,34,102,0" Template="{DynamicResource mi2049switch}" Foreground="#FFE8E6E6"/>
+        <ToggleButton x:Name="toggleButton_Copy" Content="Raw Download" Margin="30,76,102,0" Template="{DynamicResource mi2049switch}" Foreground="#FFF3F3F3" ToolTip="Download streams as is before processing them" VerticalAlignment="Top"/>
+        <Grid Margin="30,0,54,69" Height="37" VerticalAlignment="Bottom">
+            <Grid.Effect>
+                <ee:MonochromeEffect Color="#FF818181"/>
+            </Grid.Effect>
+            <ComboBox x:Name="comboBox" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="73" SelectedIndex="1" Margin="0,4" IsReadOnly="True">
+                <ComboBoxItem Content="curl.exe"/>
+                <ComboBoxItem Content="ffmpeg"/>
+                <ComboBoxItem Content="fetcher.py"/>
+                <ComboBoxItem Content=".net"/>
+                <ComboBoxItem Content="powershell"/>
+            </ComboBox>
+            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Download with" Width="85" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
+
+        </Grid>
+        <Grid Margin="30,0,54,25" Height="30" VerticalAlignment="Bottom">
+            <ComboBox x:Name="comboBox1" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="89" SelectedIndex="1" Margin="0,4">
+                <ComboBoxItem Content="Date and time"/>
+                <ComboBoxItem Content="Content ID"/>
+                <ComboBoxItem Content="Url Hash"/>
+                <ComboBoxItem Content="Random"/>
+            </ComboBox>
+            <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="AutoName method" Width="108" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
+
+        </Grid>
+    </Grid>
+</Window>

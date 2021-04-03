@@ -1,0 +1,45 @@
+﻿<UserControl x:Name="userControl" x:Class="fbhd.PopupPickerMiItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:fbhd"
+             mc:Ignorable="d" UseLayoutRounding="True" Width="262">
+
+
+    <Border Name="Border"  Background="#00000000" BorderThickness="1" PreviewMouseLeftButtonUp="Border_PreviewMouseLeftButtonUp" BorderBrush="#00000000" MouseEnter="Border_MouseEnter" MouseLeave="Border_MouseLeave" Padding="4"  >
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="highlitedState">
+                <VisualState x:Name="Highlighted">
+                    <Storyboard>
+                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="Border">
+                            <EasingColorKeyFrame KeyTime="0" Value="#FF646464"/>
+                        </ColorAnimationUsingKeyFrames>
+                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="source_name">
+                            <EasingColorKeyFrame KeyTime="0" Value="#FF85CBFF"/>
+                        </ColorAnimationUsingKeyFrames>
+                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="content">
+                            <EasingColorKeyFrame KeyTime="0" Value="White"/>
+                        </ColorAnimationUsingKeyFrames>
+                        <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Border">
+                            <EasingColorKeyFrame KeyTime="0" Value="#FF2C2C2C"/>
+                        </ColorAnimationUsingKeyFrames>
+
+                    </Storyboard>
+                </VisualState>
+                <VisualState x:Name="normal"/>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid x:Name="ogtitle" Margin="0" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="70"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="source_name" TextWrapping="WrapWithOverflow" Text="{Binding myPairItem.Key, ElementName=userControl}" Foreground="#FF92CAF4" Margin="0" MinWidth="70" VerticalAlignment="Top" TextOptions.TextFormattingMode="Display"/>
+            <TextBlock x:Name="content" TextWrapping="Wrap"  Text="{Binding myPairItem.Value, ElementName=userControl}" Foreground="#FFEAE3E3" Grid.Column="1" TextOptions.TextFormattingMode="Display"/>
+        </Grid>
+
+    </Border>
+
+
+</UserControl>

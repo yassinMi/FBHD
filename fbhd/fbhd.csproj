@@ -1,0 +1,592 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EAC10730-5248-4174-A7B7-CE160F374B26}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>fbhd</RootNamespace>
+    <AssemblyName>fbhd</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Expression.Controls, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Expression.Drawing, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Expression.Effects, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Expression.Prototyping.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Ookii.Dialogs.Wpf, Version=3.0.0.0, Culture=neutral, PublicKeyToken=66aa232afad40158, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ookii.Dialogs.Wpf.3.1.0\lib\net45\Ookii.Dialogs.Wpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="ButtonMi.xaml.cs">
+      <DependentUpon>ButtonMi.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FBHd.cs" />
+    <Compile Include="FBHDTask.cs" />
+    <Compile Include="FBHDTaskControl.cs" />
+    <Compile Include="FilterControl.cs" />
+    <Compile Include="MediaTypeSwitchControl.cs" />
+    <Compile Include="NewTaskWindow.xaml.cs">
+      <DependentUpon>NewTaskWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PopupPickerMi.xaml.cs">
+      <DependentUpon>PopupPickerMi.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PopupPickerMiItem.xaml.cs">
+      <DependentUpon>PopupPickerMiItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProgressInfoUI.cs" />
+    <Compile Include="ResolutionPicker.xaml.cs">
+      <DependentUpon>ResolutionPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SearchItem.xaml.cs">
+      <DependentUpon>SearchItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SearchQueryControl.cs" />
+    <Compile Include="SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TaskComponent.xaml.cs">
+      <DependentUpon>TaskComponent.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TaskInfo.xaml.cs">
+      <DependentUpon>TaskInfo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TypeComboBox.cs" />
+    <Page Include="ButtonMi.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="NewTaskWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PopupPickerMi.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PopupPickerMiItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResolutionPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SearchItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Simple Styles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TaskComponent.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="TaskInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="24px.svg" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="blank-file-4-16 %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="blank-file-4-16 %282%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="blank-file-4-16 %282%29-bright.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="blank-file-4-16 %282%29-bright-snaped.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="blank-file-4-16 %282%29-bright-snaped-small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="blank-file-4-16 %282%29-bright-snaped-plus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="blank-file-4-16 %282%29-bright-snaped-plus2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="blank-file-4-16 %282%29-bright-snaped-list.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3-orange.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3-orange-large.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3latg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3latg.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="arrow-90-16 %284%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3latg2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3latg3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3-cool-yellow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp4-cool.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="music-snaped.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3-20.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3-20-2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3-20-2-16.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp3-20-2.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp4-cool-magenta.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp4-cool-magenta.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="arow-down-white-mi-7x7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="arow-down-blue-mi-7x7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp4-cool-magenta-ofiice.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="elet-16-white-mi.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="elet-16-grey-mi.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="elet-14-grey-filled-mi.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="star-14-grey-filled-mi.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="flesh-white-14-14.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="skip-white-14-14.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="enter-white-14-14.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="enter-grey14-14.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="folder-16-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="image-16-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <SplashScreen Include="SplashScreen1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="sett16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="sett16-b.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="sett-2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="arow8-16--16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="x-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="video-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="lines - Copy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="check-16-aqagreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="chec2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="chec3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="error1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resloving-gray-10-10.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="loader-w-yass-panel.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="lines-rubby.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="downloading-10-1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="down-small-7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="down-small-6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="down-small-11-turns-green.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="down-small-11-turns-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="32-white-loader.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="32-white-loader-thick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="32-white-loader-thick2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="32-down-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="32-down-white-line.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="alert-32 %281%29.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="check-32-aqagreen .png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="check-32-aqagreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="check-32-aqagreen2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="check-32-aqagreen3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="start-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="parse_code16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mp4-cool-magenta-ofiice - Copy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="down-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="start16-white2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="folder-open-property-16-white-cyan.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="play-in-circle-white-16-larger.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="x-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="pause16white-perfect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="delete-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="start-perfect-white-16-black-bck.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="jpg-cool-office.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mkvcool-white-office.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="power-white2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="pin-2-16BRIGHT.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="pin-2-13BRIGHT.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="search-13-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="media\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="save-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="redx-16-red.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="redx-blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="console-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="mi-simple-xml-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="add-user-48 - Copy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="video-48-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="plus-thick-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="filter-16-white-shiny.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="regex-blueStar-16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="filter-add-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="calend-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="watch-16-white-shifted.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="redx-16-red2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="code-in-square-16-white-small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="search-in-square-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="search-in-square-16-white2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="wav-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="video-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="image-16-small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="video-16-small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="video-16-medium.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="wav-32-white-sharp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="video-32-white-rect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="image-32-white-2-square.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="copy-16-white-commandline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="copy-16-white-V.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="copy-16-white-A-shifted.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="copy-16-white-T.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="dload-thin-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="copy-fancy-16-whte-big.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="copy-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="folder-16-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="new-item-16-white-thick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="new-item-16-white-thick-smaller.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
