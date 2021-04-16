@@ -6,6 +6,7 @@ using System.Windows;
 using System.ComponentModel;
 using System.IO;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 namespace fbhd
@@ -137,6 +138,11 @@ namespace fbhd
             {
                 if (ffmpegProgress.isNull == true)
                     return 0;
+
+                if (ffmpegProgress.Percent == double.NaN)
+                    return 0;
+                if (double.IsNaN(ffmpegProgress.Percent))
+                    return 0;
                 return ffmpegProgress.Percent;
             }
         }
@@ -239,6 +245,36 @@ namespace fbhd
         }
 
 
+        private string outputDirectory = null;
+        public string OutputDirectory
+        {
+            set {
+                Trace.Assert(Directory.Exists(value), "Mi: Directory does not exist, Please contect the developer with error code: 25656");
+
+                value = value.TrimEnd(new char[] {'\\' }) + "\\";
+
+
+                outputDirectory = value; notif(nameof(OutputDirectory)); }
+            get { 
+                if(outputDirectory!= null)
+                {
+                    return outputDirectory;
+                }
+                else if(mw.mainSession.GlobalOutputFolder!=null)
+                {
+                    return mw.mainSession.GlobalOutputFolder;
+                }
+                else
+                {
+                    throw new Exception("mi: FBHDTask: output directory could not be resolved");
+                }
+
+            }
+        }
+
+
+        
+
 
         public bool ShouldShowProperties
         {
@@ -297,9 +333,10 @@ namespace fbhd
                 });
             };
 
-            string ffmpegArgs = FFMPEG.MakeArgs(post, Type, taskProperties);
-            OutputFile = "C:\\TOOLS\\fbhd-gui\\" + Fucs.filenamify(taskProperties.titleSettings.getResult()
+            OutputFile = OutputDirectory + Fucs.filenamify(taskProperties.titleSettings.getResult()
                 + $".{FFMPEG.getExtention(Type)}");
+            string ffmpegArgs = FFMPEG.MakeArgs(this);
+            
             // MessageBox.Show(ffmpegArgs);
             // return;
             // MessageBox.Show(ffmpegArgs);
@@ -385,7 +422,6 @@ namespace fbhd
             var ts = TaskProperties.titleSettings;
 
             ts.PostObj = post;
-            //mw.updateMyBidings();
 
             this.IsResolved = true;
             notif(nameof(AvailableTitles));

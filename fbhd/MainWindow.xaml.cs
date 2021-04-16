@@ -13,7 +13,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Ookii.Dialogs.Wpf;
-
+using System.Xml.Linq;
+using System.Windows.Shell;
+using System.Xml.Serialization;
 
 namespace fbhd
 {
@@ -165,21 +167,7 @@ namespace fbhd
             
 
             return;
-            Binding groupMeta_binding = new Binding("selectedTasks");
-            groupMeta_binding.Source = this;
-            groupMeta_binding.Converter = new SelectedTasksToUIVisibilityConverter();
-            groupMeta_binding.ConverterParameter = "properties";
-            groupMeta.SetBinding(GroupBox.VisibilityProperty, groupMeta_binding);
-
-
-            Binding noneSelectedLabel_bd = new Binding("selectedTasks");
-            noneSelectedLabel_bd.Source = this;
-            noneSelectedLabel_bd.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            noneSelectedLabel_bd.Converter = new SelectedTasksToUIVisibilityConverter();
-            noneSelectedLabel_bd.ConverterParameter ="count";
-            lblnoneSelected.SetBinding(TextBlock.VisibilityProperty, noneSelectedLabel_bd);
-            grd_PropertyResolution.SetBinding(Grid.VisibilityProperty, groupMeta_binding);
-
+           
 
            // label_islistening.SetBinding(TextBlock.TextProperty, noneSelectedLabel_bd);
         }
@@ -188,14 +176,13 @@ namespace fbhd
         public void updateMyBidings()
         {
 
+            return;
             Run_ffmpeg.GetBindingExpression(ButtonMi.isDisabledProperty).UpdateTarget();
             tb_property_title.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
             titlePopupPickerMi.GetBindingExpression(PopupPickerMi.PairItemsProperty).UpdateTarget();
             taskInfo.GetBindingExpression(Grid.VisibilityProperty).UpdateTarget();
-           // label_islistening.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
             groupMeta.GetBindingExpression(GroupBox.VisibilityProperty).UpdateTarget();
             grd_PropertyResolution.GetBindingExpression(Grid.VisibilityProperty).UpdateTarget();
-            lblnoneSelected.GetBindingExpression(TextBlock.VisibilityProperty).UpdateTarget();
 
         }
         private void dragable_DragOver(object sender, DragEventArgs e)
@@ -488,11 +475,16 @@ namespace fbhd
         // Using a DependencyProperty as the backing store for isSomethingSelected.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty isSomethingSelectedProperty =
             DependencyProperty.Register("isSomethingSelected", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+        internal int cc;
 
         private void start_butt_Click(object sender, RoutedEventArgs e)
         {
            
         }
+
+
+
+
 
         private void start_butt_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
@@ -521,7 +513,6 @@ namespace fbhd
             
 
            // TextTrailingCharacterEllipsis uio = new TextTrailingCharacterEllipsis(70, tf);
-            py_resolver_processes.TextTrimming = TextTrimming.CharacterEllipsis;
            
         }
 
@@ -809,14 +800,94 @@ namespace fbhd
         private void SearchQueryControl_onGo(object sender, string e)
         {
             mainSession.MainSearch.Query = e;
+            if (string.IsNullOrWhiteSpace(e)) return;
             mainSession.MainSearch.StartSearch(true);
 
         }
 
+        
+
         private async void button_Click_2(object sender, RoutedEventArgs e)
         {
 
-            testCurl("https://video.fcmn1-1.fna.fbcdn.net/v/t76.34397-2/10000000_452984002512954_6842131401692255162_n.mp4?_nc_cat=1&ccb=1-3&_nc_sid=5aebc0&efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfdjRfcGFzc3Rocm91Z2hfZnJhZ18yX3ZpZGVvIiwicG9saWN5SWQiOjQwOTd9&_nc_ohc=xBISr6nUnLsAX-wTD2u&_nc_ht=video.fcmn1-1.fna&hnt1=prn&hnt2=ftw&oh=1ae323b0038a420bbd29314e09ab471f&oe=6062C7EF");
+            TaskbarItemInfo = new System.Windows.Shell.TaskbarItemInfo();
+
+           // TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
+           // TaskbarItemInfo.ProgressValue = 0.9;
+                var notim= new System.Windows.Media.Imaging.BitmapImage(new Uri("C:\\TOOLS\\fbhd-gui\\fbhd\\fbhd\\media\\bell-16-orange-filled.png"));
+            TaskbarItemInfo.Overlay = notim;
+
+            // TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.None;
+            TaskbarItemInfo.Description = "fbhd - 5 news from DOCS";
+            TaskbarItemInfo.ThumbButtonInfos = new System.Windows.Shell.ThumbButtonInfoCollection();
+            ThumbButtonInfo ty;
+            System.Windows.Shell.ThumbButtonInfo tb = new ThumbButtonInfo();
+            tb.ImageSource = notim;
+            tb.Description = "start list watcher";
+            tb.Command = ApplicationCommands.NotACommand;
+            tb.IsEnabled = true;
+            tb.IsInteractive = true;
+            tb.CommandTarget = this;
+            tb.DismissWhenClicked = true;
+            tb.Click += (s,ee) => { MessageBox.Show("ok"); };
+            tb.DismissWhenClicked = true;
+            System.Windows.Shell.ThumbButtonInfoCollection  tbc= new ThumbButtonInfoCollection();
+            tbc.Add(tb);
+            TaskbarItemInfo.ThumbButtonInfos = tbc;
+                return;
+
+            string xpreset = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\xml\\testxml.xml");
+            string htmldata = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\xml\\textxmlcontent.html");
+            var temp = XElement.Parse("<tr><td valign=\"top\"></td><td><a href=\"/uploads/Docs/\">Parent Directory</a>       </td><td></td><td align=\"right\">  - </td><td></td></tr>");
+
+                                      //<tr><td valign="top"></td><td><a href="/uploads/Docs/">Parent Directory</a>       </td><td>&nbsp;</td><td align="right">  - </td><td>&nbsp;</td></tr>
+            MessageBox.Show(temp.ToString());
+            return;
+            XParserTag xparser = new XParserTag(temp, new wraper(null, null) { Output = htmldata });
+
+
+            string xn = "<par xmlns:x=\"my custom shit\"> <x:myDiv><x:regular normal=\"true\" /> bla bla bla </x:myDiv></par>";
+            var parsed =  XElement.Parse(xn);
+            var hasns = (XElement)parsed.FirstNode;
+            var regular = (XElement)hasns.FirstNode;
+           // string pre = regular.GetDefaultNamespace().ToString();
+           // MessageBox.Show($"namespaceName: {pre}");
+            MessageBox.Show(regular.Name.LocalName);
+            MessageBox.Show(regular.Name.NamespaceName);
+
+
+            return;
+
+            
+            string strr = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\xml\\fsdmNews.xml");
+
+         
+
+            string str =""+
+                $"PrimaryScreenHeight:{SystemParameters.PrimaryScreenHeight}\n" +
+                $"FullPrimaryScreenHeight:{SystemParameters.FullPrimaryScreenHeight}\n" +
+                $"MaximizedPrimaryScreenHeight:{SystemParameters.MaximizedPrimaryScreenHeight}\n" +
+                $"MenuBarHeight:{SystemParameters.MenuBarHeight}\n" +
+                $"CaptionHeight:{SystemParameters.CaptionHeight}\n" +
+                $"MaximumWindowTrackHeight:{SystemParameters.MaximumWindowTrackHeight}\n" +
+                $"VirtualScreenHeight:{SystemParameters.VirtualScreenHeight}\n" +
+                $"FixedFrameHorizontalBorderHeight:{SystemParameters.FixedFrameHorizontalBorderHeight}\n" +
+
+
+               "";
+
+           
+           // MessageBox.Show(str);
+            
+            NotificationWindowMi nm = new NotificationWindowMi();
+            nm.Left = SystemParameters.PrimaryScreenWidth - nm.Width;
+            nm.Top = SystemParameters.PrimaryScreenHeight 
+            ;
+
+            nm.Show();
+
+
+
         }
 
         private void resetSearchBffer_Click(object sender, RoutedEventArgs e)
@@ -935,6 +1006,267 @@ namespace fbhd
                 }
             }
             
+        }
+
+        private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+             new AboutWindow() { Owner=this} .ShowDialog();
+        }
+
+        private void CmdLineHelpMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+           // await Task.Delay(5000);
+            string cmdlineHelp = "usage:\n     fbhd [options] <url>\nOptions:\n     -mp3|-mp4|-mkv|-jpg: task type, defaults to mp4\n     -r <720p> : prefered resolution, defaults to the highest\n     -o <path>: output file path and name\n     -y : override existant files\n     -s : silent mode\n     -v : verbose logging";
+            MessageBox.Show(cmdlineHelp, "cmdhelp", MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK, MessageBoxOptions.ServiceNotification);
+        }
+
+        private void fsdmnewswatchButt_Click(object sender, RoutedEventArgs e)
+        {
+           
+
+        }
+
+
+        private void devregex_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            
+            try
+            {
+                Match m = Regex.Match(devregex_iinput.Text,devregex.Text);
+                if (m.Success)
+                {
+                    devresult.Text = m.Value;
+                }
+                else
+                {
+                    devresult.Text = "successfull = false";
+                }
+            }
+            catch (Exception)
+            {
+
+                devresult.Text = "exception";
+            }
+        }
+
+        private void fsdmnewswatchButt_Checked(object sender, RoutedEventArgs e)
+        {
+           // mainSession.fsdmNewsWatcher.Interval = 10000;
+           
+            mainSession.FsdmNewsWatcher.StartWatching();
+        }
+
+        private void fsdmnewswatchButt_Unchecked(object sender, RoutedEventArgs e)
+        {
+            mainSession.FsdmNewsWatcher.StopWatching();
+
+        }
+
+        private void pinWindowButt_Click(object sender, RoutedEventArgs e)
+        {
+            string bluePinIcon= "file:///C:/TOOLS/fbhd-gui/fbhd/fbhd/media/pin-2-13BRIGHT-blue.png";
+            string whitePinIcon = "file:///C:/TOOLS/fbhd-gui/fbhd/fbhd/media/pin-2-13BRIGHT.png";
+            if (this.Topmost)
+            {
+                this.Topmost = false;
+                pinWindowButt.iconSource = new System.Windows.Media.Imaging.BitmapImage(new Uri(whitePinIcon));
+                
+            }
+            else
+            {
+                this.Topmost = true;
+                pinWindowButt.iconSource = new System.Windows.Media.Imaging.BitmapImage(new Uri(bluePinIcon));
+
+            }
+
+
+        }
+
+
+
+         public void ShowNotificationNews(IEnumerable<INotifableItem> news, IWatch listWathcer)
+        {
+            NotificationWindowMi nm = new NotificationWindowMi();
+            
+            nm.Init(news , listWathcer);
+            nm.Owner = this;
+            nm.ShowInTaskbar = false;
+
+            nm.Show();
+        }
+        
+
+        public void PopupNews(IEnumerable<INotifableItem> news, IWatch listwatcher, string winTitle = "News" ,bool IsNotifyMode  =true)
+        {
+            GenericPopupWindow gpw = new GenericPopupWindow();
+            SoundPlayerAction spa = new SoundPlayerAction();
+           if(IsNotifyMode) mainSession.PlayNotification();
+            gpw.setItemsSource(news,listwatcher, winTitle );
+            gpw.ShowDialog();
+
+
+        }
+
+        private async void testwindowmuit_Click(object sender, RoutedEventArgs e)
+        {
+
+           
+            
+            await Task.Delay(5000);
+            GenericPopupWindow gpw = new GenericPopupWindow();
+
+            List<INotifableItem> li = new List<INotifableItem>()
+            {
+                new FsdmNew() {
+                    Title ="TITLE 1",
+                    Link = "https://abc/news/1",
+                },
+                new FsdmNew() {
+                    Title ="TITLE 2",
+                    Link = "https://abc/news/2",
+                },
+                  new FsdmNew() {
+                    Title ="TITLE 3",
+                    Link = "https://abc/news/3",
+                },
+               
+            };
+
+
+           
+            gpw.setItemsSource(li, null, "dummy news");
+            this.Activate();
+            mainSession.PlayNotification();
+
+            gpw.ShowDialog();
+            
+
+        }
+
+        
+
+       
+
+        private void intervalIncTb_OnDecrease(object sender, RoutedEventArgs e)
+        {
+            mainSession.FsdmNewsWatcher.Interval -= 30000;
+        }
+
+     
+
+        private void intervalIncTb_OnIncrease(object sender, RoutedEventArgs e)
+        {
+            mainSession.FsdmNewsWatcher.Interval += 30000;
+
+        }
+
+        private void UnreadNewsButt_Click(object sender, RoutedEventArgs e)
+        {
+            PopupNews(mainSession.FsdmNewsWatcher.UnreadNews, mainSession.FsdmNewsWatcher, "News",false);
+        }
+
+       
+
+
+        private void devFakeCheck_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void devShowPopup_Click(object sender, RoutedEventArgs e)
+        {
+           
+        }
+
+        private void devRemoveLatestNewsItem_Click(object sender, RoutedEventArgs e)
+        {
+            string c = File.ReadAllText(MI.FSDM_News_Ref_PATH);
+
+            string pre_triming = Regex.Match(c, "<ul class=\"list contact-details\">(.*?)<div class=\"paginationx\">", RegexOptions.Singleline).Value;
+            //MessageBox.Show(pre_triming.Length.ToString());
+
+            string mc = Regex.Match(pre_triming, "<li>.\\s*<div>.?(.*?)</li>", RegexOptions.Singleline).Value;
+
+            c=c.Replace(mc, "");
+            File.WriteAllText(MI.FSDM_News_Ref_PATH, c);
+
+        }
+
+        private void devShowNotification_Click(object sender, RoutedEventArgs e)
+        {
+            var dummynews = new List<FsdmNew>()
+            {
+                new FsdmNew() {Title = "Dummy Notification Title" ,
+                Link = "http://fsdm.ma/dummyhrtdfhdf",
+                ID = "44444", date="zzrhzr"
+
+                }
+            };
+            ShowNotificationNews(dummynews.Cast<INotifableItem>(),null);
+        }
+
+        private void devActivateXMLLW_Click(object sender, RoutedEventArgs e)
+        {
+            var fsdmpresetlw =  XMLLW.LoadXMLPreset(File.ReadAllText(MI.XMLFSDM_PRESET));
+            fsdmpresetlw.NewItems += (s, news) =>
+            {
+                MessageBox.Show($"new {news.Count} news");
+                MessageBox.Show(news[0].ExpandoObj.title);
+            };
+            fsdmpresetlw.InitialReferenceContent = File.ReadAllText(MI.FSDM_News_Ref_PATH);
+            fsdmpresetlw.StartWatching();
+
+        }
+
+        private async void loadListWatcherPresetButt_Click(object sender, RoutedEventArgs e)
+        {
+            Ookii.Dialogs.Wpf.VistaOpenFileDialog vofd = new VistaOpenFileDialog();
+            vofd.DefaultExt = "xml";
+            vofd.InitialDirectory = MI.MAIN_PATH + "\\xml";
+             bool? success= vofd.ShowDialog(this);
+            if (!success.HasValue) return;
+            if (!success.Value) return;
+
+           bool loaded = await mainSession.LoadXMLLW(vofd.FileName);
+            if(loaded)
+            MessageBox.Show("preset loaded successfilly");
+        }
+
+        private void prettifyXmlDoc_Click(object sender, RoutedEventArgs e)
+        {
+            
+
+
+            var myConfig = new Config();
+            myConfig.CLWPresetsDeclarations = new List<Config.CLWPresetDeclaration>()
+            {
+
+                new Config.CLWPresetDeclaration()
+                {
+                    Path=MI.XML_DIR+"\\fsdmNewsX.xml", AutoStart = true
+                },
+                 new Config.CLWPresetDeclaration()
+                {
+                    Path=MI.XML_DIR+"\\fsdmUploads.xml", AutoStart = false
+                }
+            };
+           
+            return;
+            Ookii.Dialogs.Wpf.VistaOpenFileDialog opener = new VistaOpenFileDialog();
+
+            opener.InitialDirectory = MI.XML_DIR;
+            opener.ShowDialog();
+
+            var parsed = XElement.Parse(File.ReadAllText(opener.FileName));
+            parsed.Save(opener.FileName+"", SaveOptions.None);
+            MessageBox.Show("saved");
+        }
+
+        private void factoryConfigButt_Click(object sender, RoutedEventArgs e)
+        {
+            var proceed = MessageBox.Show("this will override the config file including the prefered clw presets!", "sure?", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            if(proceed == MessageBoxResult.OK)
+            Config.FactoryConfig().Save();
         }
     }
 

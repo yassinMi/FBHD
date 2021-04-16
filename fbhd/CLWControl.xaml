@@ -1,0 +1,209 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:fbhd"
+             xmlns:ee="http://schemas.microsoft.com/expression/2010/effects" x:Name="userControl" x:Class="fbhd.CLWControl"
+             mc:Ignorable="d" 
+             d:DesignHeight="21" d:DesignWidth="138" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display" Loaded="UserControl_Loaded" HorizontalAlignment="Left">
+    <UserControl.Resources>
+        <local:boolToStringsMI x:Key="boolToStringsMI"/>
+        <Style x:Key="ComboBoxFlatStyle_miVersion"  TargetType="{x:Type ComboBox}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="TextElement.Foreground" Value="#FFB6B6B6"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBox}">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" Grid.Column="2"
+    							ClickMode="Press" Focusable="False"
+    							IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+    							Template="{DynamicResource ToggleButtonControlTemplateflattt}" Background="Black"/>
+
+                            <ContentPresenter x:Name="ContentSite" Margin="5, 3, 23, 3" IsHitTestVisible="False"
+    							HorizontalAlignment="Left" VerticalAlignment="Center"                              
+    							Content="{TemplateBinding SelectionBoxItem}" 
+    							ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+    							ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                            <TextBox x:Name="PART_EditableTextBox" Margin="3, 3, 23, 3"                     
+    							IsReadOnly="{TemplateBinding IsReadOnly}"
+    							Visibility="Visible" Background="Transparent"
+    							HorizontalAlignment="Left" VerticalAlignment="Center"
+    							Focusable="True" >
+                                <TextBox.Template>
+                                    <ControlTemplate TargetType="{x:Type TextBox}" >
+                                        <Border x:Name="PART_ContentHost" Focusable="False" />
+                                    </ControlTemplate>
+                                </TextBox.Template>
+                            </TextBox>
+                            <!-- Popup showing items -->
+                            <Popup x:Name="Popup" Placement="Bottom"
+    							Focusable="False" AllowsTransparency="True"
+    							IsOpen="{TemplateBinding IsDropDownOpen}"
+    							PopupAnimation="Slide">
+                                <Grid x:Name="DropDown" SnapsToDevicePixels="True"
+    								MinWidth="{TemplateBinding ActualWidth}"
+    								MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" Background="#FF212121" Margin="0, 1, 0, 0"
+    									CornerRadius="0" BorderThickness="1,1,1,1" 
+    									BorderBrush="#FF4F4F4F"/>
+                                    <ScrollViewer Margin="4" SnapsToDevicePixels="True">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="False">
+                                <Setter Property="MinHeight" TargetName="DropDownBorder" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="TextElement.Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsGrouping" Value="True">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                            </Trigger>
+                            <Trigger Property="IsEditable" Value="True">
+                                <Setter Property="KeyboardNavigation.IsTabStop" Value="False"/>
+                                <Setter Property="Visibility" TargetName="PART_EditableTextBox" Value="Visible"/>
+                                <Setter Property="Visibility" TargetName="ContentSite" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <local:BooleanToVisibilityInverted x:Key="BooleanToVisibilityInverted"/>
+    </UserControl.Resources>
+    <Grid HorizontalAlignment="Left">
+        <Grid x:Name="CLW" Margin="0" Background="#00464646" Height="21" VerticalAlignment="Center" HorizontalAlignment="Left">
+
+            <local:ButtonMi x:Name="mainButton" Margin="0" VerticalAlignment="Center" iconSource="bell-16-orange-filled.png" captionVisibility="Visible" textcaption="{Binding Name, FallbackValue=Name long qee}" HorizontalAlignment="Left" Width="Auto" Foreground="#FF41F1F1" captionMargin="1,0,0,0" Click="mainButton_Click">
+                <local:ButtonMi.Effect>
+                    <ee:BloomEffect BloomIntensity="{Binding IsWatching, ConverterParameter=1:0; 0:1;, Converter={StaticResource boolToStringsMI}}" BaseSaturation="1" BaseIntensity="{Binding IsWatching, ConverterParameter=1:1; 0:0;, Converter={StaticResource boolToStringsMI}}" Threshold="0.5" BloomSaturation="0"/>
+                </local:ButtonMi.Effect>
+            </local:ButtonMi>
+            <Popup x:Name="mainPopup" Placement="Top" StaysOpen="False" Margin="8,0,-8,-1">
+                <Border Width="131" BorderThickness="1" Background="#00000000" BorderBrush="#FF2F2F37" >
+                    <Grid Background="#FF0E0E0F">
+                        <StackPanel Margin="10,10,10,0" Orientation="Vertical" VerticalAlignment="Top">
+                            <Grid x:Name="interval" Height="23" d:LayoutOverrides="LeftPosition, RightPosition" Margin="0,4">
+                                <local:IncreaseTextBox x:Name="intervalIncTb"  Foreground="#FFB6B2B2" Background="{x:Null}" BorderBrush="#FF393944" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" HorizontalAlignment="Right" d:LayoutOverrides="Height" Text="{Binding IntervalAsString}" TextAlignment="Right" Loaded="intervalIncTb_Loaded" MinWidth="45" OnDecrease="intervalIncTb_OnDecrease" OnIncrease="intervalIncTb_OnIncrease">
+
+                                    <local:IncreaseTextBox.Template>
+
+                                        <ControlTemplate TargetType="{x:Type local:IncreaseTextBox}">
+                                            <Grid>
+                                                <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" Background="{TemplateBinding Background}" CornerRadius="2" Padding="2">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition Width="10"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <ScrollViewer x:Name="PART_ContentHost" Background="{TemplateBinding Background}" HorizontalAlignment="Stretch" Margin="0" Style="{DynamicResource SimpleScrollViewer}" VerticalAlignment="Stretch"/>
+                                                        <Grid Grid.ColumnSpan="1" Grid.Column="1">
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition/>
+                                                                <RowDefinition Height="*"/>
+                                                            </Grid.RowDefinitions>
+                                                            <RepeatButton x:Name="PART_INCREASE" Margin="0" Width="10" Height="8" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#00000000" BorderBrush="{x:Null}" Foreground="#FFE4E4E4" Style="{DynamicResource SimpleRepeatButton}">
+                                                                <Image x:Name="UpIcon" Height="8" Width="10" Source="up-tri-10x8-white.png"/>
+                                                            </RepeatButton>
+                                                            <RepeatButton x:Name="PART_DECREASE" Margin="0" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="10" Height="8" Style="{DynamicResource SimpleRepeatButton}" Background="#00000000" BorderBrush="{x:Null}">
+                                                                <Image x:Name="DownIcon" Height="8" Width="10" Source="down-tri-10x8-white.png"/>
+                                                            </RepeatButton>
+
+                                                        </Grid>
+                                                    </Grid>
+                                                </Border>
+                                            </Grid>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" SourceName="PART_DECREASE" Value="true">
+                                                    <Setter Property="Source" TargetName="DownIcon" Value="down-tri-10x8-orange.png"/>
+                                                </Trigger>
+
+                                                <Trigger Property="IsMouseOver" SourceName="PART_INCREASE" Value="true">
+                                                    <Setter Property="Source" TargetName="UpIcon" Value="up-tri-10x8-orange.png"/>
+                                                </Trigger>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Background" TargetName="Border" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                                                    <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </local:IncreaseTextBox.Template>
+
+                                </local:IncreaseTextBox>
+
+                                <TextBlock x:Name="intervallbl" Margin="0,0,42,0" TextWrapping="Wrap" Text="Interval:" Foreground="#FFCFCFD1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <Grid x:Name="Action" Height="23" d:LayoutOverrides="LeftPosition, RightPosition" Margin="0,4">
+                                <TextBlock x:Name="actionslbl" Margin="0,0,42,0" TextWrapping="Wrap" Text="Action:" Foreground="#FFCFCFD1" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                <ComboBox x:Name="comboBox2" Margin="43,0,0,0" Style="{DynamicResource ComboBoxFlatStyle_miVersion}" VerticalAlignment="Center" SelectedIndex="0">
+                                    <ComboBoxItem Content="Popup"/>
+                                    <ComboBoxItem Content="Sound"/>
+                                    <ComboBoxItem Content="PopupAndSound"/>
+                                </ComboBox>
+                            </Grid>
+                            <Grid x:Name="StartStop" Height="26" Margin="0,4" d:LayoutOverrides="LeftPosition, RightPosition">
+                                <Button x:Name="StartStopButt" Content="{Binding IsWatching, ConverterParameter=0:Start; 1:Stop;, Converter={StaticResource boolToStringsMI}}" Margin="10,0" Template="{DynamicResource FlatButt}" VerticalAlignment="Center" Height="23" Click="StartStopButt_Click"/>
+                            </Grid>
+                            <Grid x:Name="Unread" Height="20" Margin="0,4,0,0" d:LayoutOverrides="LeftPosition, RightPosition" Background="#00000000" Visibility="{Binding HasUnreadNews, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=visible, Mode=OneWay}">
+                                <Button x:Name="UnreadNewsButt" Margin="10,0" Style="{DynamicResource SimpleButton}" Background="#00000000" BorderBrush="{x:Null}" Foreground="#FFDED8D8" Click="UnreadNewsButt_Click">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Grid x:Name="Grid">
+                                                <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"/>
+                                                <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                            </Grid>
+                                            <ControlTemplate.Triggers>
+
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="BorderBrush" TargetName="Border" Value="#FFE59102"/>
+
+                                                    <Setter Property="Background" TargetName="Border" Value="#FF303030"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" TargetName="Border" Value="#FF2A2A2B"/>
+                                                    <Setter Property="BorderBrush" TargetName="Border" Value="#FFC59646"/>
+                                                </Trigger>
+                                                <Trigger Property="IsEnabled" Value="True"/>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Background" TargetName="Border" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                                                    <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource DisabledBorderBrush}"/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <Grid>
+                                        <TextBlock x:Name="unreadInfo" Margin="20,1,0,2" TextWrapping="Wrap" Foreground="#FFFFC159" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding UnreadCount, FallbackValue=0 News, StringFormat=\{0:D\} News}"/>
+                                        <Grid x:Name="bellIcon" HorizontalAlignment="Left" Width="16" VerticalAlignment="Center" Height="16" d:LayoutOverrides="TopMargin, BottomMargin">
+                                            <Image x:Name="bellIco" Height="16" VerticalAlignment="Center" Source="bell-16-orange-empty-shine.png" Margin="0" HorizontalAlignment="Center" Width="16"/>
+                                        </Grid>
+                                    </Grid>
+                                </Button>
+                            </Grid>
+                            <Grid x:Name="Status" Height="26" Margin="0,4" d:LayoutOverrides="LeftPosition, RightPosition">
+                                <TextBlock x:Name="statusText" Margin="28,0,0,0" TextWrapping="Wrap" Text="{Binding StatusMessage}" Foreground="#FFD6D3D2" FontSize="10.667" d:LayoutOverrides="Width, Height" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <Grid x:Name="statusIcon" HorizontalAlignment="Left" Margin="10,0,0,0" Width="13" VerticalAlignment="Center" Height="13">
+                                    <Image x:Name="errorIco" Height="13" VerticalAlignment="Center" Source="media/error1.png" Margin="0" HorizontalAlignment="Center" Visibility="{Binding IsFailing, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    <Image x:Name="infoIco" Height="13" VerticalAlignment="Center" Source="information-b-on-w-13-large.png" Margin="0" HorizontalAlignment="Center" Visibility="{Binding IsRunningSuccessfully, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                </Grid>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Popup>
+        </Grid>
+
+    </Grid>
+</UserControl>

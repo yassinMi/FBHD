@@ -18,7 +18,7 @@
                     <Image x:Name="thumb_img" Stretch="Fill" Opacity="0.7" Margin="0" Source="{Binding CoreSearchElement.ThumbImageSource, ElementName=userControl}" HorizontalAlignment="Left" VerticalAlignment="Top" Height="42" Width="74" d:LayoutOverrides="TopMargin, BottomMargin"/>
                 </Grid>
             </Grid>
-            <local:ButtonMi x:Name="watch_butt" Grid.Column="2" HorizontalAlignment="Stretch" Height="16" Margin="4,10,18,0" iconSource="play-in-circle-white-16-larger.png" captionVisibility="Visible" textcaption="Watch" Width="Auto" captionMargin="4,1,0,0" FontSize="10.667" Visibility="Hidden" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+            <local:ButtonMi x:Name="watch_butt" Grid.Column="2" HorizontalAlignment="Stretch" Height="16" Margin="4,10,18,0" iconSource="media/play-in-circle-white-16-larger.png" captionVisibility="Visible" textcaption="Watch" Width="Auto" captionMargin="4,1,0,0" FontSize="10.667" Visibility="Hidden" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
             <Grid x:Name="Actions" Grid.Column="1" Margin="0,0,2,0" Height="16" VerticalAlignment="Center" HorizontalAlignment="Right" Width="50" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -29,13 +29,13 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid x:Name="dload" Width="16" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Top">
-                    <local:ButtonMi x:Name="download_butt" HorizontalAlignment="Stretch" iconSource="dload-thin-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667" Click="download_butt_Click"/>
+                    <local:ButtonMi x:Name="download_butt" HorizontalAlignment="Stretch" iconSource="media/dload-thin-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667" Click="download_butt_Click"/>
                 </Grid>
                 <Grid x:Name="copyHref" Width="16" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Top" Grid.Column="1">
-                    <local:ButtonMi x:Name="copHrefButt" HorizontalAlignment="Stretch" iconSource="copy-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667"/>
+                    <local:ButtonMi x:Name="copHrefButt" HorizontalAlignment="Stretch" iconSource="media/copy-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667"/>
                 </Grid>
                 <Grid x:Name="more" Width="16" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Grid.Column="2" Visibility="Hidden">
-                    <local:ButtonMi x:Name="download_butt2" HorizontalAlignment="Stretch" iconSource="x-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667"/>
+                    <local:ButtonMi x:Name="download_butt2" HorizontalAlignment="Stretch" iconSource="media/x-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667"/>
                 </Grid>
             </Grid>
             <TextBlock x:Name="searchItemTitleOwner" Grid.Column="1" Height="16" Margin="10,1,59,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{Binding OwnerName, FallbackValue=OWNER}" Foreground="#FFC5C5C5"/>

@@ -43,10 +43,8 @@ namespace fbhd
 
 
 
+            return;
 
-           // GetBindingExpression(TaskInfo.core).UpdateTarget();
-
-            // GetBindingExpression(TaskInfo.coreTaskComponentProperty).UpdateTarget();
             progressBar_download.GetBindingExpression(ProgressBar.ValueProperty).UpdateTarget();
             graphics_done.GetBindingExpression(Grid.VisibilityProperty).UpdateTarget();
             graphics_down.GetBindingExpression(Grid.VisibilityProperty).UpdateTarget();
@@ -55,7 +53,6 @@ namespace fbhd
 
             graphics_resolving.GetBindingExpression(Grid.VisibilityProperty).UpdateTarget();
             lblTaskName.GetBindingExpression(TextBlock.TextProperty).UpdateTarget();
-           // MessageBox.Show("oje");
         }
 
 
@@ -393,6 +390,11 @@ namespace fbhd
             {
                 MessageBox.Show("file deleted");
             }
+        }
+
+        private void resetTask_Click(object sender, RoutedEventArgs e)
+        {
+            this.coreTaskObject.Status = TaskStatus.pending;
         }
     }
 

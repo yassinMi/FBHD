@@ -35,7 +35,7 @@
                         <VisualState x:Name="Disabled"/>
                     </VisualStateGroup>
                 </VisualStateManager.VisualStateGroups>
-                <Image x:Name="image" Source="mp3-cool-yellow.png" ScrollViewer.VerticalScrollBarVisibility="Hidden" Stretch="None" ClipToBounds="True" ToolTip="mp3 task" Opacity="0.75"/>
+                <Image x:Name="image" Source="media/mp3-cool-yellow.png" ScrollViewer.VerticalScrollBarVisibility="Hidden" Stretch="None" ClipToBounds="True" ToolTip="mp3 task" Opacity="0.75"/>
             </Grid>
         </ControlTemplate>
         <ControlTemplate x:Key="buttonoptionsdrop" TargetType="{x:Type Button}">
@@ -57,7 +57,7 @@
                         <VisualState x:Name="Disabled"/>
                     </VisualStateGroup>
                 </VisualStateManager.VisualStateGroups>
-                <Image x:Name="image" HorizontalAlignment="Center" Source="arow-down-white-mi-7x7.png" VerticalAlignment="Center" Width="7" Margin="0" Height="7" Opacity="0.75"/>
+                <Image x:Name="image" HorizontalAlignment="Center" Source="media/arow-down-white-mi-7x7.png" VerticalAlignment="Center" Width="7" Margin="0" Height="7" Opacity="0.75"/>
             </Grid>
         </ControlTemplate>
         <LinearGradientBrush x:Key="MenuBackground" EndPoint="0,1" StartPoint="0,0">
@@ -112,7 +112,7 @@
                         <ColumnDefinition SharedSizeGroup="MenuItemIGTColumnGroup" Width="Auto"/>
                         <ColumnDefinition Width="17"/>
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="icon" HorizontalAlignment="Stretch" Margin="0,0,0,1" Width="14" Height="14" Source="elet-14-grey-filled-mi.png"/>
+                    <Image x:Name="icon" HorizontalAlignment="Stretch" Margin="0,0,0,1" Width="14" Height="14" Source="media/elet-14-grey-filled-mi.png"/>
                     <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="2" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                     <TextBlock Grid.Column="4" Margin="{TemplateBinding Padding}" Text="{TemplateBinding InputGestureText}"/>
                 </Grid>
@@ -148,7 +148,7 @@
                         <ColumnDefinition SharedSizeGroup="MenuItemIGTColumnGroup" Width="Auto"/>
                         <ColumnDefinition Width="17"/>
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="icon" HorizontalAlignment="Stretch" Margin="5,3,5,4" Width="14" Height="14" Source="star-14-grey-filled-mi.png"/>
+                    <Image x:Name="icon" HorizontalAlignment="Stretch" Margin="5,3,5,4" Width="14" Height="14" Source="media/star-14-grey-filled-mi.png"/>
                     <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="2" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                     <TextBlock Grid.Column="4" Margin="{TemplateBinding Padding}" Text="{TemplateBinding InputGestureText}"/>
                 </Grid>
@@ -184,7 +184,7 @@
                         <ColumnDefinition SharedSizeGroup="MenuItemIGTColumnGroup" Width="Auto"/>
                         <ColumnDefinition Width="17"/>
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="icon" HorizontalAlignment="Stretch" Margin="0,0,0,1" Width="14" Height="14" Source="enter-grey14-14.png"/>
+                    <Image x:Name="icon" HorizontalAlignment="Stretch" Margin="0,0,0,1" Width="14" Height="14" Source="media/enter-grey14-14.png"/>
                     <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="2" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                     <TextBlock Grid.Column="4" Margin="{TemplateBinding Padding}" Text="{TemplateBinding InputGestureText}"/>
                 </Grid>
@@ -320,7 +320,7 @@
                         <ColumnDefinition SharedSizeGroup="MenuItemIGTColumnGroup" Width="Auto"/>
                         <ColumnDefinition Width="17"/>
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="icon" HorizontalAlignment="Stretch" Margin="0,0,0,1" Width="14" Height="14" Source="copy-16-white-commandline.png"/>
+                    <Image x:Name="icon" HorizontalAlignment="Stretch" Margin="0,0,0,1" Width="14" Height="14" Source="media/copy-16-white-commandline.png"/>
                     <ContentPresenter ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" Grid.Column="2" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                     <TextBlock Grid.Column="4" Margin="{TemplateBinding Padding}" Text="{TemplateBinding InputGestureText}"/>
                 </Grid>
@@ -394,11 +394,11 @@
                         <ColumnDefinition Width="38*"/>
                     </Grid.ColumnDefinitions>
                     <Grid x:Name="grd_statusIcon" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" ClipToBounds="True">
-                        <Image x:Name="done_i" Margin="0" Source="chec3.png" Height="10" VerticalAlignment="Center" d:LayoutOverrides="TopMargin, BottomMargin" Visibility="{Binding taskStatus, ConverterParameter=done, Converter={StaticResource TaskStatusToUIvisibility}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TaskComponent}}}" d:IsHidden="True"/>
-                        <Image x:Name="error_ico" Margin="0" Source="error1.png" Height="10" VerticalAlignment="Center" d:LayoutOverrides="TopMargin, BottomMargin" Visibility="{Binding taskStatus, ConverterParameter=failed, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl}" d:IsHidden="True"/>
-                        <Image x:Name="resolving_ico" Margin="0" Source="resloving-gray-10-10.png" Height="10" VerticalAlignment="Center" d:LayoutOverrides="TopMargin, BottomMargin" RenderTransformOrigin="0.5,0.5"  Visibility="{Binding taskStatus, ConverterParameter=resolving, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl}" d:IsHidden="True"/>
+                        <Image x:Name="done_i" Margin="0" Source="media/chec3.png" Height="10" VerticalAlignment="Center" d:LayoutOverrides="TopMargin, BottomMargin" Visibility="{Binding taskStatus, ConverterParameter=done, Converter={StaticResource TaskStatusToUIvisibility}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:TaskComponent}}}" d:IsHidden="True"/>
+                        <Image x:Name="error_ico" Margin="0" Source="media/error1.png" Height="10" VerticalAlignment="Center" d:LayoutOverrides="TopMargin, BottomMargin" Visibility="{Binding taskStatus, ConverterParameter=failed, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl}" d:IsHidden="True"/>
+                        <Image x:Name="resolving_ico" Margin="0" Source="media/resloving-gray-10-10.png" Height="10" VerticalAlignment="Center" d:LayoutOverrides="TopMargin, BottomMargin" RenderTransformOrigin="0.5,0.5"  Visibility="{Binding taskStatus, ConverterParameter=resolving, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl}" d:IsHidden="True"/>
                         <Grid x:Name="grd_downloading_anim" Margin="0" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center" ClipToBounds="True" Visibility="{Binding taskStatus, ConverterParameter=downloading, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl}">
-                            <Image x:Name="downloading_ico" Margin="0,0,-60,0" Source="down-small-11-turns-white.png" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" Visibility="Visible" Height="10" Width="110" HorizontalAlignment="Left" Stretch="None"/>
+                            <Image x:Name="downloading_ico" Margin="0,0,-60,0" Source="media/down-small-11-turns-white.png" VerticalAlignment="Center" RenderTransformOrigin="0.5,0.5" Visibility="Visible" Height="10" Width="110" HorizontalAlignment="Left" Stretch="None"/>
                         </Grid>
                     </Grid>
                     <Border x:Name="url_border" Margin="0" BorderThickness="1" CornerRadius="2" BorderBrush="#FF2F2F37"   Grid.ColumnSpan="2" Grid.Column="{Binding taskStatus, ConverterParameter=url_column, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl}" >
@@ -406,16 +406,16 @@
                     </Border>
                 </Grid>
                 <Grid x:Name="typeSwitch" Grid.Column="1" Margin="0,4,3.965,3" Visibility="Collapsed">
-                    <local:ButtonMi x:Name="mp3Butt" d:LayoutOverrides="Height" iconSource="mp3-cool-yellow.png" Tag="mp3"/>
-                    <local:ButtonMi x:Name="mp4Butt" iconSource="mp4-cool-magenta-ofiice.png" d:LayoutOverrides="Height" Tag="mp4"  Visibility="Collapsed" />
-                    <local:ButtonMi x:Name="mkvButt" iconSource="mkvcool-white-office.png" Tag="mkv"  Visibility="Collapsed" Margin="0,0,-26.525,0" />
-                    <local:ButtonMi x:Name="jpgButt" iconSource="jpg-cool-office.png" Tag="jpg"  Visibility="Collapsed" Margin="0,0,-26.525,0"/>
+                    <local:ButtonMi x:Name="mp3Butt" d:LayoutOverrides="Height" iconSource="media/mp3-cool-yellow.png" Tag="mp3"/>
+                    <local:ButtonMi x:Name="mp4Butt" iconSource="media/mp4-cool-magenta-ofiice.png" d:LayoutOverrides="Height" Tag="mp4"  Visibility="Collapsed" />
+                    <local:ButtonMi x:Name="mkvButt" iconSource="media/mkvcool-white-office.png" Tag="mkv"  Visibility="Collapsed" Margin="0,0,-26.525,0" />
+                    <local:ButtonMi x:Name="jpgButt" iconSource="media/jpg-cool-office.png" Tag="jpg"  Visibility="Collapsed" Margin="0,0,-26.525,0"/>
                 </Grid>
                 <Grid x:Name="menu1" Grid.Column="2" Margin="0" Width="13" HorizontalAlignment="Center" VerticalAlignment="Center" Height="12">
                     <Button x:Name="buttonoptionsdrop" Content="Button" Template="{DynamicResource buttonoptionsdrop}" Background="#FF040405" Foreground="#FF7DCD79" SnapsToDevicePixels="True" VerticalAlignment="Center" Height="16" Click="buttonoptionsdrop_Click" ToolTip="Options"/>
                     <Popup x:Name="popup" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" StaysOpen="False" Closed="popup_Closed" Opened="popup_Opened">
                         <StackPanel Background="Black" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Top" >
-                            <MenuItem Header="Remove" Foreground="#FFAAAAAA" TextOptions.TextFormattingMode="Display" d:LayoutOverrides="Width, LeftPosition, RightPosition, TopPosition, BottomPosition" Margin="0,0,2,0" Template="{DynamicResource MenuItemControlTemplate1}" Icon="{Binding Source, ElementName=remove_icon}" Click="MenuItem_Click_1"/>
+                            <MenuItem Header="Remove" Foreground="#FFAAAAAA" TextOptions.TextFormattingMode="Display" d:LayoutOverrides="Width, LeftPosition, RightPosition, TopPosition, BottomPosition" Margin="0,0,2,0" Template="{DynamicResource MenuItemControlTemplate1}" Click="MenuItem_Click_1"/>
                             <MenuItem Header="Properties" Foreground="#FFAAAAAA" TextOptions.TextFormattingMode="Display" Margin="0,0,2,0" Template="{DynamicResource starmenuitem}" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition" InputGestureText="R"/>
                             <MenuItem Header="Skip" Foreground="#FFAAAAAA" TextOptions.TextFormattingMode="Display" Margin="0,0,2,0" Template="{DynamicResource MenuItemControlTemplat_skip}" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition" Click="MenuItem_Click"/>
                             <MenuItem Header="Copy" Foreground="#FFAAAAAA" TextOptions.TextFormattingMode="Display" Margin="0,0,2,0" Template="{DynamicResource MenuItemControlTemplatecopycmd}" Click="MenuItem_Click" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition" InputGestureText="C" UsesItemContainerTemplate="True">
@@ -429,20 +429,19 @@
                         </StackPanel>
                     </Popup>
                 </Grid>
-                <TextBlock x:Name="devMedia" Margin="58,4,15,0" TextWrapping="Wrap" Text="{Binding TaskMediaType, ElementName=userControl}" Foreground="#FFDAD2D2" Visibility="Collapsed"/>
                 <Grid x:Name="MediaTypeSwitchGrd" Grid.Column="1" Margin="0,4,3.965,3" Visibility="Collapsed">
-                    <local:ButtonMi x:Name="mp3Butt1" d:LayoutOverrides="Height" iconSource="mp3-cool-yellow.png" Tag="mp3"/>
-                    <local:ButtonMi x:Name="mp4Butt1" iconSource="mp4-cool-magenta-ofiice.png" d:LayoutOverrides="Height" Tag="mp4"  Visibility="Collapsed" />
-                    <local:ButtonMi x:Name="mkvButt1" iconSource="mkvcool-white-office.png" Tag="mkv"  Visibility="Collapsed" Margin="0,0,-26.525,0"  />
-                    <local:ButtonMi x:Name="jpgButt1" iconSource="jpg-cool-office.png" Tag="jpg"  Visibility="Collapsed" Margin="0,0,-26.525,0"  />
+                    <local:ButtonMi x:Name="mp3Butt1" d:LayoutOverrides="Height" iconSource="media/mp3-cool-yellow.png" Tag="mp3"/>
+                    <local:ButtonMi x:Name="mp4Butt1" iconSource="media/mp4-cool-magenta-ofiice.png" d:LayoutOverrides="Height" Tag="mp4"  Visibility="Collapsed" />
+                    <local:ButtonMi x:Name="mkvButt1" iconSource="media/mkvcool-white-office.png" Tag="mkv"  Visibility="Collapsed" Margin="0,0,-26.525,0"  />
+                    <local:ButtonMi x:Name="jpgButt1" iconSource="media/jpg-cool-office.png" Tag="jpg"  Visibility="Collapsed" Margin="0,0,-26.525,0"  />
                 </Grid>
-                <local:MediaTypeSwitchControl x:Name="MediaTypeSwitch" Shifted="MediaTypeSwitch_Shifted" Grid.Column="1" Margin="2,0" IconAudio="wav-16-white.png" IconVideo="video-16-medium.png" IconImage="image-16-small.png" Value="{Binding MediaType, FallbackValue=0}">
+                <local:MediaTypeSwitchControl x:Name="MediaTypeSwitch" Shifted="MediaTypeSwitch_Shifted" Grid.Column="1" Margin="2,0" IconAudio="media/wav-16-white.png" IconVideo="media/video-16-medium.png" IconImage="media/image-16-small.png" Value="{Binding MediaType, FallbackValue=0}">
 
 
                     <local:MediaTypeSwitchControl.Template>
                         <ControlTemplate>
                             <Grid>
-                                <local:ButtonWithIcon x:Name="PART_BUTTON" Icon="wav-16-white.png">
+                                <local:ButtonWithIcon x:Name="PART_BUTTON" Icon="media/wav-16-white.png">
                                     <local:ButtonWithIcon.Template>
                                         <ControlTemplate TargetType="local:ButtonWithIcon">
                                             <Grid x:Name="grd" Background="#00000000" Opacity="0.85">
@@ -465,7 +464,7 @@
 
                 </local:MediaTypeSwitchControl>
             </Grid>
-            <ProgressBar x:Name="progressBar_download" Height="4" Margin="0" Style="{DynamicResource smallProgBarFlat}" VerticalAlignment="Bottom" Background="#003E3D3D" BorderBrush="#0004B081" Foreground="#FF9C9C9C" Maximum="1" BorderThickness="0" Visibility="{Binding isDownloading, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=userControl}" Value="{Binding ffmpegProgress.Percent, ElementName=userControl, Mode=OneWay}"/>
+            <ProgressBar x:Name="progressBar_download" Height="4" Margin="0" Style="{DynamicResource smallProgBarFlat}" VerticalAlignment="Bottom" Background="#003E3D3D" BorderBrush="#0004B081" Foreground="#FF9C9C9C" Maximum="1" BorderThickness="0" Visibility="{Binding IsDownloading, Converter={StaticResource BooleanToVisibilityConverter}}" Value="{Binding downloadingPercent, FallbackValue=0, Mode=OneWay}"/>
 
         </Grid>
     </Border>

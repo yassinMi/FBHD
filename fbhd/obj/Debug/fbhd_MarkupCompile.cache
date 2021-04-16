@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\TOOLS\fbhd-gui\fbhd\fbhd\App.xaml
-11-1037076212
-
-22-829084451
+16-1902144981
+1703870903
+281275718309
 241541027357
-ButtonMi.xaml;MainWindow.xaml;NewTaskWindow.xaml;PopupPickerMi.xaml;PopupPickerMiItem.xaml;ResolutionPicker.xaml;SearchItem.xaml;SettingsWindow.xaml;Simple Styles.xaml;TaskComponent.xaml;TaskInfo.xaml;
-splashscreen1.png
+AboutWindow.xaml;ButtonMi.xaml;CLWControl.xaml;CLWItemPresenter.xaml;GenericPopupWindow.xaml;MainWindow.xaml;NewTaskWindow.xaml;NotificationWindowMi.xaml;PopupPickerMi.xaml;PopupPickerMiItem.xaml;ResolutionPicker.xaml;SearchItem.xaml;SettingsWindow.xaml;Simple Styles.xaml;TaskComponent.xaml;TaskInfo.xaml;
+media\splashscreen1.png
 False
 

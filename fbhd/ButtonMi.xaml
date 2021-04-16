@@ -112,7 +112,7 @@
         </VisualStateManager.VisualStateGroups>
         <StackPanel Orientation="Horizontal" d:LayoutOverrides="Height" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Button x:Name="coreButton" Content="Button" Template="{DynamicResource buttmicorebutt}" Background="#FF040405" Foreground="#FF7DCD79" Margin="0" SnapsToDevicePixels="True" Tag="mp3" HorizontalAlignment="Left" VerticalAlignment="Center" Click="coreButton_Click" Opacity="0.75"/>
-            <TextBlock x:Name="caption" TextWrapping="Wrap" Text="{Binding textcaption, ElementName=userControl}" Foreground="#FFD5D5D5" d:LayoutOverrides="TopPosition, BottomPosition" Margin="{Binding captionMargin, ElementName=userControl}" Visibility="{Binding captonVisibility, ElementName=userControl}" TextOptions.TextFormattingMode="Display"/>
+            <TextBlock x:Name="caption" TextWrapping="Wrap" Text="{Binding textcaption, ElementName=userControl}" Foreground="#FFD5D5D5" d:LayoutOverrides="TopPosition, BottomPosition" Margin="{Binding captionMargin, ElementName=userControl}" Visibility="{Binding captionVisibility, ElementName=userControl}" TextOptions.TextFormattingMode="Display"/>
 
         </StackPanel>
 

@@ -19,7 +19,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
-    <ItemsControl Style="{DynamicResource ItemsControlResoPicker}" ItemsSource="{Binding Resolutions, ElementName=userControl}" Margin="0" HorizontalAlignment="Center" MinWidth="40">
+    <ItemsControl x:Name="resolutionsitemsControl" Style="{DynamicResource ItemsControlResoPicker}" ItemsSource="{Binding Resolutions, ElementName=userControl}" Margin="0" HorizontalAlignment="Center" MinWidth="40">
         <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
                 <WrapPanel Orientation="Horizontal"/>
@@ -27,7 +27,7 @@
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
             <DataTemplate>
-                <RadioButton Tag="{Binding}" Checked="on_item_checked" GroupName="uniqueone" Foreground="{Binding IsChecked, Converter={StaticResource isPickedToForeground}, RelativeSource={RelativeSource Self}}" Content="{Binding serialized}" Margin="4,0,4,4" Template="{DynamicResource RadioResoPicker}" VerticalAlignment="Center" Width="Auto" Height="20" />
+                <RadioButton  Tag="{Binding}" Checked="on_item_checked" GroupName="uniqueone" Foreground="{Binding IsChecked, Converter={StaticResource isPickedToForeground}, RelativeSource={RelativeSource Self}}" Content="{Binding serialized}" Margin="4,0,4,4" Template="{DynamicResource RadioResoPicker}" VerticalAlignment="Center" Width="Auto" Height="20" />
 
             </DataTemplate>
         </ItemsControl.ItemTemplate>

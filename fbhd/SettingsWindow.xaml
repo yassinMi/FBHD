@@ -138,7 +138,7 @@
                         <VisualState x:Name="Disabled"/>
                     </VisualStateGroup>
                 </VisualStateManager.VisualStateGroups>
-                <Image x:Name="image" Source="x-white.png" ScrollViewer.VerticalScrollBarVisibility="Hidden" Stretch="None" ClipToBounds="True" ToolTip="mp3 task"/>
+                <Image x:Name="image" Source="media/x-white.png" ScrollViewer.VerticalScrollBarVisibility="Hidden" Stretch="None" ClipToBounds="True" ToolTip="mp3 task"/>
                 <Grid x:Name="grid1" Margin="0" Background="#4C000000"/>
             </Grid>
         </ControlTemplate>

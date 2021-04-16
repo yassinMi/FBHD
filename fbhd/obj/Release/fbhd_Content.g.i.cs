@@ -8,6 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("start-perfect-white-16-black-bck.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("notif-5th.wav")]
 
 

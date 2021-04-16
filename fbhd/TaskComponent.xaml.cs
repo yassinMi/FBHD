@@ -306,6 +306,14 @@ namespace fbhd
 
       
                 SetValue(isSelectedProperty, value);
+                if (value)
+                {
+                    if (mw.TaskWiewTabSwitch.IsChecked.HasValue)
+                    {
+                        if (!mw.TaskWiewTabSwitch.IsChecked.Value)
+                            mw.TaskWiewTabSwitch.IsChecked = true;
+                    }
+                }
 
                 notif(nameof(isSelected));
 

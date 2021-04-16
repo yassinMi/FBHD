@@ -13,6 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -25,7 +26,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -83,16 +83,32 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ButtonMi.xaml.cs">
       <DependentUpon>ButtonMi.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CLWControl.xaml.cs">
+      <DependentUpon>CLWControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CLWItemPresenter.xaml.cs">
+      <DependentUpon>CLWItemPresenter.xaml</DependentUpon>
     </Compile>
     <Compile Include="FBHd.cs" />
     <Compile Include="FBHDTask.cs" />
     <Compile Include="FBHDTaskControl.cs" />
     <Compile Include="FilterControl.cs" />
+    <Compile Include="GenericPopupWindow.xaml.cs">
+      <DependentUpon>GenericPopupWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="IncreaseTextBox.cs" />
     <Compile Include="MediaTypeSwitchControl.cs" />
     <Compile Include="NewTaskWindow.xaml.cs">
       <DependentUpon>NewTaskWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="NotificationWindowMi.xaml.cs">
+      <DependentUpon>NotificationWindowMi.xaml</DependentUpon>
     </Compile>
     <Compile Include="PopupPickerMi.xaml.cs">
       <DependentUpon>PopupPickerMi.xaml</DependentUpon>
@@ -118,7 +134,23 @@
       <DependentUpon>TaskInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="TypeComboBox.cs" />
+    <Page Include="AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ButtonMi.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CLWControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CLWItemPresenter.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GenericPopupWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -135,6 +167,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="NewTaskWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="NotificationWindowMi.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -189,7 +225,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="24px.svg" />
+    <None Include="media\24px.svg" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -201,46 +237,46 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="blank-file-4-16 %281%29.png" />
+    <Resource Include="media\blank-file-4-16 %281%29.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="blank-file-4-16 %282%29.png" />
+    <Resource Include="media\blank-file-4-16 %282%29.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="blank-file-4-16 %282%29-bright.png" />
+    <Resource Include="media\blank-file-4-16 %282%29-bright.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="blank-file-4-16 %282%29-bright-snaped.png" />
+    <Resource Include="media\blank-file-4-16 %282%29-bright-snaped.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="blank-file-4-16 %282%29-bright-snaped-small.png" />
+    <Resource Include="media\blank-file-4-16 %282%29-bright-snaped-small.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="blank-file-4-16 %282%29-bright-snaped-plus.png" />
+    <Resource Include="media\blank-file-4-16 %282%29-bright-snaped-plus.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="blank-file-4-16 %282%29-bright-snaped-plus2.png" />
+    <Resource Include="media\blank-file-4-16 %282%29-bright-snaped-plus2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="blank-file-4-16 %282%29-bright-snaped-list.png" />
+    <Resource Include="media\blank-file-4-16 %282%29-bright-snaped-list.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3-orange.png" />
+    <Resource Include="media\mp3-orange.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3-orange-large.png" />
+    <Resource Include="media\mp3-orange-large.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3latg.png" />
+    <Resource Include="media\mp3latg.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3latg.bmp" />
+    <Resource Include="media\mp3latg.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="arrow-90-16 %284%29.png" />
+    <Resource Include="media\arrow-90-16 %284%29.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3latg2.png" />
+    <Resource Include="media\mp3latg2.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -255,331 +291,362 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3latg3.png" />
+    <Resource Include="media\mp3latg3.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3-cool-yellow.png" />
+    <Resource Include="media\mp3-cool-yellow.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp4-cool.png" />
+    <Resource Include="media\mp4-cool.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="music-snaped.png" />
+    <Resource Include="media\music-snaped.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3-20.png" />
+    <Resource Include="media\mp3-20.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3-20-2.png" />
+    <Resource Include="media\mp3-20-2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3-20-2-16.bmp" />
+    <Resource Include="media\mp3-20-2-16.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp3-20-2.gif" />
+    <Resource Include="media\mp3-20-2.gif" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp4-cool-magenta.bmp" />
+    <Resource Include="media\mp4-cool-magenta.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp4-cool-magenta.png" />
+    <Resource Include="media\mp4-cool-magenta.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="arow-down-white-mi-7x7.png" />
+    <Resource Include="media\arow-down-white-mi-7x7.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="arow-down-blue-mi-7x7.png" />
+    <Resource Include="media\arow-down-blue-mi-7x7.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp4-cool-magenta-ofiice.png" />
+    <Resource Include="media\mp4-cool-magenta-ofiice.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="elet-16-white-mi.png" />
+    <Resource Include="media\elet-16-white-mi.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="elet-16-grey-mi.png" />
+    <Resource Include="media\elet-16-grey-mi.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="elet-14-grey-filled-mi.png" />
+    <Resource Include="media\elet-14-grey-filled-mi.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="star-14-grey-filled-mi.png" />
+    <Resource Include="media\star-14-grey-filled-mi.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="flesh-white-14-14.png" />
+    <Resource Include="media\flesh-white-14-14.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="skip-white-14-14.png" />
+    <Resource Include="media\skip-white-14-14.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="enter-white-14-14.png" />
+    <Resource Include="media\enter-white-14-14.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="enter-grey14-14.png" />
+    <Resource Include="media\enter-grey14-14.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="folder-16-16.png" />
+    <Resource Include="media\folder-16-16.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="image-16-16.png" />
+    <Resource Include="media\image-16-16.png" />
   </ItemGroup>
   <ItemGroup>
-    <SplashScreen Include="SplashScreen1.png" />
+    <SplashScreen Include="media\SplashScreen1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="sett16.png" />
+    <Resource Include="media\sett16.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="sett16-b.png" />
+    <Resource Include="media\sett16-b.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="sett-2.png" />
+    <Resource Include="media\sett-2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="arow8-16--16.png" />
+    <Resource Include="media\arow8-16--16.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="x-white.png" />
+    <Resource Include="media\x-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="video-32.png" />
+    <Resource Include="media\video-32.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="lines - Copy.png" />
+    <Resource Include="media\lines - Copy.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="check-16-aqagreen.png" />
+    <Resource Include="media\check-16-aqagreen.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="chec2.png" />
+    <Resource Include="media\chec2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="chec3.png" />
+    <Resource Include="media\chec3.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="error1.png" />
+    <Resource Include="media\error1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="resloving-gray-10-10.png" />
+    <Resource Include="media\resloving-gray-10-10.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="loader-w-yass-panel.gif" />
+    <Resource Include="media\loader-w-yass-panel.gif" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="lines-rubby.png" />
+    <Resource Include="media\lines-rubby.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="downloading-10-1.png" />
+    <Resource Include="media\downloading-10-1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="down-small-7.png" />
+    <Resource Include="media\down-small-7.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="down-small-6.png" />
+    <Resource Include="media\down-small-6.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="down-small-11-turns-green.png" />
+    <Resource Include="media\down-small-11-turns-green.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="down-small-11-turns-white.png" />
+    <Resource Include="media\down-small-11-turns-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="32-white-loader.png" />
+    <Resource Include="media\32-white-loader.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="32-white-loader-thick.png" />
+    <Resource Include="media\32-white-loader-thick.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="32-white-loader-thick2.png" />
+    <Resource Include="media\32-white-loader-thick2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="32-down-white.png" />
+    <Resource Include="media\32-down-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="32-down-white-line.png" />
+    <Resource Include="media\32-down-white-line.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="alert-32 %281%29.png" />
+    <Resource Include="media\alert-32 %281%29.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="check-32-aqagreen .png" />
+    <Resource Include="media\check-32-aqagreen .png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="check-32-aqagreen.png" />
+    <Resource Include="media\check-32-aqagreen.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="check-32-aqagreen2.png" />
+    <Resource Include="media\check-32-aqagreen2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="check-32-aqagreen3.png" />
+    <Resource Include="media\check-32-aqagreen3.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="start-white.png" />
+    <Resource Include="media\start-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="parse_code16.png" />
+    <Resource Include="media\parse_code16.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mp4-cool-magenta-ofiice - Copy.png" />
+    <Resource Include="media\mp4-cool-magenta-ofiice - Copy.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="down-16-white.png" />
+    <Resource Include="media\down-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="start16-white2.png" />
+    <Resource Include="media\start16-white2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="folder-open-property-16-white-cyan.png" />
+    <Resource Include="media\folder-open-property-16-white-cyan.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="play-in-circle-white-16-larger.png" />
+    <Resource Include="media\play-in-circle-white-16-larger.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="x-16-white.png" />
+    <Resource Include="media\x-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="pause16white-perfect.png" />
+    <Resource Include="media\pause16white-perfect.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="delete-16-white.png" />
+    <Resource Include="media\delete-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="start-perfect-white-16-black-bck.png" />
+    <Resource Include="media\start-perfect-white-16-black-bck.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="jpg-cool-office.png" />
+    <Resource Include="media\jpg-cool-office.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mkvcool-white-office.png" />
+    <Resource Include="media\mkvcool-white-office.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="power-white2.png" />
+    <Resource Include="media\power-white2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="pin-2-16BRIGHT.png" />
+    <Resource Include="media\pin-2-16BRIGHT.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="pin-2-13BRIGHT.png" />
+    <Resource Include="media\pin-2-13BRIGHT.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="search-13-white.png" />
+    <Resource Include="media\search-13-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="media\" />
+    <Resource Include="eye-smouth-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="save-16-white.png" />
+    <Resource Include="media\save-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="redx-16-red.png" />
+    <Resource Include="media\redx-16-red.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="redx-blue.png" />
+    <Resource Include="media\redx-blue.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="console-16-white.png" />
+    <Resource Include="media\console-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="mi-simple-xml-16-white.png" />
+    <Resource Include="media\mi-simple-xml-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="add-user-48 - Copy.png" />
+    <Resource Include="media\add-user-48 - Copy.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="video-48-white.png" />
+    <Resource Include="media\video-48-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="plus-thick-16-white.png" />
+    <Resource Include="media\plus-thick-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="filter-16-white-shiny.png" />
+    <Resource Include="media\filter-16-white-shiny.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="regex-blueStar-16.png" />
+    <Resource Include="media\regex-blueStar-16.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="filter-add-16-white.png" />
+    <Resource Include="media\filter-add-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="calend-16-white.png" />
+    <Resource Include="media\calend-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="watch-16-white-shifted.png" />
+    <Resource Include="media\watch-16-white-shifted.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="redx-16-red2.png" />
+    <Resource Include="media\redx-16-red2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="code-in-square-16-white-small.png" />
+    <Resource Include="media\code-in-square-16-white-small.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image1.png" />
+    <Resource Include="media\Image1.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="search-in-square-16-white.png" />
+    <Resource Include="media\search-in-square-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="search-in-square-16-white2.png" />
+    <Resource Include="media\search-in-square-16-white2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image2.png" />
+    <Resource Include="media\Image2.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image3.png" />
+    <Resource Include="media\Image3.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="wav-16-white.png" />
+    <Resource Include="media\wav-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="video-16-white.png" />
+    <Resource Include="media\video-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="image-16-small.png" />
+    <Resource Include="media\image-16-small.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="video-16-small.png" />
+    <Resource Include="media\video-16-small.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="video-16-medium.png" />
+    <Resource Include="media\video-16-medium.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="wav-32-white-sharp.png" />
+    <Resource Include="media\wav-32-white-sharp.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="video-32-white-rect.png" />
+    <Resource Include="media\video-32-white-rect.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="image-32-white-2-square.png" />
+    <Resource Include="media\image-32-white-2-square.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="copy-16-white-commandline.png" />
+    <Resource Include="media\copy-16-white-commandline.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="copy-16-white-V.png" />
+    <Resource Include="media\copy-16-white-V.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="copy-16-white-A-shifted.png" />
+    <Resource Include="media\copy-16-white-A-shifted.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="copy-16-white-T.png" />
+    <Resource Include="media\copy-16-white-T.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="dload-thin-16-white.png" />
+    <Resource Include="media\dload-thin-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="copy-fancy-16-whte-big.png" />
+    <Resource Include="media\copy-fancy-16-whte-big.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="copy-16-white.png" />
+    <Resource Include="media\copy-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="folder-16-white.png" />
+    <Resource Include="media\folder-16-white.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="new-item-16-white-thick.png" />
+    <Resource Include="media\new-item-16-white-thick.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="new-item-16-white-thick-smaller.png" />
+    <Resource Include="media\new-item-16-white-thick-smaller.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="media\eye-16-white-small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="media\pin-2-13BRIGHT-blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="media\pin-2-13BRIGHT-orange.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="information-b-on-w-13-large.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="up-tri-10x8-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="down-tri-10x8-white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="up-tri-10x8-orange.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="down-tri-10x8-orange.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="bell-16-white-empty-shine.png" />
+    <Resource Include="bell-16-orange-empty-shine.png" />
+    <Resource Include="bell-16-orange-filled.png" />
+    <Resource Include="new-task-lite-16-white.png" />
+    <Content Include="notif-5th.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

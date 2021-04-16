@@ -198,9 +198,9 @@
                         <Grid x:Name="rotatingRect" Height="5" Margin="0" VerticalAlignment="Center" OpacityMask="#FFBFBFBF" Width="31" HorizontalAlignment="Center" Background="Black" RenderTransformOrigin="0.5,0.5"/>
                     </Grid>
                     <TextBlock x:Name="lbl_Status1" Margin="4,11,0,11" TextWrapping="Wrap" Text="Resolving post" Foreground="#FFBDBDBD" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Height="18" Grid.Column="1"/>
-                    <local:ButtonMi HorizontalAlignment="Right" Height="18" Margin="0,11,10,11" Width="59" textcaption="Cancel" iconSource="x-16-white.png" VerticalAlignment="Center" Grid.Column="1"/>
+                    <local:ButtonMi HorizontalAlignment="Right" Height="18" Margin="0,11,10,11" Width="59" textcaption="Cancel" iconSource="media/x-16-white.png" VerticalAlignment="Center" Grid.Column="1" captionVisibility="Visible"/>
                 </Grid>
-                <Grid x:Name="graphics_down" Margin="0,0,0,2" Visibility="{Binding coreTaskObject.Status, ConverterParameter=downloading, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl, FallbackValue=vosoble}" Height="60" VerticalAlignment="Top" d:IsHidden="True">
+                <Grid x:Name="graphics_down" Margin="0,0,0,2" Visibility="{Binding coreTaskObject.Status, ConverterParameter=downloading, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl, FallbackValue=collapsed}" Height="60" VerticalAlignment="Top" d:IsHidden="True">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="9.25"/>
@@ -212,9 +212,9 @@
                     </Grid.ColumnDefinitions>
                     <Grid x:Name="down_anim" RenderTransformOrigin="0.5,0.5" Width="32" Height="31" Visibility="Visible" VerticalAlignment="Top" d:LayoutOverrides="Height" Margin="8,4,8,0" HorizontalAlignment="Center">
                         <Grid HorizontalAlignment="Left" Margin="5,5,0,6" Width="6">
-                            <Image x:Name="dowloadAnim_line" Source="32-down-white-line.png" d:LayoutOverrides="Height" HorizontalAlignment="Left" VerticalAlignment="Top" Width="2" Margin="2,0,0,0"/>
+                            <Image x:Name="dowloadAnim_line" Source="media/32-down-white-line.png" d:LayoutOverrides="Height" HorizontalAlignment="Left" VerticalAlignment="Top" Width="2" Margin="2,0,0,0"/>
                         </Grid>
-                        <Image x:Name="dowloadAnim_drive" Margin="0" Source="32-down-white.png" Opacity="0.7" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <Image x:Name="dowloadAnim_drive" Margin="0" Source="media/32-down-white.png" Opacity="0.7" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     </Grid>
                     <TextBlock x:Name="lbl_Status" Margin="0" TextWrapping="Wrap" Text="{Binding coreTaskObject.IsDownloading, ConverterParameter=1:Downloading..; 0:Wait..;, Converter={StaticResource boolToStringsMI}, ElementName=userControl}" Foreground="#FFBDBDBD" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Grid.Column="1"/>
                     <ProgressBar x:Name="progressBar_download" Margin="2,0" Style="{DynamicResource ProgressBarStyle1}" Background="#FF3E3D3D" BorderBrush="#0004B081" Foreground="#FF9C9C9C" Value="{Binding coreTaskObject.downloadingPercent, ElementName=userControl, Mode=OneWay}" Maximum="1" Grid.ColumnSpan="2" Grid.Row="1" Height="6"/>
@@ -225,8 +225,8 @@
                             </ControlTemplate>
                         </local:ProgressInfoUI.Template>
                     </local:ProgressInfoUI>
-                    <local:ButtonMi x:Name="abort_butt" Margin="0,1,15,0" Width="Auto" HorizontalAlignment="Right" textcaption="Abort" iconSource="x-16-white.png" captionMargin="3,0,0,0" Click="abort_butt_Click" Grid.Column="1" Grid.Row="2"/>
-                    <local:ButtonMi x:Name="pauseButt" Margin="0,1,70,0" Width="Auto" HorizontalAlignment="Right" textcaption="Pause" iconSource="pause16white-perfect.png" Grid.Column="1" Grid.Row="2"/>
+                    <local:ButtonMi x:Name="abort_butt" Margin="0,1,15,0" Width="Auto" HorizontalAlignment="Right" textcaption="Abort" iconSource="media/x-16-white.png" captionMargin="3,0,0,0" Click="abort_butt_Click" Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
+                    <local:ButtonMi x:Name="pauseButt" Margin="0,1,70,0" Width="Auto" HorizontalAlignment="Right" textcaption="Pause" iconSource="media/pause16white-perfect.png" Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
                     <TextBlock x:Name="elapsed_time" Margin="81,1,0,0" TextWrapping="Wrap" Foreground="#FFBDBDBD" FontSize="10.667" VerticalAlignment="Top" TextOptions.TextFormattingMode="Display" PreviewMouseLeftButtonDown="progress_info_PreviewMouseLeftButtonDown" Tag="0" Text="(Elapsed time: 0:56)" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="2" Visibility="Hidden"/>
                 </Grid>
                 <Grid x:Name="graphics_done" Margin="0" Visibility="{Binding coreTaskObject.Status, ConverterParameter=done, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl, FallbackValue=visible}" VerticalAlignment="Top">
@@ -238,7 +238,7 @@
                         <ColumnDefinition Width="48"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="done_i" Margin="0" Source="check-32-aqagreen3.png" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Center" Width="32" Height="32"/>
+                    <Image x:Name="done_i" Margin="0" Source="media/check-32-aqagreen3.png" Visibility="Visible" HorizontalAlignment="Center" VerticalAlignment="Center" Width="32" Height="32"/>
                     <Grid x:Name="Wraper" Grid.Column="1" Margin="0" Height="40">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
@@ -246,6 +246,7 @@
                         </Grid.RowDefinitions>
                         <TextBlock x:Name="lbl_outputPath" Margin="0" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Text="{Binding coreTaskObject.OutputFile, ConverterParameter=40, Converter={StaticResource URLtoVideoID1}, ElementName=userControl, FallbackValue=FILENAME}"/>
                         <TextBlock x:Name="lbl_size" TextWrapping="Wrap" Text="{Binding coreTaskObject.OutputFileSize, ElementName=userControl, FallbackValue=Size: -, StringFormat=Size: \{0\}}" Foreground="#FFBDBDBD" FontSize="10.667" HorizontalAlignment="Left" TextOptions.TextFormattingMode="Display" Margin="0" Grid.Row="1" d:LayoutOverrides="Height" VerticalAlignment="Center"/>
+                        <local:ButtonMi x:Name="resetTask" Margin="117,0,5,0" iconSource="new-task-lite-16-white.png" textcaption="New Task" VerticalAlignment="Center" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Right" Height="18" Click="resetTask_Click" captionVisibility="Visible" d:LayoutOverrides="Width" Grid.Row="1"/>
                     </Grid>
                     <Border x:Name="Actions" Grid.ColumnSpan="2" Margin="0" Grid.Row="1" VerticalAlignment="Bottom" BorderBrush="#FF2D2D30" BorderThickness="1" Padding="4,2">
                         <Grid>
@@ -254,11 +255,11 @@
                                 <ColumnDefinition Width="16"/>
                                 <ColumnDefinition Width="85*"/>
                             </Grid.ColumnDefinitions>
-                            <local:ButtonMi x:Name="miOpenFile" iconSource="play-in-circle-white-16-larger.png" textcaption="Open file" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" Height="18" PreviewMouseLeftButtonUp="miOpenFile_PreviewMouseLeftButtonUp"/>
-                            <local:ButtonMi x:Name="miOpenLocation" Margin="14,0,104,0" iconSource="folder-open-property-16-white-cyan.png" textcaption="Show in Folder" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Stretch" Height="18" d:LayoutOverrides="Width" Click="miOpenLocation_Click" Grid.Column="2"/>
-                            <local:ButtonMi x:Name="miDeleteFile" iconSource="delete-16-white.png" textcaption="Delete File" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Right" Height="18" Click="miDeleteFile_Click" Grid.Column="2"/>
+                            <local:ButtonMi x:Name="miOpenFile" iconSource="media/play-in-circle-white-16-larger.png" textcaption="Open file" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" Height="18" PreviewMouseLeftButtonUp="miOpenFile_PreviewMouseLeftButtonUp" captionVisibility="Visible"/>
+                            <local:ButtonMi x:Name="miOpenLocation" Margin="14,0,104,0" iconSource="media/folder-open-property-16-white-cyan.png" textcaption="Show in Folder" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Stretch" Height="18" d:LayoutOverrides="Width" Click="miOpenLocation_Click" Grid.Column="2" captionVisibility="Visible"/>
+                            <local:ButtonMi x:Name="miDeleteFile" iconSource="media/delete-16-white.png" textcaption="Delete File" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Right" Height="18" Click="miDeleteFile_Click" Grid.Column="2" captionVisibility="Visible"/>
                             <Grid x:Name="missingFileFlag" Grid.Column="1" Margin="0" Width="10" Height="10" HorizontalAlignment="Center" ToolTip="missing file" Visibility="Hidden">
-                                <Image x:Name="image1" Margin="0" Source="error1.png" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Image x:Name="image1" Margin="0" Source="media/error1.png" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Grid>
                         </Grid>
                     </Border>
@@ -268,8 +269,8 @@
                         <ColumnDefinition Width="48"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Image x:Name="error_ico" Margin="0,2" Source="alert-32 (1).png" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <TextBlock x:Name="lbl_Status_Copy1" Margin="2,0,0,0" TextWrapping="Wrap" Text="{Binding coreTaskComponent.failurReason, ElementName=userControl, FallbackValue=Unknown Failur Reason}" Foreground="#FFE04006" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Grid.Column="1"/>
+                    <Image x:Name="error_ico" Margin="0,2" Source="media/alert-32 (1).png" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="lbl_Status_Copy1" Margin="2,0,0,0" TextWrapping="Wrap" Text="{Binding coreTaskObject.FailureReason, ElementName=userControl, FallbackValue=Unknown Failur Reason}" Foreground="#FFE04006" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Grid.Column="1"/>
                 </Grid>
             </Grid>
         </Grid>

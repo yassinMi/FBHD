@@ -1,0 +1,121 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:fbhd"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Class="fbhd.NotificationWindowMi"
+        mc:Ignorable="d"
+        Title="NotificationWindowMi" Width="328" Background="#FF1A1A1A" ResizeMode="NoResize" WindowStyle="None" Topmost="True" TextOptions.TextFormattingMode="Display" Loaded="Window_Loaded" Foreground="#FFD8D8D8" Height="124.839">
+    <Window.Resources>
+
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo/>
+    </Window.TaskbarItemInfo>
+    <Border BorderBrush="#FF333333" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="16"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid Width="Auto" UseLayoutRounding="True" Margin="0,4" Background="#00640404" Grid.RowSpan="2">
+                <Border Height="Auto" Margin="0" BorderBrush="#002F2F37" BorderThickness="1" d:LayoutOverrides="Width, Height">
+                    <Grid Background="#001C1C1C" Height="Auto" Width="Auto" Margin="1,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="51"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="title" Margin="10,4,17,4" FontSize="14.667" Foreground="#FFD1D1D1" UseLayoutRounding="True" TextWrapping="Wrap" ClipToBounds="True" SnapsToDevicePixels="True" Text="Summy title" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                        <StackPanel x:Name="Actions" Margin="0,0,0,2" Background="#00000000" Grid.Row="1" Orientation="Horizontal" d:LayoutOverrides="LeftMargin, RightMargin" Height="23" VerticalAlignment="Bottom">
+                            <Button x:Name="ShowNewsButt" Margin="10,0,0,0" Style="{DynamicResource SimpleButton}" Background="#00000000" BorderBrush="{x:Null}" Foreground="#FFDED8D8" Click="ShowNewsButt_Click" HorizontalAlignment="Left" Width="100" Height="20" d:LayoutOverrides="LeftPosition, RightPosition">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Grid x:Name="Grid">
+                                            <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"/>
+                                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="BorderBrush" TargetName="Border" Value="#FFE59102"/>
+
+                                                <Setter Property="Background" TargetName="Border" Value="#FF303030"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" TargetName="Border" Value="#FF2A2A2B"/>
+                                                <Setter Property="BorderBrush" TargetName="Border" Value="#FFC59646"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="True"/>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Background" TargetName="Border" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                                                <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource DisabledBorderBrush}"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                                <Grid>
+                                    <TextBlock x:Name="unreadInfo" Margin="20,1,0,2" TextWrapping="Wrap" Foreground="#FFFFC159" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Show News"/>
+                                    <Grid x:Name="bell" HorizontalAlignment="Left" Width="16" VerticalAlignment="Center" Height="16" d:LayoutOverrides="TopMargin, BottomMargin">
+                                        <Image x:Name="bellIco" Height="16" VerticalAlignment="Center" Source="bell-16-orange-empty-shine.png" Margin="0" HorizontalAlignment="Center" Width="16"/>
+                                    </Grid>
+                                </Grid>
+                            </Button>
+                            <Button x:Name="MarkAsReadButt" Margin="10,0,4,0" Style="{DynamicResource SimpleButton}" Background="#00000000" BorderBrush="{x:Null}" Foreground="#FFDED8D8" Height="20" d:LayoutOverrides="LeftPosition, RightPosition" Click="MarkAsReadButt_Click">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="{x:Type Button}">
+                                        <Grid x:Name="Grid">
+                                            <Border x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}"/>
+                                            <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="BorderBrush" TargetName="Border" Value="#FFE59102"/>
+
+                                                <Setter Property="Background" TargetName="Border" Value="#FF303030"/>
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter Property="Background" TargetName="Border" Value="#FF2A2A2B"/>
+                                                <Setter Property="BorderBrush" TargetName="Border" Value="#FFC59646"/>
+                                            </Trigger>
+                                            <Trigger Property="IsEnabled" Value="True"/>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter Property="Background" TargetName="Border" Value="{DynamicResource DisabledBackgroundBrush}"/>
+                                                <Setter Property="BorderBrush" TargetName="Border" Value="{DynamicResource DisabledBorderBrush}"/>
+                                                <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                                <Grid>
+                                    <TextBlock x:Name="unreadInfo1" Margin="20,1,0,2" TextWrapping="Wrap" Foreground="#FFB6B6B6" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Mark as read"/>
+                                    <Grid x:Name="bell1" HorizontalAlignment="Left" Width="16" VerticalAlignment="Center" Height="16" d:LayoutOverrides="TopMargin, BottomMargin">
+                                        <Image x:Name="bellIco1" Height="16" VerticalAlignment="Center" Source="eye-smouth-16-white.png" Margin="0" HorizontalAlignment="Center" Width="16" Opacity="0.7"/>
+                                    </Grid>
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                        <Grid x:Name="LinkOrCount" Height="21" Margin="10,0,17,0" Grid.Row="1" VerticalAlignment="Top" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
+                            <TextBlock x:Name="fastLink" Margin="10,0,0,0" TextWrapping="Wrap" Text="https://" Foreground="#FF0097FF" HorizontalAlignment="Left" VerticalAlignment="Center" Cursor="Hand">
+                            	<i:Interaction.Triggers>
+                            		<i:EventTrigger EventName="MouseLeftButtonDown">
+                            			<ei:LaunchUriOrFileAction Path="{Binding Text, ElementName=fastLink}"/>
+                            		</i:EventTrigger>
+                            	</i:Interaction.Triggers>
+                            </TextBlock>
+                            <TextBlock x:Name="countInfo" Margin="10,0,0,0" TextWrapping="Wrap" Text="and 4 more.." Foreground="#FFA2A2A2" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Grid>
+
+                    </Grid>
+                </Border>
+            </Grid>
+            <local:ButtonMi x:Name="CloseButt" HorizontalAlignment="Right" Height="16" Margin="0,0,5,0" VerticalAlignment="Top" Width="16" iconSource="media/x-16-white.png" Click="CloseButt_Click"/>
+
+
+        </Grid>
+    </Border>
+</Window>

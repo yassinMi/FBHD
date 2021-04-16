@@ -79,6 +79,13 @@ namespace fbhd
         {
             base.OnPropertyChanged(e);
 
+
+            if(e.Property == selectedResolutionProperty)
+            {
+                
+                 
+            }
+
             /*if(e.Property != ResolutionPicker.ResolutionsProperty)
             {
                 return;

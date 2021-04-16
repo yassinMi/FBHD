@@ -99,3 +99,14 @@ C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\SearchItem.baml
 C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\Ookii.Dialogs.Wpf.dll
 C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\Ookii.Dialogs.Wpf.pdb
 C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\Ookii.Dialogs.Wpf.xml
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\AboutWindow.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\AboutWindow.baml
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\GenericPopupWindow.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\GenericPopupWindow.baml
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\NotificationWindowMi.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\fbhd_Content.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\NotificationWindowMi.baml
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\CLWControl.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\CLWControl.baml
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\CLWItemPresenter.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\CLWItemPresenter.baml

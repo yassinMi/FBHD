@@ -16,7 +16,12 @@ using System.Text;
 using System.ComponentModel;
 using System.Windows.Media;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
+using System.Xml;
+
 using System.Security.Policy;
+using System.Dynamic;
+using System.Xml.Serialization;
 
 namespace fbhd
 {
@@ -24,6 +29,28 @@ namespace fbhd
 
 
 
+
+    public class BooleanToVisibilityInverted : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+           
+           
+            if ((bool)value == true)
+            {
+                return Visibility.Collapsed;
+            }
+            else 
+            {
+                return Visibility.Visible;
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     public class TaskObjToPropertiesVisibility : IValueConverter
     {
@@ -99,19 +126,66 @@ namespace fbhd
 
 
 
+
+
+
+
+    public class TaskStatusToTaskBarProgressState : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            TaskStatus input = (TaskStatus)value;
+
+            switch (input)
+            {
+                case TaskStatus.pending:
+                    return System.Windows.Shell.TaskbarItemProgressState.None;
+                case TaskStatus.resolving:
+                    return System.Windows.Shell.TaskbarItemProgressState.None;
+                case TaskStatus.downloading:
+                    return System.Windows.Shell.TaskbarItemProgressState.Normal;
+                case TaskStatus.done:
+                    return System.Windows.Shell.TaskbarItemProgressState.None;
+                case TaskStatus.failed:
+                    return System.Windows.Shell.TaskbarItemProgressState.Paused;
+                default:
+                    return System.Windows.Shell.TaskbarItemProgressState.None;
+            }
+
+
+
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+
+
     public class EmptyTextConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             bool reversed = false;
+            
             if (parameter != null)
-                reversed = (bool)parameter;
+            {
+                string parameterStr = parameter.ToString();
+                bool.TryParse(parameterStr, out reversed);
+                
+               
+     
+            }
+              
 
             bool evaluated;
             evaluated = ((string.IsNullOrEmpty((string)value)) ? true : false);
             if (reversed) evaluated = !evaluated;
             if (targetType == typeof(Visibility))
-                return (evaluated ? Visibility.Visible : Visibility.Hidden);
+                return (evaluated ? Visibility.Visible : Visibility.Collapsed);
             else if (targetType == typeof(bool))
                 return evaluated;
             else
@@ -272,8 +346,9 @@ namespace fbhd
 
 
     /// <summary>
-    /// usage: passing the string "0:yassin 1:miracles" as param will return "yassin" on false and "miracles" on true
-    /// </summary>
+    /// usage: passing the string "0:yassin; 1:miracles;" as param will return "yassin" on false and "miracles" on true
+    /// can be sed to convert to double; 0:0; 1:1.5;
+    ///  </summary>
     public class boolToStringsMI : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -287,10 +362,19 @@ namespace fbhd
             false_str = (Regex.Match(param, "0:([^;]*);").Success) ?
                    Regex.Match(param, "0:([^;]*);").Groups[1].Value : "";
 
-            return val ? true_str : false_str;
+            if(targetType == typeof(string))
+            {
+                return val ? true_str : false_str;
+            }
+            else if (targetType == typeof(double))
+            {
+                return val ? double.Parse( true_str) : double.Parse( false_str);
+            }
+            else
+            {
+                return val ? true_str : false_str;
 
-
-
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -432,8 +516,11 @@ namespace fbhd
         public static MainWindow mw = (MainWindow)Application.Current.MainWindow;
         internal static string HTML_CONTAINER_PATH = "C:\\TOOLS\\fbhd-gui\\html";
         internal const string MAIN_PATH = "C:\\TOOLS\\fbhd-gui";
-
-
+        internal const string FSDM_News_Ref_PATH = "C:\\TOOLS\\fbhd-gui\\fbhd-fsdm-news-watcher-reference.html";
+        public const string DEFAULT_GLOBAL_OUTPUT_DIR = "C:\\TOOLS\\fbhd-gui\\output\\";
+        internal const string XMLFSDM_PRESET= "C:\\TOOLS\\fbhd-gui\\xml\\fsdmNews.xml";
+        internal const string XML_DIR= "C:\\TOOLS\\fbhd-gui\\xml";
+        internal const string CONFIG_FILE = "C:\\TOOLS\\fbhd-gui\\xml\\config.mi.xml";
 
         public static List<Resolution> standardResolutionSet {
             get
@@ -912,18 +999,18 @@ namespace fbhd
             }
         }
 
-        public static string MakeArgs(Post post, TaskType type, TaskProperties taskProperties)
+        public static string MakeArgs(FBHDTask task)
         {
 
-            // taskProperties.resolutionSettings.UserPicked = new Resolution(855);
-
-
-            //  MessageBox.Show(taskProperties.resolutionSettings.getResult().serialized);
-            //MessageBox.Show(taskProperties.titleSettings.getResult());
+            Trace.Assert(task.IsResolved, "Mi: FFMPEG.MakeArgs(): task should be reselved, Please contact the developer with error code: 486327");
+            Trace.Assert(task.Post.HasValue,"FFMPEG.MakeArgs(): FBHDTask object has no Post property, Please contact the developer with error code: 486328");
+            
+            Post post = task.Post.Value;
+            TaskType type = task.Type;
+            TaskProperties taskProperties = task.TaskProperties;
 
 
             string resolutionstr = taskProperties.resolutionSettings.getResult().serialized;
-            // MessageBox.Show("ljl");
 
             string
                 videoStream = post.QualityLabels.Find((Q) =>
@@ -931,21 +1018,16 @@ namespace fbhd
                 (resolutionstr))
                 ).videoUrl,
 
-
                 audioStram = post.audioUrl,
-
-                title = Fucs.filenamify(taskProperties.titleSettings.getResult()),
-
                 metatitle = "",
-                output = title,
-                thumb = post.Images.First().Value,
-                extension;
+                outputFile = task.OutputFile,
+                thumb = post.Images.First().Value;
+                
 
             string args;
             if (hasVideo(type))
             {
-                extension = $".{getExtention(type)}";
-                FFMPEG.Args mp4args = new FFMPEG.Args(100);
+                Args mp4args = new FFMPEG.Args(100);
 
                 mp4args = mp4args.add("-v 32")
                     .add("-vn -i", Fucs.qoute(audioStram))
@@ -959,7 +1041,7 @@ namespace fbhd
                     .add("-metadata", "title=" + Fucs.qoute(metatitle))
                     .add("-metadata:s:v:0", Fucs.qoute("comment='Cover (front)'"))
                     .add("-metadata:s:v:0", Fucs.qoute("title='Cover (front)'"))
-                    .add(Fucs.qoute(title + extension))
+                    .add(Fucs.qoute( outputFile ))
                     .add("-y")
 
                     ;
@@ -969,11 +1051,28 @@ namespace fbhd
             }
             else
             {
-                extension = ".mp3";
-                args = "  -v 32 -hide_banner -vn -i " + Fucs.qoute(audioStram) +
-                    " -an -i " + Fucs.qoute(thumb) + " -map 0 -map 1 -c:v:0 mjpeg -disposition:v:0 attached_pic -metadata title=\"" +
-                   metatitle + "\"  -metadata:s:v \"comment='Cover (front)'\" -metadata:s:v \"title='Cover (front)'\"  \"" +
-                   title + extension + "\" -y";
+
+                Args mp3args = new FFMPEG.Args(100);
+
+                mp3args = mp3args.add("-v 32")
+                    .add("-hide_banner")
+                    .add("-vn -i", Fucs.qoute(audioStram))
+                    .add("-an -i", Fucs.qoute(thumb))
+                    .add("-map 0 -map 1")
+                    .add("-c:v:0 mjpeg")
+                    .add("-disposition:v:0", "attached_pic")
+
+                    .add("-c:a:0", "copy", type == TaskType.mkvTask)
+
+                    .add("-metadata", "title=" + Fucs.qoute(metatitle))
+                    .add("-metadata:s:v", Fucs.qoute("comment='Cover (front)'"))
+                    .add("-metadata:s:v", Fucs.qoute("title='Cover (front)'"))
+                    .add(Fucs.qoute(outputFile))
+                    .add("-y")
+
+                    ;
+
+                args = mp3args.toString;
 
 
             }
@@ -1770,6 +1869,20 @@ namespace fbhd
         {
             return(d70.AddSeconds(timestamp));
         }
+
+
+
+        /// <summary>
+        /// decodes stuff like "Mi &amp; You " to "Mi & You"
+        /// it uses the xml parser, so it should handle all the escape notations
+        /// </summary>
+        internal static string decodeXml(string input)
+        {
+            XElement ElemWithTextNode = XElement.Parse($"<elem>{input}</elem>");
+
+            return (((XText)ElemWithTextNode.FirstNode).Value);
+            
+        }
     }
 
 
@@ -2026,9 +2139,8 @@ namespace fbhd
 
         /// <summary>
         /// get text using a temp html file
+        /// returns null string on any failure, use the enhanced version GetTextAdvanced for more detailed failure reason
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="headers"></param>
         /// <param name="saveAs">assigning this will cause the temp html to be saved under a custome name, and kept safe after the task completes</param>
         /// <returns>returns string on success, null on failure</returns>
         public async Task<string> GetText(string url, Headers headers =null, string saveAs=null)
@@ -2068,6 +2180,52 @@ namespace fbhd
             else
             {
                 return null;
+            }
+
+        }
+
+
+        /// <summary>
+        /// get text using a temp html file, workes somilar to GetText but returns detailed information including the process exit code, the time spent
+        /// </summary>
+        /// <param name="saveAs">assigning this will cause the temp html to be saved under a custome name, and kept safe after the task completes</param>
+        public async Task<GetTextResult> GetTextAdvanced(string url, Headers headers = null, string saveAs = null)
+        {
+            bool shouldKeepFile = !(saveAs == null);
+            string output = "";
+            string tempHTMLFile = shouldKeepFile ? saveAs : "temp," + DateTime.Now.GetHashCode().ToString();
+            string args = makeArgs(url, headers, tempHTMLFile);
+            Process webClientProcess = Fucs.constructProcess(ProcessFileName, args);
+            StringBuilder cachedStdout = new StringBuilder();
+            webClientProcess.OutputDataReceived += (s, e) => { cachedStdout.Append(e.Data); };
+            webClientProcess.StartInfo.WorkingDirectory = "C:\\TOOLS\\fbhd-gui\\html\\";
+            /// ## RUNNING ##
+            MI.Verbose($"starting {ProcessFileName}..");
+            await Task.Run(new Action(() =>
+            {
+                webClientProcess.Start();
+                webClientProcess.BeginErrorReadLine();
+                webClientProcess.BeginOutputReadLine();
+            }));
+            MI.Verbose($"{ProcessFileName} is runing");
+            await Task.Run(new Action(() =>
+            {
+                webClientProcess.WaitForExit();
+            }));
+            MI.Verbose(null);
+
+
+            /// ## READING FROM FILE ##
+
+            if (success(webClientProcess.ExitCode))
+            {
+                output = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\html\\" + tempHTMLFile);
+                if (!shouldKeepFile) File.Delete("C:\\TOOLS\\fbhd-gui\\html\\" + tempHTMLFile);
+                return new GetTextResult() {Text = output, Success = true, ClientExitCode = webClientProcess.ExitCode, RunningTime = webClientProcess.StartTime- webClientProcess.ExitTime };
+            }
+            else
+            {
+                return new GetTextResult() { Text = null, Success = false, ClientExitCode = webClientProcess.ExitCode, RunningTime = webClientProcess.StartTime - webClientProcess.ExitTime };
             }
 
         }
@@ -2230,9 +2388,15 @@ namespace fbhd
             }
 
             public override string ProcessFileName { get { return "curl.exe"; } }
-            public static async Task<string> GetTextStatic(string url, Headers headers)
+
+
+            /// <summary>
+            /// instantites a new cURL object and uses its GetTextAdvanced method, 
+            /// </summary>
+            public static async Task<cURL.GetTextResult> GetTextStatic(string url, Headers headers)
             {
-                return await new cURL().GetText(url, headers);
+                return await new cURL().GetTextAdvanced(url, headers);
+               
             }
             
             
@@ -2286,7 +2450,13 @@ namespace fbhd
 
         }
 
-
+        public struct GetTextResult
+        {
+            public string Text { get; set; }
+            public int ClientExitCode { get; set; }
+            public bool Success { get; set; }
+            public TimeSpan RunningTime { get; set; }
+        }
     }
 
     public class Headers : Dictionary<string, string>
@@ -2298,6 +2468,19 @@ namespace fbhd
                 v.Add("accept-language", "en-US;");
                 return v;
             } }
+
+        public static Headers FakeUserAgentHeaders
+        {
+            get
+            {
+                var v = new Headers();
+                v.Add("user-agent", Headers.USER_AGENT);
+                return v;
+                
+               
+            }
+        }
+
         public void evz()
         {
             
@@ -2466,7 +2649,7 @@ namespace fbhd
 
                 }
                 else
-                    return new System.Windows.Media.Imaging.BitmapImage(new Uri("file:///C:/TOOLS/fbhd-gui/fbhd/fbhd/video-48-white.png"));//
+                    return new System.Windows.Media.Imaging.BitmapImage(new Uri("file:///C:/TOOLS/fbhd-gui/fbhd/fbhd/media/video-48-white.png"));//
             }
 
         }
@@ -2701,6 +2884,8 @@ namespace fbhd
                 SortBy_ = SearchPresenter.SortBy.MostRecent,
 
             };
+
+
         }
         
         private SearchParams params_;
@@ -2718,7 +2903,7 @@ namespace fbhd
         {
             set { query = value;
                 notif(nameof(Query));
-                
+
             }
             get { return query; }
         }
@@ -2763,7 +2948,10 @@ namespace fbhd
                 notif(nameof(BufferedResuls));
                 notif(nameof(ShouldShowFiltersSection));
             }
-            get { return Manipulate( bufferedResults,Presenter); }
+            get { return Manipulate( bufferedResults,Presenter);
+
+                
+            }
         }
 
 
@@ -2804,6 +2992,24 @@ namespace fbhd
                 notif(nameof(ShouldShowFiltersSection));
             }
         }
+
+
+
+        private bool shouldShowError;
+        public bool ShouldShowError
+        {
+            set { shouldShowError = value; notif(nameof(ShouldShowError)); }
+            get { return shouldShowError; }
+        }
+
+
+        private string failureReason;
+        public string FailureReason
+        {
+            set { failureReason = value; notif(nameof(FailureReason)); }
+            get { return failureReason; }
+        }
+
 
         void notif(string prop)
         {
@@ -2886,7 +3092,7 @@ namespace fbhd
                     Url ="https://www.facebook.com/Othmanemd/videos/533766623864047/?sfnsn=mo",
                     },
 
-                new SearchElement() { Title="SearchEllement object too but with super long title to test the elipsis behavior",
+                new SearchElement() { Title="SearchEllement object too ",
                     Duration_str ="13:53",
                     OwnerName ="Dummy profile long title" ,
                     DateAndViewsInfo ="Nov 12 · 0 Views",
@@ -2933,28 +3139,97 @@ namespace fbhd
              };
         }
 
+        const int ERR_CONNECTION = 1;
+        const int ERR_UNKNOWN = 2;
+        const int SUCCESS = 0;
+
+
+
+
 
         //dummy
         // performs the search and updates the results property on successfull
         //operation or rises the OnSearchFaild even otherwise
-        public async void StartSearch (bool addToBuffer)
+        public async Task<int> StartSearch (bool addToBuffer)
         {
+            bool dev_dummy_mode = query.Contains("dummy");
+            Trace.Assert(!string.IsNullOrWhiteSpace(Query), "cannot call SatrtSearch with NullOrWhiteSpace Query, please contact th developer with error code : 0156532 ");
+
+            ShouldShowError = false;
+
             IsSearching = true;
+
+            if (dev_dummy_mode)
+            {
+                Results = generateDummyList();
+                await Task.Delay(1000);
+                isSearching = false;
+
+                notif(nameof(Results));
+                if (addToBuffer)
+                {
+                    foreach (var item in results)
+                    {
+                        bufferedResults.Add(item);
+
+                    }
+                    notif(nameof(BufferedResuls));
+                }
+
+
+
+               // MainWindow mw = (MainWindow)App.Current.MainWindow;
+               // mw.searchResultsList.Items.Filter = (o) => false;
+               // var ss = mw.searchResultsList.Items.CanFilter.ToString();
+               // Debug.WriteLine(ss);
+                return SUCCESS; // int 0
+            }
+           
+
             // await Task.Delay(1500);
             Uri queryUrl = new Uri( "https://web.facebook.com/watch/search/?query="+Query);
 
-            string rawHTML = await WebClient.cURL.GetTextStatic(queryUrl.AbsoluteUri, Headers.DefaultFbWatchHeaders);
-            IsSearching = false;
-            if(query.Contains("dummy"))
+
+
+            
+            var r =   await WebClient.cURL.GetTextStatic(queryUrl.AbsoluteUri, Headers.DefaultFbWatchHeaders);
+
+
+            if (!r.Success)
             {
-                 Results = generateDummyList();
+                IsSearching = false;
+                ShouldShowError = true;
+
+                if (r.ClientExitCode == 6)
+                {
+                    this.FailureReason = "Connection Error";
+
+                    return ERR_CONNECTION;
+
+                }
+                else
+                {
+
+                    this.FailureReason = "Unknown Error";
+   
+                    return ERR_UNKNOWN;
+
+                }
+
 
             }
-            else
-            {
+
+            Trace.Assert(r.Text.Length >10, "the WebClient.cURL fetching operation failed with exit code:" + r.ClientExitCode.ToString(),"Please Contact the devoloper with error code :'569847'");
+            string rawHTML = r.Text;
+            IsSearching = false;
+
+           
+            
                 Results = new BindingList<SearchElement>(ExperimentalSearchResultsParser.Parse(rawHTML));
 
-            }
+
+
+
             notif(nameof(Results));
             if (addToBuffer)
             {
@@ -2965,7 +3240,9 @@ namespace fbhd
                 }
                 notif(nameof(BufferedResuls));
             }
-            
+
+
+            return SUCCESS; // int 0
 
         }
 
@@ -2983,6 +3260,59 @@ namespace fbhd
         }
     }
 
+    public enum DownloadClients { curl,powershell,ffmpeg}
+
+    [Serializable]
+    public class Config
+    {
+        [Serializable]
+        public struct CLWPresetDeclaration { public string Path { get; set; } public bool AutoStart { get; set; }
+            public bool AutoLoad { get; set; }
+        }
+
+        public List<CLWPresetDeclaration> CLWPresetsDeclarations { get; set; } = new List<CLWPresetDeclaration>();
+
+
+
+        public List<string> RecentGlobalDirectories { get; set; } = new List<string>();
+        public OverrideBehaviour DefaultOverrideBehaviour { get; set; } = OverrideBehaviour.Override;
+        public bool DownloadRawStreams { get; set; } = false;
+        public bool AutoStartServer { get; set;  } = false;
+        public bool UseChunckedDownloading { get; set; } = false;
+        public DownloadClients DefaultDownloadClient { get; set; } = DownloadClients.curl;
+
+        static XmlSerializer sr = new XmlSerializer(typeof(Config));
+
+        public void Save(string saveAS = MI.CONFIG_FILE)
+        {
+            using (var stream = File.Open(saveAS, FileMode.Create))
+            {
+                sr.Serialize(stream, this);
+            }
+        }
+
+        public static Config Load(string ConfigFile = MI.CONFIG_FILE)
+        {
+            if (!File.Exists(ConfigFile)) {
+                Trace.Assert(false, $"Mi: Config Loader: file '{ConfigFile}' does not exist");
+                return null;
+            }
+            using (var stream = File.OpenRead(ConfigFile))
+            {
+                return  sr.Deserialize(stream) as Config;
+            }
+        }
+
+        public static Config FactoryConfig()
+        {
+            return new Config() ;
+                
+        }
+
+
+    }
+
+
 
     public class Session : INotifyPropertyChanged 
     {
@@ -2990,18 +3320,92 @@ namespace fbhd
 
         public Session()
         {
+
+
+            MainConfig = Config.Load();
+            if (MainConfig == null) MainConfig = Config.FactoryConfig();
+
             MainSearch = new Search();
+           // mp.Open(new Uri("C:\\TOOLS\\fbhd-gui\\notif-5th.wav"));
+            mp.Open(new Uri("C:\\TOOLS\\fbhd-gui\\mi-notif-5th.wav"));
+
+            FsdmNewsWatcher.OnError += (s, err) => {
+
+                MI.Verbose ( "Couldn't connect");
+
+            };
+            FsdmNewsWatcher.NewItems += (s, news) =>
+            {
+                string appended = "";
+                foreach (FsdmNew item in news)
+                {
+                    appended += item.PopupMessageString + "\n\n";
+                }
+                appended = appended.Substring(0, appended.Length - 2);
+                // Application.Current.MainWindow.Activate();
+
+                // mw. PopupNews(news);
+                PlayNotification();
+                IEnumerable<INotifableItem> AsINotifable = news.Cast<INotifableItem>();
+                mw.ShowNotificationNews(AsINotifable, FsdmNewsWatcher);
+                //MessageBox.Show($"{appended}","fsdm news", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+            };
+
+            CustomListWatchers = new BindingList<CustomLW>();
+            foreach (var presetDeclaration in MainConfig.CLWPresetsDeclarations)
+            {
+                string presetPath = presetDeclaration.Path;
+                if (presetDeclaration.AutoLoad)
+                {
+                    LoadXMLLW(presetPath);
+                }
+
+            }
+            OnPropertyChanged(nameof(ExistLoadedCLWatchers));
+
+
         }
 
 
+
+        MainWindow mw = (MainWindow)Application.Current.MainWindow;
+
         private FBHDTask selectedTask;
         private BindingList<FBHDTask> tasks = new BindingList<FBHDTask>();
-        private string globalOutputFolder = "c`:\\tools\\fbhd-gui\\";
+        private string globalOutputFolder = MI.DEFAULT_GLOBAL_OUTPUT_DIR;
         private int runningFfmpegCount = 0;
         private bool isServerRunning = false;
         private int failedCount = 0;
         private int runningPy_fetcherCount = 0;
 
+
+        
+
+
+        private BindingList<CustomLW> customListWatchers;
+        public BindingList<CustomLW> CustomListWatchers
+        {
+            set { customListWatchers = value;
+                OnPropertyChanged(nameof(CustomListWatchers));
+
+            }
+            get { return customListWatchers; }
+        }
+
+
+        public bool ExistLoadedCLWatchers
+        {
+            get { return CustomListWatchers.Count>0; }
+        }
+
+
+
+
+        private FSDMNewsWatcher fsdmNewsWatcher= new FSDMNewsWatcher(File.ReadAllText(MI.FSDM_News_Ref_PATH)) { Interval = 3 * 60 * 1000 };
+        public FSDMNewsWatcher FsdmNewsWatcher 
+        {
+            get { return fsdmNewsWatcher; }
+        }
 
 
 
@@ -3067,6 +3471,7 @@ namespace fbhd
                 return globalOutputFolder;
             } set
             {
+                value = value.TrimEnd(new char[] { '\\' }) + "\\";
                 globalOutputFolder = value;
                 OnPropertyChanged(nameof(GlobalOutputFolder));
             }
@@ -3116,11 +3521,89 @@ namespace fbhd
             }
         }
 
+        public Config MainConfig { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName)
         {
+            
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if(propertyName == nameof(CustomListWatchers))
+            {
+                OnPropertyChanged(nameof(ExistLoadedCLWatchers));
+            }
+        }
+
+
+        private MediaPlayer mp = new MediaPlayer();
+        internal void PlayNotification()
+        {
+
+
+            // mp.Volume = 1;
+            mp.Position = TimeSpan.FromMilliseconds(0);
+            mp.Play() ;
+        }
+
+
+
+        /// <summary>
+        /// loads the file content, parses it, adds a listwatcher objct to the CustomListWatchers 
+        /// </summary>
+        internal async Task<bool> LoadXMLLW(string fileName)
+        {
+            CustomLW newCustomLW  =  XMLLW.LoadXMLPreset(File.ReadAllText(fileName));
+
+
+            if (File.Exists(newCustomLW.ReferenceFilePath))
+            {
+                newCustomLW.InitialReferenceContent = File.ReadAllText(newCustomLW.ReferenceFilePath);
+
+                if (string.IsNullOrEmpty(newCustomLW.InitialReferenceContent))
+                {
+                    MessageBox.Show($"Empty initial data! XMLLW-Loader will attemp to fetch data from {newCustomLW.Href} and override the file:\n {newCustomLW.ReferenceFilePath}  ");
+                    var data = await WebClient.cURL.GetTextStatic(newCustomLW.Href, Headers.FakeUserAgentHeaders);
+                    if (data.Success)
+                    {
+                        File.WriteAllText(newCustomLW.ReferenceFilePath, data.Text);
+                        newCustomLW.InitialReferenceContent = data.Text;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"couldnt fetch the data, try later\n errorcoe:{data.ClientExitCode}");
+                        return false;// //done//todo: shold inform the caller that things went wrong
+                    }
+                }
+            }
+
+            else
+            {
+                MessageBox.Show($"Reference file does not exist at {newCustomLW.Href}!\n XMLLW-Loader will attemp to create one with initial data from {newCustomLW.Href} ");
+                var data = await WebClient.cURL.GetTextStatic(newCustomLW.Href, Headers.FakeUserAgentHeaders);
+                if (data.Success)
+                {
+                    File.WriteAllText(newCustomLW.ReferenceFilePath, data.Text);
+                    newCustomLW.InitialReferenceContent = data.Text;
+
+                }
+                else
+                {
+                    MessageBox.Show($"couldnt fetch the data, try later\n errorcoe:{data.ClientExitCode}");
+                    return false;
+                }
+
+            }
+
+           
+            newCustomLW.NewItems += (s, news) =>
+            {
+                PlayNotification();
+                mw.ShowNotificationNews(news, newCustomLW);
+            };
+            CustomListWatchers.Add(newCustomLW);
+            OnPropertyChanged(nameof(ExistLoadedCLWatchers));
+            return true;
+
         }
     }
 
@@ -3213,6 +3696,1834 @@ namespace fbhd
 
         }
     }
+
+
+
+
+
+    public interface IHasID
+    {
+        string ID { get; }
+
+    }
+
+
+
+    public interface ListWatcherItem : IHasID
+    {
+         string PopupMessageString { get; }
+
+
+    }
+
+
+    //created to solve some casting problems and abstract away methods between the fsdmlistwatcher and CustomListWatcher
+    public interface IWatch
+    {
+
+         void MarkAllAsRead();
+
+
+         void MarkAsRead(IEnumerable<INotifableItem> what);
+        
+    }
+
+
+    /// <summary>
+    /// base class for watching a static web page that has a list-like patern, by Checking it's content regularely with the pre configured Interval
+    /// notifies changes through firing the events NewItems, RevokedItems ;
+    /// the OnError event is fired in when the client fails to connect or when the list parser method fails 
+    /// NOTE/ it's important for the ID property of an item to be unique and stay unchanged over time in order for this to work
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class ListWatcher<T>  : INotifyPropertyChanged, IWatch where T : ListWatcherItem
+    {
+
+        
+       
+        public event EventHandler<List<T>> NewItems;
+        public event EventHandler<List<T>> RevokedItems;
+
+        public event EventHandler<string> OnError;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+
+
+
+
+        private int interval = 60000;
+        public int Interval
+        {
+            set {
+                if (value < 30000) value = 30000;
+                interval = value;
+                notif(nameof(Interval));
+                notif(nameof(IntervalAsString));
+
+            }
+            get { return interval; }
+        }
+
+
+
+
+        public int ChecksCount { get; set; } = 0; // countes both successfull and unsuccessful checkings
+        public TimeSpan WatchingFor { get; set; }
+
+
+
+        internal void notif(string propertyName)
+        {
+            
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
+        private bool isWatching = false;
+        public bool IsWatching { get {return isWatching; } private set {
+                isWatching = value;
+                notif(nameof(IsWatching));
+                notif(nameof(StatusMessage));
+
+
+            }
+        }
+
+
+        public bool IsFailing
+        {
+           
+            get { return FailingCount > 0; }
+        }
+
+        public bool IsRunningSuccessfully
+        {
+            get { return !IsFailing; }
+        }
+
+
+
+        /// <summary>
+        /// seccessful checking counter, starts when first initalized
+        /// </summary>
+        private int successfulCheckCount;
+        public int SuccessfulCheckCount
+        {
+            set { successfulCheckCount = value;
+                notif(nameof(SuccessfulCheckCount)); notif(nameof(StatusMessage));
+            }
+            get { return successfulCheckCount; }
+        }
+
+
+
+        
+
+        public void MarkAllAsRead()
+        {
+            UnreadNews.Clear();
+            UnreadNews = new BindingList<INotifableItem>();
+            notif(nameof(HasUnreadNews));
+            notif(nameof(UnreadCount));
+            UpdateReferenceFile();
+
+        }
+
+        public void MarkAsRead(IEnumerable<INotifableItem> what)
+        {
+            foreach (var item in what)
+            {
+                UnreadNews.Remove(item);
+            }
+            notif(nameof(HasUnreadNews));
+            notif(nameof(UnreadCount));
+        }
+
+
+        private BindingList<INotifableItem> unreadNews;
+        public BindingList<INotifableItem> UnreadNews
+        {
+            set { unreadNews = value;
+                notif(nameof(UnreadNews));
+                notif(nameof(HasUnreadNews));
+                notif(nameof(UnreadCount));
+            }
+            get { return unreadNews; }
+        }
+
+
+        public bool HasUnreadNews
+        {
+            set { notif(nameof(HasUnreadNews)); }
+            get { return UnreadNews.Count > 0; }
+        }
+
+
+        public int UnreadCount
+        {
+            set {  notif(nameof(UnreadCount)); }
+            get { return UnreadNews.Count; }
+        }
+
+
+
+
+
+
+        public string StatusMessage
+        {
+            set {  notif(nameof(StatusMessage)); }
+            get { return !IsWatching? "Disabled" : IsFailing? $"Failed [{FailingCount}]" : $"Running [{SuccessfulCheckCount}]"; }
+        }
+
+
+
+        /// <summary>
+        /// unsuccessful checkings cc, gets reset to 0 when a successfull check occurs
+        /// </summary>
+        private int failingCount;
+        public int FailingCount
+        {
+            set { failingCount = value;
+                notif(nameof(FailingCount));
+                notif(nameof(IsFailing));
+                notif(nameof(IsRunningSuccessfully));
+                notif(nameof(StatusMessage));
+
+
+            }
+            get { return failingCount; }
+        }
+
+
+
+
+        /// <summary>
+        /// short description: only assign something that Fucs.TimeSpanFromString can 
+        /// parse, and expect the getter to return "03:30"-like strings
+        /// this property works as a parser/converter for the actual int Interval property 
+        /// simplifing the two way binding for the UI IncreaseTextBox control
+        /// NOTE: when passing a string tha cannot be resolved the value 00:30 is supplied 
+        /// </summary>
+        public string IntervalAsString
+        {
+            set {
+                var ts = Fucs.TimeSpanFromString(value);
+                if (!ts.HasValue)
+                {
+                    Interval = (int)TimeSpan.FromSeconds(30).TotalMilliseconds;
+                }
+                else
+                {
+                    Interval = (int) ts.Value.TotalMilliseconds;
+                }
+
+            }
+            get { return TimeSpan.FromMilliseconds(Interval).ToString().Substring(3); }
+        }
+
+
+
+
+
+        public abstract string Href { get;  }
+        public string InitialReferenceContent { get; set; }
+        public List<T> CurrentReferenceList { get; set; }
+        public  string ReferenceFilePath { get; set; }
+
+        //internal abstract string GetPageContent(string href);
+
+        /// <summary>
+        /// returns false on any parsing failure, 
+        /// on successful parsing it assigns a new list oject to the out parsedList argument
+        /// </summary>
+        /// <returns></returns>
+        internal abstract bool ParseList(string pageContent, out List<T> parsedList );
+
+
+        /// <summary>
+        /// iterates through the newList items and searchs for new ones that does not exist in the oldList, 
+        /// returns false if not new items were found, true otherwise
+        /// the passed newItems object should be pre-assigned cuw the new items will be added ther using its .add() method
+        /// </summary>
+        private bool findNewItems(List<T> oldList, List<T> newList, List<T> newItemsOutput)
+        {
+            bool newsExist = false;
+            foreach (var item in newList)
+            {
+                int ix = oldList.FindIndex((One)=>One.ID==item.ID);
+                if ( ix== -1)
+                {
+                    newItemsOutput.Add(item);
+                    newsExist = true;
+                }
+            }
+
+            return newsExist;
+        }
+
+        public string  currentContent;
+
+
+        /// <summary>
+        /// iterates through the oldList items and searchs for ones that are missing in the newList, 
+        /// returning true when revoked items exist, false otherwise
+        /// the passed revokedItems object should be pre-assigned cuz the revoked items will be added there using its .add() method
+        /// Note: the results relies only on the items's ID
+        ///  </summary>
+        private bool findRevokedItems(List<T> oldList, List<T> newList, List<T> revokedItemsOutput)
+        {
+            bool Exist = false;
+            foreach (var item in oldList)
+            {
+                int ix = newList.FindIndex((One) => One.ID == item.ID);
+                if (ix == -1)
+                {
+                    revokedItemsOutput.Add(item);
+                    Exist = true;
+                }
+            }
+
+            return Exist;
+        }
+
+
+        struct CheckingResult
+        {
+            public bool ExistChanges;
+            public bool Success;
+            public Exception Error;
+        }
+
+        private async Task <CheckingResult> Check()
+        {
+            
+            
+
+                var r = await WebClient.cURL.GetTextStatic(Href, Headers.FakeUserAgentHeaders);
+
+            if (!r.Success)
+            {
+                return new CheckingResult() { Success = false, Error = new Exception("Couldnt fetch: curl exited wih code: "+ r.ClientExitCode.ToString()), ExistChanges = false };
+
+            }
+            currentContent = r.Text;
+
+            
+            if (currentContent == null)
+            {
+                return new CheckingResult() { Success = false, Error = new Exception("couldent fetch"), ExistChanges = false };
+               
+            }
+
+            // File.WriteAllText(MI.MAIN_PATH + "\\aaaareeeef.html", currentContent);
+
+            // MessageBox.Show("saved html");
+
+            List<T> currentList;
+            bool successfulParsing = ParseList(currentContent , out currentList);
+            if(!successfulParsing)
+            {
+                return new CheckingResult() { Success = false, Error = new Exception("mi: parsing method failed") };
+            }
+            List<T> maybeNewItems = new List<T>();
+            List<T> maybeRevokedItems = new List<T>();
+            bool existNews = findNewItems(CurrentReferenceList, currentList, maybeNewItems);
+            bool existRevoked = findRevokedItems(CurrentReferenceList, currentList, maybeRevokedItems);
+            bool existChanges = existNews || existRevoked;
+            if (existChanges)
+            {
+                CurrentReferenceList = currentList;
+                if (existNews)
+                {
+                    if (NewItems != null) NewItems(this, maybeNewItems);
+                }
+                if (existRevoked)
+                {
+                    if (RevokedItems != null) RevokedItems(this, maybeRevokedItems);
+                }
+            }
+
+            return new CheckingResult() { Success = true, ExistChanges = existChanges };
+
+
+
+        }
+
+        public async void StartWatching()
+        {
+            Debug.WriteLine($"StartWatching() was called", "ListWatcher<>");
+
+            if (CurrentReferenceList == null) 
+            {
+                Debug.WriteLine($"CurrentReferenceList is null", "ListWatcher<>");
+
+                if (string.IsNullOrWhiteSpace(InitialReferenceContent))
+                {
+                    throw new Exception("mi: ListWatcher: cannot start watching before assigning the initialContentReference");
+                }
+                List<T> initialList;
+               bool succesfullInitialization =  ParseList(InitialReferenceContent, out initialList);
+                if (succesfullInitialization)
+                {
+                    CurrentReferenceList = initialList;
+                    Debug.WriteLine($"initialized CurrentReferenceList ({CurrentReferenceList.Count} Items)", "ListWatcher<>");
+
+                }
+                else
+                {
+                    throw new Exception("mi: canot init the watcher because parsing the initialContentReference failed");
+                }
+
+            }
+            IsWatching = true;
+            while (IsWatching)
+            {
+                CheckingResult res = await Check();
+                if(res.Success == false)
+                {
+                    FailingCount++;
+                    Debug.WriteLine($"Check() method returned unsuccessfull CheckingResult with Error: {res.Error} ", "ListWatcher<>");
+                    Debug.WriteLine($"Firing the OnError event", "ListWatcher<>");
+
+                    if (OnError!=null)  OnError(this,"could'nt fetch");
+
+
+                }
+                else
+                {
+                    if (FailingCount > 0) FailingCount = 0;
+                    SuccessfulCheckCount++;
+                    Debug.WriteLine($"Check() method succeed, CurrentReferenceList has {CurrentReferenceList.Count} items ", "ListWatcher<>");
+                    
+                }
+                await Task.Delay(Interval);
+            }
+            
+        }
+
+        
+
+        public void StopWatching()
+        {
+            IsWatching = false;
+        }
+
+
+        internal void UpdateReferenceFile()
+        {
+            File.WriteAllText(this.ReferenceFilePath, currentContent);
+        }
+
+       
+    }
+
+
+
+
+    
+
+
+    public struct FsdmNew: ListWatcherItem, INotifableItem
+    {
+        public string ID { get; set; }
+        public string PopupMessageString { get {
+                return $"{Title} \n       {Link}";
+            } }
+
+        public string SubTitle { get { return date; } }
+
+        public string Link { get; set; }
+        public string Title { get; set; }
+        public string date { get; set; }
+        public string category { get; set; }
+
+
+    }
+
+    public class FSDMNewsWatcher : ListWatcher<FsdmNew>, IWatch
+    {
+        public FSDMNewsWatcher(string initialReferenceContent)
+        {
+           
+            InitialReferenceContent = initialReferenceContent;
+            ReferenceFilePath = MI.FSDM_News_Ref_PATH;
+            Debug.WriteLine($"initialized with InitialReferenceContent of {initialReferenceContent.Length.ToString()} lenght", "FSDMNewsWatcher");
+
+            UnreadNews = new BindingList<INotifableItem>();
+
+            base.NewItems += (s, news) => {
+                foreach (var item in news)
+                {
+                    UnreadNews.Add(item);
+                }
+                notif(nameof(UnreadNews));
+                notif(nameof(HasUnreadNews));
+                notif(nameof(UnreadCount));
+
+
+            };
+
+        }
+
+        
+
+
+       
+
+
+        
+       
+
+
+
+
+        // taken from python version 
+        // attemps to parse item, no need to handle exceptions cuz this is called inside a catch
+        private FsdmNew parseItem(string rawItemString)
+        {
+            FsdmNew outp = new FsdmNew();
+
+
+            Match parse_href_and_title = Regex.Match(rawItemString,"<a  href=\"(http://fsdmfes.ac.ma/News/(\\d{3,5})/show)\">(.*?)</a></span></p>");
+            Match date_and_category = Regex.Match(rawItemString, "<p style=\"font-size:10px; \">(.*?)\\|(.*?)</p>");
+
+    if (parse_href_and_title.Success ==false)
+            {
+                throw new Exception("parsing item filed: parse_href_and_title");
+            }
+           if (parse_href_and_title.Success == false)
+            {
+                throw new Exception("parsing item filed: date_and_category");
+            }
+            outp.Link = parse_href_and_title.Groups[1].Value;
+            outp.ID = int.Parse(parse_href_and_title.Groups[2].Value).ToString();
+            outp.Title = parse_href_and_title.Groups[3].Value.Replace("&amp;", "&").Replace("&#039;", "'") ;
+            outp.date = date_and_category.Groups[1].Value;
+            outp.category = date_and_category.Groups[2].Value;
+            return outp;
+        }
+        private List<string> getRawItems(string rawPage)
+        {
+
+
+            List<string> outplist = new List<string>();
+
+            string pre_triming = Regex.Match(rawPage,"<ul class=\"list contact-details\">(.*?)<div class=\"paginationx\">",  RegexOptions.Singleline).Value;
+            //MessageBox.Show(pre_triming.Length.ToString());
+
+            MatchCollection mc = Regex.Matches(pre_triming, "<li>.\\s*<div>.?(.*?)</li>", RegexOptions.Singleline);
+
+            foreach (Match item  in mc)
+            {
+                outplist.Add(item.Value);
+            }
+
+            Debug.WriteLine($"getRawItems returned {outplist.Count} raw items", "FSDMNewsWatcher");
+
+            return outplist;
+
+        }
+
+    public override string Href  {get {return "http://fsdmfes.ac.ma/News"; } }
+
+        internal override bool ParseList(string pageContent, out List<FsdmNew> parsedList)
+        {
+            Debug.WriteLine($"ParseList was called", "FSDMNewsWatcher");
+
+            List<string> rawItems = getRawItems(pageContent);
+            if (rawItems.Count < 2)
+            {
+                parsedList = null;
+                return false;
+            }
+            List<FsdmNew> outp = new List<FsdmNew>();
+            foreach (var rawItem in rawItems)
+            {
+                FsdmNew maybeItem;
+                if(parseItem(rawItem, out maybeItem))
+                {
+                    outp.Add(maybeItem);
+
+                }
+            }
+            if (outp.Count < 2)
+            {
+                parsedList = null;
+                return false;
+            }
+            parsedList = outp;
+            return true;
+        }
+
+        private bool parseItem(string rawItem, out FsdmNew maybeItem)
+        {
+            try
+            {
+                maybeItem = parseItem(rawItem);
+                return true;
+            }
+            catch (Exception)
+            {
+                maybeItem = new FsdmNew();
+                return false;
+                
+            }
+        }
+
+        
+    }
+
+
+
+
+
+
+
+    public class ExpandoLWItemObject : DynamicObject, ListWatcherItem, INotifableItem
+    {
+        public string ID
+        {
+            get { return ExpandoObj.ID; }
+        }
+
+        public string PopupMessageString
+        {
+            get {   return ExpandoObj.PopupMessageString;  }
+        }
+
+
+        public dynamic  ExpandoObj { get; set; }
+
+        public string Title
+        {
+            get { return HasProperty("Title") ? ExpandoObj.Title : "unknown"; }
+
+        }
+
+        bool HasProperty(string propname)
+        {
+            IDictionary<String, object> asDict = (IDictionary<string, object>)this.ExpandoObj;
+            return asDict.Keys.Contains(propname);
+        }
+
+        public string SubTitle
+        {
+            get {
+                return HasProperty("SubTitle") ? ExpandoObj.SubTitle : null;
+               
+            }
+
+        }
+
+        public string Link
+        {
+            get { return HasProperty("Link") ? ExpandoObj.Link : "unknown"; }
+
+        }
+    }
+
+
+
+    public class XMLLW
+    {
+
+        public static class MESSAGES
+        {
+
+            public static string missingProp(string elementName, string propName)
+            {
+                return $"Mi: {elementName} element missing the '{propName}' property";
+            }
+            public static string missingElem(string elementName)
+            {
+                return $"Mi: {elementName} element missing";
+            }
+
+            public const string listWatcher_missing_name_prop = "Mi: ListWatcher is missing the name property";
+            public const string zez = "Mi: ListWatcher";
+            public const string zezr = "Mi: ListWatcher";
+            public const string zerz = "Mi: ListWatcher";
+            public const string err = "Mi: ListWatcher";
+            public const string erre = "Mi: ListWatcher";
+            public const string rte = "Mi: ListWatcher";
+
+        }
+
+
+
+        public static CustomLW LoadXMLPreset(string PrestXmldata)
+        {
+
+            XDocument d = XDocument.Parse(PrestXmldata);
+            
+           // File.WriteAllText("C:\\TOOLS\\fbhd-gui\\xml\\fsdmNews.xml", d.ToString());
+            XElement listWatcher = null;
+            foreach (var item in d.Nodes())
+            {
+                if (item.NodeType == System.Xml.XmlNodeType.Element)
+                {
+                    //MessageBox.Show(((XElement)item).Name.LocalName);
+                    if (((XElement)item).Name == "ListWatcher")
+                    {
+                        listWatcher = (XElement)item;
+                    }
+                }
+            }
+            Trace.Assert(listWatcher != null, XMLLW.MESSAGES.missingElem("ListWatcher"));
+
+            XElement ItemClass = listWatcher.Element("ItemClass");
+            Debug.Assert(ItemClass != null, XMLLW.MESSAGES.missingElem("ItemClass"));
+            XElement ListParser = null;
+
+            foreach (var item in listWatcher.Descendants())
+            {
+                if (fbhd.Tag.Type(item) == fbhd.Tag.TagType.ListParser)
+                    ListParser = (XElement)item;
+            }
+            Debug.Assert(ListParser != null, XMLLW.MESSAGES.missingElem("ListParser"));
+
+            XAttribute nam = listWatcher.Attribute("name");
+            string presetName = nam == null ? null : nam.Value;
+            XAttribute RefFileAttr = listWatcher.Attribute("referenceFile");
+            string referenceFile = RefFileAttr == null ? null : RefFileAttr.Value;
+            Debug.Assert(!string.IsNullOrWhiteSpace(presetName), XMLLW.MESSAGES.missingProp("ListWatcher", "name"));
+            Debug.Assert(!string.IsNullOrWhiteSpace(referenceFile), XMLLW.MESSAGES.missingProp("ListWatcher", "referenceFile"));
+
+            Debug.WriteLine("loading preset with name: " + presetName);
+
+            XElement ItemParser = ListParser.Element("Item");
+            Debug.Assert(ItemParser != null, XMLLW.MESSAGES.missingElem("ItemParser"));
+
+            //string input = File.ReadAllText(MI.FSDM_News_Ref_PATH);
+
+            ListWatcherTag main = new ListWatcherTag(listWatcher, "dummy data");
+
+            Debug.WriteLine("main ListWatcher Tag constructed, the preset model is constructed succesfully");
+
+            ListParser listParserTag = (ListParser)main.GetAllDescendants().Find((elem) => elem.GetType() == typeof(ListParser));
+
+            Debug.Assert(listParserTag != null, "mi: listParserTag did not get cosntructed, please contact the developer iwth error key: 43323");
+
+            //var collection = listParserTag.GetParsedList();
+
+            
+           // Debug.WriteLine($"{collection.Count} items were parsed");
+            return new CustomLW(main, referenceFile);
+
+        }
+
+
+    }
+
+
+
+    public class CustomLW : ListWatcher<ExpandoLWItemObject> , IWatch
+    {
+        private string PresetHref;
+        public string Name { get { return ListWatcherTag.presetName; } }
+
+        private ListWatcherTag ListWatcherTag { get; set; }
+        private ListParser ListParserTag { get; set; }
+
+        public CustomLW(ListWatcherTag main, string referenceFile)
+        {
+            ReferenceFilePath = referenceFile;
+            ListWatcherTag = main;
+            PresetHref = main.uri;
+            Interval = (int) main.DefaultInterval.TotalMilliseconds;
+
+            ListParserTag = main.ListParserRef;
+            UnreadNews = new BindingList<INotifableItem>();
+
+            base.NewItems += (s, news) => {
+                foreach (var item in news)
+                {
+                    UnreadNews.Add(item);
+                }
+                notif(nameof(UnreadNews));
+                notif(nameof(HasUnreadNews));
+                notif(nameof(UnreadCount));
+
+
+            };
+
+        }
+        public override string Href
+        {
+            get
+            {
+                return PresetHref;
+            }
+        }
+
+
+        
+
+        internal override bool ParseList(string pageContent, out List<ExpandoLWItemObject> parsedList)
+        {
+
+            List<ExpandoLWItemObject> outputList = new List<ExpandoLWItemObject>();
+            ListWatcherTag.Input = pageContent;
+            ListWatcherTag.Refresh(pageContent);
+            outputList = ListParserTag.GetParsedList().ConvertAll<ExpandoLWItemObject>(new Converter<ExpandoObject, ExpandoLWItemObject>((e) => new ExpandoLWItemObject() { ExpandoObj = e }));
+            parsedList = outputList;
+
+            if (outputList.Count <1 )
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+       
+       
+    }
+
+
+
+
+    /// <summary>
+    /// a moodle session, provides facilities for loging in, monitoring and downloading
+    /// all types of resources,
+    /// </summary>
+    public class Moodle
+    {
+        public Moodle()
+        {     
+        }
+
+        public List<Module> Modules;
+
+        public partial class Module
+        {
+            public List<Section> l;
+        }
+        public partial class Section
+        {
+        }
+        public partial class Folder
+        {
+        }
+        public partial class Resource
+        {
+
+        }
+        public  enum ResourceType { Doc,Vid,Zip}
+
+    }
+
+
+    
+
+    
+    
+    public abstract class Tag
+    {
+
+        public List<Tag> GetAllDescendants()
+        {
+            List<Tag> outp = new List<Tag>();
+            if (Children == null)
+            {
+                return outp;
+            }
+            foreach (var item in Children)
+            {
+                outp.AddRange(item.GetAllDescendants());
+                outp.Add(item);
+            }
+            return outp;
+        }
+
+
+        public void spawnChildren()
+        {
+            foreach (var item in XElement.Nodes())
+            {
+                //doesnt include Item tag cz the ListParser class does child spawning by it's owwn, instead of calling this base ethode
+                TagType type = Type(item);
+                if (type == TagType.Wraper)
+                {
+                    Children.Add(new wraper((XElement)item, this));
+                }
+                else if (type == TagType.Replacer)
+                {
+                    Children.Add(new Replacer((XElement)item, this));
+                }
+                else if (type == TagType.Match)
+                {
+                    Children.Add(new Matcher((XElement)item, this));
+                }
+                else if (type == TagType.TargetProperty)
+                {
+                    Children.Add(new TargetProperty((XElement)item, this));
+                }
+                
+                else if (type == TagType.ListParser)
+                {
+                    Children.Add(new ListParser((XElement)item, this));
+                }
+                else if (type == TagType.Value)
+                {
+                    Children.Add(new ValueTag((XElement)item, this));
+                }
+                else if (type == TagType.Group)
+                {
+                    Children.Add(new GroupTag((XElement)item, this));
+                }
+                else if (type == TagType.tracer)
+                {
+                    Children.Add(new TracerTag((XElement)item, this));
+                }
+                else if (type == TagType.XParser)
+                {
+                    Children.Add(new XParserTag((XElement)item, this));
+                }
+                else if (type == TagType.InnerXML)
+                {
+                    Children.Add(new InnerXML((XElement)item, this));
+                }
+                else if (type == TagType.AttributeValue)
+                {
+                    Children.Add(new AttributeValue((XElement)item, this));
+                }
+
+            }
+        }
+
+
+
+        /// <summary>
+        /// returns null if attribute doesnt exist
+        /// </summary>
+        public string getAttrib(string attribName)
+        {
+            return XElement.Attribute(attribName)?.Value;
+        }
+
+        /// <summary>
+        /// returns bool indicating wether the attribute was found and outputed
+        /// </summary>
+        public bool getAttrib(string attribName, out string maybeValue)
+        {
+            var xattr =  XElement.Attribute(attribName);
+            if (xattr != null) {  maybeValue = xattr.Value; return true; }
+            else { maybeValue = null; return false; }
+        }
+
+
+
+        /// <summary>
+        /// causes all descendants to re apply(), resulting in a new data distrubution over the preset model, 
+        /// this allows to re use the preset model to parse another string data, and usually only invoked by the root ListWatcher object 
+        /// </summary>
+        public virtual void Refresh(string injectInput="")
+        {
+            Input = injectInput;
+            if (string.IsNullOrEmpty(injectInput))
+            {
+                Input = Parent.Output;
+            }
+            
+            apply();
+            foreach (var item in Children)
+            {
+                item.Refresh();
+            }
+        }
+
+        public enum TagType { Wraper, Replacer, Match, ListParser, Item, Value, Group, Success, TargetProperty , none,
+            tracer,
+            XParser,
+            InnerXML,
+            AttributeValue
+        }
+
+        public static TagType Type(XElement xelem)
+        {
+            if (xelem.Name.Namespace == "xml-parser") return TagType.XParser;
+            switch (xelem.Name.LocalName.ToLower())
+            {
+                case "wraper":
+                    return TagType.Wraper;
+                case "replacer":
+                    return TagType.Replacer;
+                case "match":
+                    return TagType.Match;
+                case "listparser":
+                    return TagType.ListParser;
+                case "item":
+                    return TagType.Item;
+                case "value":
+                    return TagType.Value;
+                case "group":
+                    return TagType.Group;
+                case "targetproperty":
+                    return TagType.TargetProperty;
+                case "tracer": return TagType.tracer;
+                case "attributevalue": return TagType.AttributeValue;
+                case "innerxml": return TagType.InnerXML;
+                default:
+                   return TagType.none ;
+            }
+
+        }
+        public static TagType Type(XNode xnode)
+        {
+            if(xnode.NodeType == XmlNodeType.Element)
+            {
+                return Type((XElement)xnode);
+            }
+            else
+            {
+                return TagType.none;
+            }
+           
+              
+        }
+
+        public List<Tag> Children { get; set; }
+        public XElement XElement { get; set; }
+
+        public string Input { set; get; }
+        public string Output { set; get; }
+        public Tag Parent { set; get; }
+
+        public virtual void apply()
+        {
+            Output = (Input);
+        }
+
+       
+    }
+
+
+
+
+
+    public class ListWatcherTag : Tag
+    {
+        public string uri { get; set; }
+        public string presetName { get; set; }
+
+        public TimeSpan DefaultInterval { set; get; } = TimeSpan.FromMinutes(3);
+        public string DefaultAction { set; get; }
+        public string PopupWindowTitleFormatter { get; set; } = "$name : $c New Items";
+        public string UnreadButtonCaptionFormatter { get; set; } = "$c News";
+
+        private ListParser listParserRef = null;
+        public ListParser ListParserRef { get {
+
+                if(listParserRef != null)
+                {
+                    return listParserRef;
+                }
+                foreach (var item in this.GetAllDescendants())
+                {
+                    if (item.GetType() ==  typeof(ListParser)) {
+                        listParserRef = (ListParser)item;
+                        return listParserRef;
+                    }
+                }
+
+                Debug.Assert(listParserRef != null, "Mi: ListWarcherTag object couldnt find the ListParser descendant ");
+                return null;
+            } }
+
+        public ListWatcherTag(XElement XELEM, string input)
+        {
+            
+            Debug.WriteLine("spawning ListWatcherTag");
+            Children = new List<Tag>();
+            XElement = XELEM;
+            // ## validating and parsing attributes ## //
+            string maybeDefaultAction = getAttrib("defaultAction");
+            if (maybeDefaultAction != null) DefaultAction = maybeDefaultAction;
+            string maybeDefaultInterval;
+            if (getAttrib("defaultInterval", out maybeDefaultInterval) )
+            {
+                var maybeDefaultInterval_ = Fucs.TimeSpanFromString(maybeDefaultInterval);
+                Trace.Assert(maybeDefaultInterval_!= null, $"Mi defaultInterval attribute value '{maybeDefaultInterval}' is not a valid timeSpan value");
+                if (maybeDefaultInterval_.HasValue)
+                    DefaultInterval = maybeDefaultInterval_.Value;
+            }
+            string maybePPWT;
+            if (getAttrib("popupWindowTitle", out maybePPWT))
+                PopupWindowTitleFormatter = maybePPWT;
+
+            string maybeUBC;
+            if (getAttrib("unreadButtonCaption", out maybeUBC))
+                UnreadButtonCaptionFormatter = maybeUBC;
+
+            uri = XElement.Attribute("uri")?.Value;
+            Trace.Assert(uri !=null, XMLLW.MESSAGES.missingProp("ListWatcher", "uri"));
+            presetName = XElement.Attribute("name")?.Value;
+            Trace.Assert(uri != null, XMLLW.MESSAGES.missingProp("ListWatcher", "name"));
+
+            Input = input;
+            apply();
+            base.spawnChildren();
+
+        }
+
+       
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public class wraper: Tag
+    {
+        string From { get; set; }
+        string To { get; set; }
+        int Ignore { get; set; }
+       
+         public wraper(XElement XELEM, Tag parent)
+        {
+            if(XELEM == null && parent == null)
+            {
+                return;
+            }
+            Debug.WriteLine("spawning wraper");
+            Children = new List<Tag>();
+            XElement = XELEM;
+            string from= (string) XElement.Attribute("from").Value;
+            string to = (string)XElement.Attribute("to").Value;
+            int ignor = int.Parse( XElement.Attribute("ignore").Value);
+
+            From = from;
+            To = to;
+            Ignore = ignor;
+
+            Parent = parent;
+            Input = Parent.Output;
+            apply();
+           
+        }
+
+        
+
+        public override void apply()
+        {
+            Output = wraper.Wrap(Input, From, To, Ignore);
+        }
+
+        public static string Wrap(string input, string from, string to, int ignore)
+        {
+            Match m = Regex.Match(input, from + ".*?" + to);
+            if (m.Success) return m.Value;
+            else return "";
+        }
+
+    }
+
+
+
+
+
+
+    public class Replacer : Tag
+    {
+        string Pattern { get; set; }
+        string Replacement { get; set; }
+        string UseConverter { get; set; }
+
+        public Replacer(XElement XELEM, Tag parent)
+        {
+
+            Children = new List<Tag>();
+            XElement = XELEM;
+
+
+
+            var ReplacementAtt = XElement.Attribute("replacement");
+            var PatternAtt = XElement.Attribute("pattern");
+            var UseConverterAtt = XElement.Attribute("converter");
+            Trace.Assert(ReplacementAtt != null, XMLLW.MESSAGES.missingProp("replacer", "pattern"));
+            Trace.Assert(ReplacementAtt != null, XMLLW.MESSAGES.missingProp("replacer", "replacement"));
+            Replacement = ReplacementAtt.Value;
+            Pattern = PatternAtt.Value;
+            UseConverter = UseConverterAtt==null? "none" : UseConverterAtt.Value;
+
+            Parent = parent;
+            Input = Parent.Output;
+            apply();
+            base.spawnChildren();
+
+
+        }
+
+        public override void apply()
+        {
+            if (UseConverter.ToLower() == "xmldecoder")
+            {
+                Output = Fucs.decodeXml(Input);
+                    
+            }
+            else
+            {
+                Output = Regex.Replace(Input, Pattern, Replacement);
+
+            }
+        }
+
+       
+
+    }
+
+
+
+
+
+
+
+
+    public class Matcher : Tag, IMatcher
+    {
+        string Pattern { get; set; } string Options { get; set; }
+        public Match MatcherOutput { set; get; }
+
+        public bool Success{  get{return MatcherOutput.Success;}}
+
+        public GroupCollection Groups {get{return MatcherOutput.Groups;}}
+
+        public string Value{get{return MatcherOutput.Value;}}
+
+        public Matcher(XElement XELEM, Tag parent)
+        {
+            Debug.WriteLine("spawning matcher");
+
+            Children = new List<Tag>();
+            XElement = XELEM;
+
+            Pattern = XElement.Attribute("pattern")?.Value;
+            Options = XElement.Attribute("options")?.Value;
+            Trace.Assert(Pattern != null, XMLLW.MESSAGES.missingProp("matcher", "pattern"));
+
+            Parent = parent;
+            Input = Parent.Output;
+            apply();
+            base.spawnChildren();
+        }
+
+        public static RegexOptions parseOptions(string asStr)
+        {
+            switch (asStr)
+            {
+                case "Singleline": return RegexOptions.Singleline;
+                default:
+                    return RegexOptions.None;
+            }
+        }
+        public override void apply()
+        {
+            MatcherOutput = Regex.Match(Input, Pattern,parseOptions(Options)  );
+            Output = MatcherOutput.Success? MatcherOutput. Value : "";
+        }
+    }
+
+
+
+
+    public class ListParser : Tag
+    {
+
+
+        private string ItemPattern { get; set; }
+        private RegexOptions ItemPatternOptions { get; set; }
+        private XElement ItemNode { get; set; }
+
+        public List<ExpandoObject> GetParsedList()
+        {
+            List<ExpandoObject> outp = new List<ExpandoObject>();
+            foreach (var item in Children)
+            {
+                outp.Add( ((ItemParser)item).makeItemObject());
+
+            }
+
+            return outp;
+        }
+
+
+        public ListParser(XElement XELEM, Tag parent)
+        {
+            Debug.WriteLine("spawning ListParser");
+
+            Children = new List<Tag>();
+            XElement = XELEM;
+
+
+
+            Parent = parent;
+            Input = Parent.Output;
+            apply();
+
+            ItemNode = (XElement) XElement.FirstNode;
+            Debug.Assert( (ItemNode!=null) &&(Type(ItemNode) == TagType.Item),"ListParser must have an Item element as fist child");
+
+            ItemPatternOptions = Matcher.parseOptions(ItemNode.Attribute("options")?.Value);
+            ItemPattern = ItemNode.Attribute("pattern")?.Value;
+            Debug.Assert(ItemPattern != null, "mi: Item must have a pattern attribute");
+
+
+
+            spawnItems();
+        }
+
+        public override void Refresh(string injectedInput="")
+        {
+            Input = injectedInput;
+            if (string.IsNullOrEmpty(injectedInput))
+            {
+                Input = Parent.Output;
+            }
+            apply();
+            spawnItems();
+            //new code is uneccessary , the new spawned objects will have an up to date data no refreshing needed
+            return;
+            foreach (var item in Children)
+            {
+                item.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// should be recalled when data changes
+        /// </summary>
+        private void spawnItems()
+        {
+            MatchCollection mc = Regex.Matches(Input, ItemPattern, ItemPatternOptions);
+            Children.Clear();
+            foreach (Match oneMatch in mc)
+            {
+                Children.Add(new ItemParser(ItemNode, oneMatch, this));
+
+
+            }
+        }
+
+       
+    }
+
+
+
+
+    // for matcher and ItemParser (anthing that accepts the success , group, vale sub tags
+    public interface IMatcher
+    {
+        bool Success { get; }
+        GroupCollection Groups { get; }
+        string Value { get; }
+
+    }
+
+    public class ItemParser : Tag , IMatcher
+    {
+        Match RawMatch { get; set; }
+        
+        public bool Success { get { return RawMatch.Success; } }
+        public GroupCollection Groups { get { return RawMatch.Groups; } }
+        public  string Value { get { return RawMatch.Value; } }
+
+        public Match MatcherOutput { set; get; }
+
+        
+       
+        public ExpandoObject makeItemObject()
+        {
+            dynamic obj = new ExpandoObject();
+            IDictionary<String, object> asDict = (IDictionary<string, object>)obj;
+
+            foreach (var item in GetAllDescendants())
+            {
+                if(item.GetType() ==typeof(TargetProperty))
+                {
+                    TargetProperty tp = (TargetProperty)  item;
+                    asDict.Add(tp.PropertyName, tp.Output);
+                    if(tp.UseAs != SpecialProps.none)
+                    {
+                        asDict.Add(tp.UseAs.ToString(), tp.Output);
+                    }
+                }
+            }
+            obj.ldjslk = "lklm";
+
+           
+
+
+            return obj;
+        }
+        public ItemParser(XElement XELEM, Match rawMatch, ListParser parent)
+        {
+            Debug.WriteLine("spawning ItemParser");
+
+            RawMatch = rawMatch;
+            Children = new List<Tag>();
+            XElement = XELEM;
+
+
+            Parent = parent;
+            Input = RawMatch.Value;
+            apply();
+            base.spawnChildren();
+        }
+        public override void apply()
+        {
+            Output = Value;
+        }
+    }
+
+
+    // most messy shit i've ever written
+    public class XParserTag : Tag
+    {
+        /// <summary>
+        /// target, usually html, element name, e.g div, span
+        /// </summary>
+        public string ElementName { set; get; }
+
+        /// <summary>
+        /// contains the raw inner string of the node
+        /// </summary>
+        public string InnerXmlString { get; set; }
+
+
+        /// <summary>
+        /// gets the first element that passes a set of attribute conditions and/or an index condition
+        /// the indedx condition usage is as follow x:index="4", meaning the element must ba the 4th among it's siblings 
+        /// </summary>
+        static XElement GetElement(XElement InputElem, string targetElemName, IEnumerable<XAttribute> requiredAttributes)
+        {
+            var attribsAslist = requiredAttributes.ToList();
+            var attribsASKeyPairs = attribsAslist.ConvertAll<KeyValuePair<string, string>>(new Converter<XAttribute, KeyValuePair<string, string>>((at)=>new KeyValuePair<string, string>( (at.Name.NamespaceName=="xml-parser"?"x:":"" )+ at.Name.LocalName,at.Value)));
+            return GetElement(InputElem, targetElemName, attribsASKeyPairs);
+        }
+
+
+        /// <summary>
+        /// returns the first child element that have all the required attribs with the requiredd values, 
+        /// passing a null string as a required attib value will pass any value
+        /// returns null if no match was found
+        /// </summary>
+        static XElement GetElement(XElement InputElem, string targetElemName, IEnumerable<KeyValuePair<string,string>> requiredAttributes)
+        {
+             List< XElement> lst =new List<XElement>( InputElem.Elements(targetElemName));
+            foreach (var item in lst)
+            {
+                bool passesAllConditions = true;
+                foreach (var requiredAttrib in requiredAttributes)
+                {
+                    //### case of a special x:index=4 condition
+                    if (requiredAttrib.Key == "x:index")
+                    {
+                        int requiredIndexValue = int.Parse(requiredAttrib.Value);
+                        if ( GetIndexOf(InputElem,item) != requiredIndexValue)
+                        {
+                            passesAllConditions = false;
+                            break;
+                        }
+
+                        continue;
+                    }
+
+                    
+                    //## case of a regular attribute=value condition
+                    XAttribute att = (item.Attribute(requiredAttrib.Key));
+                    if (att == null)
+                    {
+                        passesAllConditions = false;
+                        break; // no need to keep cheking other requested attribs
+                    } 
+                    if(requiredAttrib.Value != null)
+                    {
+                        if ((requiredAttrib.Value!="mi:any")&& (att.Value != requiredAttrib.Value))
+                        {
+                            // break if element does not have the requird attrib at all
+                            // break ig it have the required attib but with a different vale that the one required, 
+                            // if the required value is null then this will not do the value checking
+                            passesAllConditions = false;
+                            break; // no need to keep cheking other requested attribs
+                        }
+                       
+                    }
+                    
+                }
+                if (passesAllConditions){ return item;}
+                // steps here when the item didsnt pass the tests, 
+            }
+            // steps here when none of the items if any passed the tests, 
+            // returning null
+            return null;
+
+        }
+
+
+        /// <summary>
+        /// returns the index of an item whithin a parrent's child elements, or -1 if it doesnt exist among them 
+        /// </summary>
+        private static int GetIndexOf(XElement parentElem, XElement elem, bool sameLocalName = false)
+        {
+            if (sameLocalName)
+                return parentElem.Elements(elem.Name.LocalName).ToList().IndexOf(elem);
+            return parentElem.Elements().ToList().IndexOf(elem);
+        }
+
+        public XElement ParsedElement { get; set; }
+        public bool Success { set; get; }
+        public bool isParentAnXParser
+        {
+            get
+            {
+                return Parent.GetType() == typeof(XParserTag);
+            }
+        }
+        public XParserTag(XElement XELEM, Tag parent)
+        {
+
+            Parent = parent;
+            Input = Parent.Output;
+
+            Debug.Assert(XELEM.Name.NamespaceName == "xml-parser","Mi: the passed xelement does not belong to the 'xml-parser' namespace");
+            XElement = XELEM;
+
+            ElementName = XElement.Name.LocalName;
+            
+            
+            Debug.WriteLine("spawning XParserTag");
+            
+            Children = new List<Tag>();
+            XElement = XELEM;
+
+
+
+            apply();
+            spawnChildren();
+
+        }
+
+        public override void apply()
+        {
+            if (isParentAnXParser)
+            {
+                var parentAsXparser = (XParserTag)Parent;
+                if (!parentAsXparser.Success)
+                {
+                    Debug.WriteLine($"XParserTag with elementName name:'{ElementName}' failed because it's XParserTag '{parentAsXparser.ElementName}' parent has failed");
+                    Success = false;
+                   
+                }
+                else
+                {
+                    var parentsParsedElement = ((XParserTag)Parent).ParsedElement;
+
+                    ParsedElement = GetElement(parentsParsedElement, this.ElementName, this.XElement.Attributes());
+                    Success = ParsedElement != null;
+                    if (Success == false)
+                    {
+                        Debug.WriteLine($"XParserTag with elementName name:'{ElementName}' failed because GetElement() didnt find any matching element, parent XParserTag is: '{parentAsXparser.ElementName}' ");
+                    }
+                }
+                
+            }
+            else
+            {
+                try
+                {
+                    ParsedElement = XElement.Parse(Input);
+                    Success = true;
+                    if (ParsedElement == null)
+                    {
+                        Success = false;
+                        Debug.WriteLine($"Mi: XParserTag with name:'{ElementName}' failed because parsing it's input text returnd a null XElement object");
+                    }
+                    else if (ParsedElement.Name.LocalName != ElementName)
+                    {
+                        Success = false;
+                        Debug.WriteLine($"Mi: XParserTag with name:'{ElementName}' failed because parsing it's input text returnd an XElement with name '{ParsedElement.Name.LocalName}' when the name '{ElementName}' was excpected");
+                    }
+                   
+                }
+                catch (Exception)
+                {
+                    Success = false;
+                    Debug.WriteLine($"Mi: XParserTag with name:'{ElementName}' failed to parse it's Input text");
+                }
+            }
+            
+            Output = Success ? ParsedElement.ToString() : "";
+            InnerXmlString = Success ? ParsedElement.Value : "";
+        }
+
+    }
+
+
+    // can only appear as a XParserTag child
+    // supplies children with the parent's InnertXMLSring 
+    // if a 'Trim' attribut is present this performes a string.trim() before outputing text
+    public class InnerXML : Tag
+    {
+        public bool EnableTrimming { get; set; }
+
+        public InnerXML(XElement XELEM, Tag parent)
+        {
+            Trace.Assert(parent.GetType() == typeof(XParserTag), "Mi: InnerXML tag can only appear as a XParser child ");
+            Children = new List<Tag>();
+            XElement = XELEM;
+            Parent = parent;
+            EnableTrimming = XElement.Attribute("Trim") != null;
+
+            var parentAsXParser = (XParserTag)parent;
+            Input = parentAsXParser.InnerXmlString; // tofo: make this tag do the inner text exctracting operations instead of the XParser, for better debuging
+
+            Debug.WriteLine($"spawning InnerXML, child of a '{parentAsXParser.ElementName}' XParser");
+
+
+            
+            apply();
+            base.spawnChildren();
+
+        }
+
+        public override void apply()
+        {
+            if (EnableTrimming)
+                Output = Input.Trim();
+            else
+                Output = Input;
+        }
+
+    }
+
+
+
+    // can only appear as a XParserTag child
+    // supplies children with the parent's attribute value  
+    // if a 'Trim' attribut is present this performes a string.trim() before outputing text
+    public class AttributeValue : Tag
+    {
+        public bool EnableTrimming { get; set; }
+        public string AttributeName { get; internal set; }
+
+        public AttributeValue(XElement XELEM, Tag parent)
+        {
+            Children = new List<Tag>();
+            XElement = XELEM;
+            Parent = parent;
+            Trace.Assert(parent.GetType() == typeof(XParserTag), "Mi: AttributeValue tag can only appear as a XParser child ");
+
+            var parentAsXParser = (XParserTag)parent;
+            Input = parent.Output;
+            Debug.WriteLine($"spawning AttributeValue, child of a '{parentAsXParser.ElementName}' XParser, target attribute is ");
+
+            Trace.Assert((AttributeName =getAttrib("AttributeName")) != null, XMLLW.MESSAGES.missingProp("AttributeValue", "AttributeName"));
+            EnableTrimming = XElement.Attribute("Trim") != null;
+
+
+
+
+            apply();
+            base.spawnChildren();
+
+        }
+
+        public override void apply()
+        {
+            var parentAsXParser = (XParserTag)Parent;
+            string outString ;
+
+            if (parentAsXParser.Success)
+            {
+                XAttribute targetAtt = parentAsXParser.ParsedElement.Attribute(AttributeName);
+                if (targetAtt == null)
+                {
+                    outString = "";
+                    Debug.WriteLine($"Mi: AttributeValue tag couldnt find the requested attribute '{AttributeName}'");
+
+                }
+                else
+                {
+                    outString = targetAtt.Value ;
+
+                }
+            }
+            else /// (!parentAsXParser.Success)
+            {
+                outString = "";
+                Debug.WriteLine($"Mi: AttributeValue tag returned empty string because its XParser '{parentAsXParser.ElementName}' parent has failed ");
+
+            }
+            if (EnableTrimming)
+                Output = outString.Trim();
+            else
+                Output = outString;
+        }
+
+    }
+
+
+
+    public enum SpecialProps
+    {
+        Title, SubTitle, Link,
+        none
+    }
+
+    public class TargetProperty : Tag
+    {
+        public string PropertyName { get; internal set; }
+        public string AppendAfter { get; set; }
+        public string AppendBefore { get; set; }
+        public SpecialProps UseAs { get; set; } = SpecialProps.none;
+
+
+
+        public TargetProperty(XElement XELEM, Tag parent)
+        {
+
+            Debug.WriteLine("spawning targetProperty");
+            Children =null;
+            XElement = XELEM;
+
+            PropertyName = XELEM.Attribute("property")?.Value;
+            Trace.Assert(PropertyName != null, XMLLW.MESSAGES.missingProp("TargetProperty", "property"));
+
+            AppendBefore = getAttrib("appendBefore");
+            AppendAfter = getAttrib("appendAfter" );
+            string UseAsStr_ = getAttrib("UseAs");
+            if (UseAsStr_ != null)
+            {
+                UseAsStr_ = UseAsStr_.ToLower();
+                switch (UseAsStr_)
+                {
+                    case "title": UseAs = SpecialProps.Title; break;
+                    case "link": UseAs = SpecialProps.Link; break;
+                    case "subtitle": UseAs = SpecialProps.SubTitle; break;
+                    default: UseAs = SpecialProps.none; break;
+                }
+            }
+           
+            
+
+            Parent = parent;
+            
+            Input = Parent.Output;
+            apply();
+        }
+
+
+        public override void apply()
+        {
+           
+            Output = AppendBefore + Input + AppendAfter;
+        }
+
+    }
+
+
+
+    public class TracerTag : Tag
+    {
+        public string Message { get; internal set; }
+
+        public override void Refresh(string injectInput = "")
+        {
+            Input = Parent.Output;
+            Debug.WriteLine("tarcer refreshed: " + Message);
+            Debug.WriteLine(Input);
+
+        }
+
+        public TracerTag(XElement XELEM, Tag parent)
+        {
+          
+            Children = null;
+
+            XElement = XELEM;
+            Message = XELEM.Attribute("message").Value;
+            Debug.WriteLine("tarcer: " + Message);
+            Parent = parent;
+            Input = Parent.Output;
+            Debug.WriteLine(Input);
+
+            apply();
+        }
+
+    }
+
+
+
+    public class ValueTag : Tag
+    {
+        public string PropertyName { get; internal set; }
+
+        public ValueTag(XElement XELEM, Tag parent)
+        {
+            Children = new List<Tag>();
+
+            Debug.WriteLine("spawning valueTag");
+            Debug.WriteLine(parent.GetType());
+
+            Debug.Assert((parent.GetType() == typeof(Matcher)) || (parent.GetType() == typeof(ItemParser)),"Mi: a Value tag's parent must be either a Matcher or an Item");
+
+            XElement = XELEM;
+            Parent = parent;
+            Input = ((IMatcher) Parent).Value;
+            apply();
+            base.spawnChildren();
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+    public class GroupTag : Tag
+    {
+
+        public int Index { get; internal set; }
+
+        public GroupTag(XElement XELEM, Tag parent)
+        {
+            Debug.WriteLine("spawning GroupTag");
+            Children = new List<Tag>();
+
+            Debug.Assert((parent.GetType() == typeof(ItemParser)) || (parent.GetType() == typeof(Matcher)), "Mi: a Group tag's parent must be either a Matcher or an Item");
+
+            XElement = XELEM;
+            Index = int.Parse(XElement.Attribute("index").Value);
+            Debug.WriteLine("GroupTag's index is:" + Index.ToString());
+            //<td><a href=\"2019-03-26-08-33-33_58f37f00f409b98b8eda58634d6dbeadeec0340f\">2019-03-26-08-33-33_..&gt;</a></td><td align=\"right\">2019-03-26 09:33  </td><td align=\"right\">713K</td><td>&nbsp;</td></tr>\r
+            //<a href=\"((.*)(\\..{3,5}))\">
+            Parent = parent;
+            Debug.Assert(((IMatcher)Parent).Groups.Count > Index, "mi: a Group tag is pointing to an out of range index");
+            Input = ((IMatcher)Parent).Groups[Index].Value;
+            apply();
+            base.spawnChildren();
+
+        }
+
+    }
+
+
 
 
 }
