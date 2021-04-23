@@ -129,7 +129,7 @@ namespace fbhd
             get { return (bool)GetValue(hasTasksProperty); }
             set { SetValue(hasTasksProperty, value); }
         }
-
+// commit try
         // Using a DependencyProperty as the backing store for hasTasks.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty hasTasksProperty =
             DependencyProperty.Register("hasTasks", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
