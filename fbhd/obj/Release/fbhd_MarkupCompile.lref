@@ -2,9 +2,12 @@
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\App.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\AboutWindow.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\ButtonMi.xaml;;
+FC:\TOOLS\fbhd-gui\fbhd\fbhd\CLWControl.xaml;;
+FC:\TOOLS\fbhd-gui\fbhd\fbhd\CLWItemPresenter.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\GenericPopupWindow.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\MainWindow.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\NewTaskWindow.xaml;;
+FC:\TOOLS\fbhd-gui\fbhd\fbhd\NotificationWindowMi.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\PopupPickerMi.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\PopupPickerMiItem.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\ResolutionPicker.xaml;;
@@ -12,7 +15,4 @@ FC:\TOOLS\fbhd-gui\fbhd\fbhd\SearchItem.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\SettingsWindow.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\TaskComponent.xaml;;
 FC:\TOOLS\fbhd-gui\fbhd\fbhd\TaskInfo.xaml;;
-FC:\TOOLS\fbhd-gui\fbhd\fbhd\NotificationWindowMi.xaml;;
-FC:\TOOLS\fbhd-gui\fbhd\fbhd\CLWControl.xaml;;
-FC:\TOOLS\fbhd-gui\fbhd\fbhd\CLWItemPresenter.xaml;;
 

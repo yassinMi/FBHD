@@ -167,6 +167,7 @@ namespace fbhd
 
 
         private bool isSelected;
+        [Obsolete("",true)]
         public bool IsSelected
         {
             set { 
@@ -313,6 +314,16 @@ namespace fbhd
 
 
 
+        /// <summary>
+        /// calculates the resolution that should be used, using TaskProperties.resolutionSettings.getResult()
+        /// </summary>
+        public Resolution ResolvedResolution
+        {
+           
+            get { return TaskProperties.resolutionSettings.getResult(); }
+        }
+
+
 
         public async void StartDownload(Post post)
         {
@@ -322,7 +333,7 @@ namespace fbhd
             Status = TaskStatus.downloading;
 
 
-            Action<FFMPEG.FFMPEGProgress> onProgAction = (FFMPEG.FFMPEGProgress progress) =>
+            EventHandler<FFMPEG.FFMPEGProgress> onProgAction = (object s,FFMPEG.FFMPEGProgress progress) =>
             {
                 this.Dispatcher.Invoke(() =>
                 {
@@ -333,6 +344,11 @@ namespace fbhd
                 });
             };
 
+            if (!Directory.Exists(OutputDirectory))
+            {
+                Directory.CreateDirectory(OutputDirectory);
+            }
+
             OutputFile = OutputDirectory + Fucs.filenamify(taskProperties.titleSettings.getResult()
                 + $".{FFMPEG.getExtention(Type)}");
             string ffmpegArgs = FFMPEG.MakeArgs(this);
@@ -341,29 +357,56 @@ namespace fbhd
             // return;
             // MessageBox.Show(ffmpegArgs);
             mw.comma.Text = ffmpegArgs;
-            ffmpeg_process_ref = null;
+            
+            FfmpegTask = new FFMPEG();
+            FfmpegTask.OnProgress += onProgAction;
 
-            int downloaded = await Fucs.run_ffmpeg_task(ffmpegArgs, onProgAction, this);
+           
+            FfmpegTask.OnExitedWithError += (s, code) => {
+                this.Dispatcher.Invoke(() =>
+                {
+                   // MessageBox.Show(FfmpegTask.Builder.ToString().Substring(FfmpegTask.Builder.ToString().Length - 400));
+                    FailureReason += $"ffmpg exited with code: {code} " ;
+                    Status = TaskStatus.failed;
+                    return;
+                });
+            };
 
-            if ((downloaded != 0) && (downloaded != 255))
-            {
-                FailureReason = "ffmpg exited with code: " + downloaded.ToString();
-                Status = TaskStatus.failed;
-                return;
-            }
+            FfmpegTask.OnExitedSuccessfully += (s, code) => {
+                this.Dispatcher.Invoke(() =>
+                {
+                    this.IsDownloading = false;
+                    Status = TaskStatus.done;
+                });
+            };
+            FfmpegTask.OnError += (s, err) => {
+                this.Dispatcher.Invoke(() =>
+                {
+                    FailureReason += $"{err.Message}.{Environment.NewLine}";
+                });
+            };
+            FfmpegTask.OnRunning += (s, rr) => { MI.Verbose("ffmpeg is running"); };
+            MI.Verbose("Starting ffmpeg..");
+
+
+            int exitCode =await FfmpegTask.Run(ffmpegArgs);
+            MI.Verbose(null);
+
+
+
+
             //TitleSettings ts = new TitleSettings(post, true, "miracles title", serialTtitle_: "robotic title");
             //ts.sourceFallbacks = new TitleSource[10];
             //ts.sourceFallbacks[0] = TitleSource.ogTitle;
             //ts.isTaskResolved = true;
             // FBHd.Verbose(new TitleSettings().getResult());
-            if (downloaded == 255)
+            if (exitCode == 255)
             {
                 //todo distinguish between normal sucess, and an aborted task
                 this.IsAborted = true;
 
             }
-            this.IsDownloading = false;
-            Status = TaskStatus.done;
+           
         }
 
 
@@ -394,8 +437,22 @@ namespace fbhd
 
                 }
                 else
-                    post = fbhd.Post.fromHTMLContent(await Fucs.run_py_fetcher(uri),
+                {
+                    string tempHtmlFileName = MI.TEMP_HTML_FILES + "\\" + (Url.GetHashCode()) + ".html";
+                    WebClient.GetTextResult PostResult = await new WebClient.cURL().GetTextAdvanced(Url,
+                        Headers.FB_Fake_Browser_For_HD_Videos,
+                       tempHtmlFileName, true
+                        );
+                    if (!PostResult.Success)
+                    {
+                        FailureReason = $"curl exited with code: {PostResult.ClientExitCode}";
+                        Status = TaskStatus.failed;
+                        return null;
+                    }
+                    post = fbhd.Post.fromHTMLContent(PostResult.Text,
                         StandardPostProperties.stdTitles, StandardPostProperties.stdImages);
+
+                }
                 //Post post = Post.fromHTMLContent(System.IO.File.ReadAllText("C:\\TOOLS\\fbhd-gui\\html\\dummy.html"));
 
             }
@@ -418,6 +475,7 @@ namespace fbhd
             //todo creat an onResolved event 
             var rs = TaskProperties.resolutionSettings;
             rs.Available = post.AvailableResolutions;
+            rs.isChoiceTargeted = true;
             TaskProperties.resolutionSettings = rs;
             var ts = TaskProperties.titleSettings;
 
@@ -489,47 +547,51 @@ namespace fbhd
 
         public async Task<bool> aborteFfmpegProcess()
         {
-            if (ffmpeg_process_ref == null)
+
+            bool res = false;
+            try
             {
-                MessageBox.Show("prcess null");
-                return false;
+                res = await FfmpegTask.Abort();
             }
-            //ffmpeg_process_ref.StandardInput.WriteLine("\x3");
-            //ffmpeg_process_ref.StandardInput.Flush();
-
-
-            if (Fucs.AttachConsole((uint)ffmpeg_process_ref.Id))
+            catch (Exception err)
             {
-                Fucs.SetConsoleCtrlHandler(null, true);
 
-                try
-                {
-                    if (!Fucs.GenerateConsoleCtrlEvent(Fucs.CTRL_C_EVENT, 0))
-                        return false;
-                    await Task.Run(() =>
-                    {
-                        ffmpeg_process_ref.WaitForExit();
-                    });
-
-
-                }
-                finally
-                {
-                    Fucs.SetConsoleCtrlHandler(null, false);
-                    Fucs.FreeConsole();
-
-                }
-                return true;
+                MessageBox.Show(err.Message);
             }
 
-            return true;
 
+            return res;
+
+        }
+
+        public async Task<bool> KillFfmpegProcess()
+        {
+            
+            bool res = false;
+            try
+            {
+                
+                FfmpegTask.Kill();
+                res= true;
+            }
+            catch (Exception err)
+            {
+
+                MessageBox.Show(err.Message);
+            }
+
+
+            return res;
+            await Task.Delay(1);
 
         }
 
         internal async Task<bool> OpenOutputLocation(bool shouldSelectFile)
         {
-            Process p = Fucs.constructProcess("explorer", "/select,\"" + OutputFile + "\"");
+            string args = "/select,\"" + OutputFile + "\"";
+            args = args+"";
+            MessageBox.Show(args);
+            Process p = Fucs.constructProcess("explorer", args );
             await Task.Run(new Action(() => {
                 p.Start();
                 p.WaitForExit();
@@ -562,14 +624,20 @@ namespace fbhd
 
         string makeHTMLFileName()
         {
-            return MI.HTML_CONTAINER_PATH + "\\" + this.url.GetHashCode().ToString() + ".html";
+            return MI.TEMP_HTML_FILES + "\\" + this.url.GetHashCode().ToString() + ".html";
         }
 
 
 
         
-
+        [Obsolete("Deprecated as the killing and aborting operations are now moved to the FFMPEG class, You can still access the process objec through The Process propetry of the FFMPEG instance",true)]
         public Process ffmpeg_process_ref
+        {
+            get;
+            set;
+        }
+
+        public FFMPEG FfmpegTask
         {
             get;
             set;

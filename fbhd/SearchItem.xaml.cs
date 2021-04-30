@@ -45,5 +45,12 @@ namespace fbhd
             if (string.IsNullOrWhiteSpace(((SearchElement)DataContext).Url)) return;
             mw.addNewFBHDTask(((SearchElement)DataContext).Url, TaskType.mp4Task);
         }
+
+        private async void copHrefButt_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(this.CoreSearchElement.Url);
+            MI.Verbose("Copied");
+
+        }
     }
 }

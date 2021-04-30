@@ -75,6 +75,16 @@ namespace fbhd
         }
 
 
+        /// <summary>
+        /// phisically check the corespondant radioButton for the passed resolution
+        /// </summary>
+        private void selectResolution(Resolution resolution)
+        {
+            RadioButton rb = (RadioButton)resolutionsitemsControl.ItemContainerGenerator.ContainerFromItem(resolution);
+           // rb.IsChecked = true;
+
+        }
+
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -82,8 +92,8 @@ namespace fbhd
 
             if(e.Property == selectedResolutionProperty)
             {
-                
-                 
+                selectResolution((Resolution) e.NewValue);
+
             }
 
             /*if(e.Property != ResolutionPicker.ResolutionsProperty)
@@ -103,11 +113,7 @@ namespace fbhd
 
         }
 
-        private void reso1_Checked(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
+       
 
         private void on_item_checked(object sender, RoutedEventArgs e)
         {
@@ -163,7 +169,7 @@ namespace fbhd
 
                 return;
                 //the folowing code is moved to the onPropertyChanged event so that it gets executed also when the binding controles the Reesolutions property
-                this.clearResoItems();
+                clearResoItems();
                 foreach (Resolution item in value)
                 {
 
@@ -195,6 +201,7 @@ namespace fbhd
         {
             get { return (Resolution)GetValue(selectedResolutionProperty); }
             set { SetValue(selectedResolutionProperty, value);
+
 
                 //foreach (RadioButton item in resosCountainer.Children)
                // {
@@ -256,10 +263,5 @@ namespace fbhd
 
 
 
-        internal void updateMyBindings()
-        {
-
-            GetBindingExpression(ResolutionPicker.ResolutionsProperty).UpdateTarget();
-        }
     }
 }

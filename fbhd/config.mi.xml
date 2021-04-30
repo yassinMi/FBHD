@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CLWPresetsDeclarations >
+ <CLWPresetDeclaration>
+<Path>C:\TOOLS\fbhd-gui\xml\fsdmUploads.xml</Path>
+<AutoLoad>true</AutoLoad>
+ </CLWPresetDeclaration>
+ <CLWPresetDeclaration>
+<Path>C:\TOOLS\fbhd-gui\xml\fsdmNewsX.xml</Path>
+<AutoLoad>true</AutoLoad>
+ </CLWPresetDeclaration>
+</CLWPresetsDeclarations >
+
+  <RecentGlobalDirectories />
+  <DefaultOverrideBehaviour>Override</DefaultOverrideBehaviour>
+  <DownloadRawStreams>false</DownloadRawStreams>
+  <AutoStartServer>false</AutoStartServer>
+  <UseChunckedDownloading>false</UseChunckedDownloading>
+  <DefaultDownloadClient>curl</DefaultDownloadClient>
+</Config>

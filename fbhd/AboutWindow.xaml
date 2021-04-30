@@ -17,6 +17,7 @@
             <RowDefinition Height="55"/>
             <RowDefinition Height="43"/>
         </Grid.RowDefinitions>
+
         <Grid x:Name="DragableHead" Margin="0" Background="Black" Grid.ColumnSpan="2" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" DragEnter="DragableHead_DragEnter" DragOver="DragableHead_DragOver">
             <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="About" Foreground="#FF929292" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
 
@@ -35,7 +36,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock x:Name="versionLabel" TextWrapping="Wrap" Text="Version" Foreground="#FFB6B6B6" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBlock x:Name="version" Margin="0" TextWrapping="Wrap" Text="0.1 beta04-04-2021 " Foreground="#FFE2E2E2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBlock x:Name="version" Margin="0" TextWrapping="Wrap" Text="0.2.0-beta (28-04-2021)" Foreground="#FFE2E2E2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <TextBlock x:Name="developerLabel" Margin="0" TextWrapping="Wrap" Text="Developer:" Foreground="#FFB6B6B6" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <TextBlock x:Name="developer" Margin="0" TextWrapping="Wrap" Text="Yass.Mi" Foreground="#FFE2E2E2" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"/>
             <TextBlock x:Name="email" Margin="47,3,0,2" TextWrapping="Wrap" Text="dir16cat17@gmail.com" Foreground="#FF0097FF" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
@@ -44,11 +45,11 @@
         </Grid>
         <TextBlock x:Name="reportBugsLabel" Margin="21,6,0,0" TextWrapping="Wrap" Text="Report Issue or contribute at:" HorizontalAlignment="Left" Width="172" Foreground="#FFB6B6B6" Grid.Row="2" Height="19" VerticalAlignment="Top"/>
         <TextBlock x:Name="githubLink" Margin="21,0,62,10" Grid.Row="2" TextWrapping="Wrap" Text="https://github.com/UndefinedYass/fbhd" Grid.ColumnSpan="2" Foreground="#FF0097FF" Cursor="Hand" VerticalAlignment="Bottom" Height="15" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
-			<i:Interaction.Triggers>
-				<i:EventTrigger EventName="MouseLeftButtonDown">
-					<ei:LaunchUriOrFileAction Path="https://github.com/UndefinedYass/fbhd"/>
-				</i:EventTrigger>
-			</i:Interaction.Triggers>
+    		<i:Interaction.Triggers>
+    			<i:EventTrigger EventName="MouseLeftButtonDown">
+    				<ei:LaunchUriOrFileAction Path="https://github.com/UndefinedYass/fbhd"/>
+    			</i:EventTrigger>
+    		</i:Interaction.Triggers>
         </TextBlock>
         <Button x:Name="OkButton" Content="OK" HorizontalAlignment="Right" Margin="0,6,15,6" Grid.Row="3" Style="{DynamicResource SimpleButton}" Background="#FFD6D6D6" BorderBrush="#FFD6D6D6" Width="71" Template="{DynamicResource FlatButt}" Click="OkButton_Click" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
 

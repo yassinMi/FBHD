@@ -76,8 +76,9 @@ namespace fbhd
         }
 
        
-        private void StartStopButt_Click(object sender, RoutedEventArgs e)
+        private async void  StartStopButt_Click(object sender, RoutedEventArgs e)
         {
+            
             if (CoreCustomListWatcher.IsWatching)
             {
                 CoreCustomListWatcher.StopWatching();
@@ -86,6 +87,8 @@ namespace fbhd
             {
                 CoreCustomListWatcher.StartWatching();
             }
+            await Task.Run(()=> { });
+
         }
 
         static MainWindow mw = (MainWindow)Application.Current.MainWindow;

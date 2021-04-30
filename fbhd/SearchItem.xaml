@@ -32,7 +32,7 @@
                     <local:ButtonMi x:Name="download_butt" HorizontalAlignment="Stretch" iconSource="media/dload-thin-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667" Click="download_butt_Click"/>
                 </Grid>
                 <Grid x:Name="copyHref" Width="16" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Top" Grid.Column="1">
-                    <local:ButtonMi x:Name="copHrefButt" HorizontalAlignment="Stretch" iconSource="media/copy-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667"/>
+                    <local:ButtonMi x:Name="copHrefButt" HorizontalAlignment="Stretch" iconSource="media/copy-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667" Click="copHrefButt_Click"/>
                 </Grid>
                 <Grid x:Name="more" Width="16" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" Grid.Column="2" Visibility="Hidden">
                     <local:ButtonMi x:Name="download_butt2" HorizontalAlignment="Stretch" iconSource="media/x-16-white.png" captionVisibility="Visible" textcaption="" Width="16" VerticalAlignment="Stretch" captionMargin="4,0,0,0" FontSize="10.667"/>

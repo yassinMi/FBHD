@@ -22,6 +22,33 @@ namespace fbhd
         public SettingsWindow()
         {
             InitializeComponent();
+            DataContext = (Config)mw.mainSession.MainConfig;
+            ConfigObj = (Config)mw.mainSession.MainConfig;
+        }
+
+        static MainWindow mw = (MainWindow)App.Current.MainWindow;
+
+
+
+
+        public Config ConfigObj
+        {
+            get { return (Config)GetValue(ConfigObjProperty); }
+            set { SetValue(ConfigObjProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ConfigObj.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ConfigObjProperty =
+            DependencyProperty.Register("ConfigObj", typeof(Config), typeof(SettingsWindow), new PropertyMetadata(null));
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+
+        }
+
+        private void SaveConfig_Click(object sender, RoutedEventArgs e)
+        {
+            ConfigObj.Save();
         }
     }
 }

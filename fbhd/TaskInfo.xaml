@@ -161,7 +161,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="lbl_type" Margin="0,3.5" TextWrapping="Wrap" Text="Type:" VerticalAlignment="Center" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" HorizontalAlignment="Left"/>
-                    <local:TypeComboBox x:Name="typePickerCombo" Background="Black" BorderBrush="#FF2F2F37" Style="{DynamicResource ComboBoxFlatStyle_miVersion}" ToolTip="Overriding behaviour" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="58"  TextOptions.TextFormattingMode="Display" Foreground="#FFDAD7D7" SelectionChanged="typePickerCombo_SelectionChanged" SelectedIndex="{Binding SelectedTask.Type, Converter={StaticResource TypeToIntConverter}, FallbackValue=0, Mode=OneWay}" >
+                    <local:TypeComboBox x:Name="typePickerCombo" Background="Black" BorderBrush="#FF2F2F37" Style="{DynamicResource ComboBoxFlatStyle_miVersion}" ToolTip="Overriding behaviour" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="58"  TextOptions.TextFormattingMode="Display" Foreground="#FFDAD7D7" SelectedIndex="{Binding SelectedTask.Type, Converter={StaticResource TypeToIntConverter}, FallbackValue=0, Mode=TwoWay}" >
                         <ComboBoxItem Content="MP3" TextOptions.TextFormattingMode="Display" />
                         <ComboBoxItem Content="MP4" Foreground="#FFC5C5C5" Style="{x:Null}" TextOptions.TextFormattingMode="Display" />
                         <ComboBoxItem Content="MKV" TextOptions.TextFormattingMode="Display"/>
@@ -200,7 +200,7 @@
                     <TextBlock x:Name="lbl_Status1" Margin="4,11,0,11" TextWrapping="Wrap" Text="Resolving post" Foreground="#FFBDBDBD" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Height="18" Grid.Column="1"/>
                     <local:ButtonMi HorizontalAlignment="Right" Height="18" Margin="0,11,10,11" Width="59" textcaption="Cancel" iconSource="media/x-16-white.png" VerticalAlignment="Center" Grid.Column="1" captionVisibility="Visible"/>
                 </Grid>
-                <Grid x:Name="graphics_down" Margin="0,0,0,2" Visibility="{Binding coreTaskObject.Status, ConverterParameter=downloading, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl, FallbackValue=collapsed}" Height="60" VerticalAlignment="Top" d:IsHidden="True">
+                <Grid x:Name="graphics_down" Margin="0,0,0,2" Visibility="{Binding coreTaskObject.Status, ConverterParameter=downloading, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl, FallbackValue=collapsed}" Height="60" VerticalAlignment="Top" d:IsHidden="True" d:IsLocked="True">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="9.25"/>
@@ -225,11 +225,11 @@
                             </ControlTemplate>
                         </local:ProgressInfoUI.Template>
                     </local:ProgressInfoUI>
-                    <local:ButtonMi x:Name="abort_butt" Margin="0,1,15,0" Width="Auto" HorizontalAlignment="Right" textcaption="Abort" iconSource="media/x-16-white.png" captionMargin="3,0,0,0" Click="abort_butt_Click" Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
-                    <local:ButtonMi x:Name="pauseButt" Margin="0,1,70,0" Width="Auto" HorizontalAlignment="Right" textcaption="Pause" iconSource="media/pause16white-perfect.png" Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
+                    <local:ButtonMi x:Name="kill_butt" Margin="0,1,15,0" Width="Auto" HorizontalAlignment="Right" textcaption="Kill" iconSource="media/x-16-white.png" captionMargin="3,0,0,0" Click="kill_butt_Click"  Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
+                    <local:ButtonMi x:Name="pauseButt" Margin="0,1,70,0" Width="Auto" HorizontalAlignment="Right" textcaption="Abort" iconSource="media/pause16white-perfect.png" Click="abort_butt_Click" Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
                     <TextBlock x:Name="elapsed_time" Margin="81,1,0,0" TextWrapping="Wrap" Foreground="#FFBDBDBD" FontSize="10.667" VerticalAlignment="Top" TextOptions.TextFormattingMode="Display" PreviewMouseLeftButtonDown="progress_info_PreviewMouseLeftButtonDown" Tag="0" Text="(Elapsed time: 0:56)" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="2" Visibility="Hidden"/>
                 </Grid>
-                <Grid x:Name="graphics_done" Margin="0" Visibility="{Binding coreTaskObject.Status, ConverterParameter=done, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl, FallbackValue=visible}" VerticalAlignment="Top">
+                <Grid x:Name="graphics_done" Margin="0" Visibility="{Binding coreTaskObject.Status, ConverterParameter=done, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl, FallbackValue=visible}" VerticalAlignment="Top" d:IsHidden="True">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition Height="32"/>

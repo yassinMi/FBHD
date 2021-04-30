@@ -13,11 +13,7 @@
 
 
 
-            <local:Session x:Key="fakedatacontext" />
-
-
-
-
+           
 
             <ControlTemplate x:Key="RadioResoPicker" TargetType="{x:Type RadioButton}">
                 <Grid x:Name="grid">
@@ -836,6 +832,299 @@
                     <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Style="{DynamicResource ScrollBarStyle2}"/>
                 </Grid>
             </ControlTemplate>
+
+
+
+
+
+
+
+
+
+
+            <Style x:Key="SimplerStyleMi" TargetType="{x:Type Button}" BasedOn="{x:Null}">
+                <Setter Property="FocusVisualStyle" Value="{DynamicResource SimpleButtonFocusVisual}"/>
+                <Setter Property="Background" Value="{DynamicResource NormalBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+
+                            <!-- We use Grid as a root because it is easy to add more elements to customize the button -->
+                            <Grid x:Name="Grid" Opacity="0.85">
+                                <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}"/>
+
+                                <!-- Content Presenter is where the text content etc is placed by the control -->
+                                <!-- The bindings are useful so that the control can be parameterized without editing the template -->
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True"/>
+                            </Grid>
+
+                            <!--Each state sets a brush on the Border in the template -->
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsKeyboardFocused" Value="true">
+                                    <Setter Property="BorderBrush" TargetName="Border" Value="#FF383838"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="BorderBrush" TargetName="Border" Value="#FF646464"/>
+
+                                    <Setter Property="Opacity" TargetName="Grid" Value="1" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="true">
+                                    <Setter Property="BorderBrush" TargetName="Border" Value="#FF2C2C2C"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="true"/>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Opacity" Value="0.3" TargetName="Grid"/>
+                                    <Setter Property="Foreground" Value="#FF434345"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <DrawingBrush x:Key="MiBrush" Viewbox="0,0,8,8" Viewport="0,0,4,4" ViewportUnits="Absolute" ViewboxUnits="Absolute" TileMode="Tile" Stretch="Uniform">
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <GeometryDrawing  Brush="#FF3E3E40" Geometry="M0,0L0,2 2,2 2,0z"/>
+
+                        <GeometryDrawing Brush="#FF3E3E40" Geometry="M4,4L4,6 6,6 6,4z"/>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+                <DrawingBrush.RelativeTransform>
+                    <TransformGroup>
+                        <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                        <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                        <RotateTransform CenterY="0.5" CenterX="0.5"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </DrawingBrush.RelativeTransform>
+            </DrawingBrush>
+
+
+
+
+
+
+
+
+
+            <LinearGradientBrush x:Key="ToolBarHorizontalBackground" EndPoint="0,1" StartPoint="0,0">
+                <GradientStop Color="#FFFFFF" Offset="0"/>
+                <GradientStop Color="#FFFBFF" Offset="0.5"/>
+                <GradientStop Color="#F7F7F7" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ToolBarToggleButtonVerticalBackground" EndPoint="1,0" StartPoint="0,0">
+                <GradientStop Color="#ECECEC" Offset="0"/>
+                <GradientStop Color="#DDDDDD" Offset="0.5"/>
+                <GradientStop Color="#A0A0A0" Offset="1"/>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="ToolBarButtonHover" Color="#C2E0FF"/>
+            <SolidColorBrush x:Key="ToolBarGripper" Color="#C6C3C6"/>
+            <Style x:Key="ToolBarVerticalOverflowButtonStyle" TargetType="{x:Type ToggleButton}">
+                <Setter Property="Background" Value="{StaticResource ToolBarToggleButtonVerticalBackground}"/>
+                <Setter Property="MinHeight" Value="0"/>
+                <Setter Property="MinWidth" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <Border x:Name="Bd" SnapsToDevicePixels="true" CornerRadius="0,0,3,3" Background="{TemplateBinding Background}">
+                                <Canvas Width="7" VerticalAlignment="Bottom" SnapsToDevicePixels="true" Margin="2,7,2,2" Height="6" HorizontalAlignment="Right">
+                                    <Path Data="M 1.5 1 L 1.5 6" Stroke="White"/>
+                                    <Path Data="M 0.5 0 L 0.5 5" Stroke="{TemplateBinding Foreground}"/>
+                                    <Path Data="M 3.5 0.5 L 7 3.5 L 4 6.5 Z" Fill="White"/>
+                                    <Path Data="M 3 -0.5 L 6 2.5 L 3 5.5 Z" Fill="{TemplateBinding Foreground}"/>
+                                </Canvas>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Background" TargetName="Bd" Value="{StaticResource ToolBarButtonHover}"/>
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="true">
+                                    <Setter Property="Background" TargetName="Bd" Value="{StaticResource ToolBarButtonHover}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Foreground" Value="{StaticResource ToolBarGripper}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Source={x:Static SystemParameters.HighContrast}}" Value="true">
+                        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <LinearGradientBrush x:Key="ToolBarVerticalBackground" EndPoint="1,0" StartPoint="0,0">
+                <GradientStop Color="#FFFFFF" Offset="0"/>
+                <GradientStop Color="#FFFBFF" Offset="0.5"/>
+                <GradientStop Color="#F7F7F7" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="ToolBarToggleButtonHorizontalBackground" EndPoint="0,1" StartPoint="0,0">
+                <GradientStop Color="#ECECEC" Offset="0"/>
+                <GradientStop Color="#DDDDDD" Offset="0.5"/>
+                <GradientStop Color="#A0A0A0" Offset="1"/>
+            </LinearGradientBrush>
+            <Style x:Key="ToolBarHorizontalOverflowButtonStyle" TargetType="{x:Type ToggleButton}">
+                <Setter Property="Background" Value="{StaticResource ToolBarToggleButtonHorizontalBackground}"/>
+                <Setter Property="MinHeight" Value="0"/>
+                <Setter Property="MinWidth" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ToggleButton}">
+                            <Border x:Name="Bd" SnapsToDevicePixels="true" CornerRadius="0,3,3,0" Background="{TemplateBinding Background}" Width="16">
+                                <Canvas Width="6" VerticalAlignment="Bottom" SnapsToDevicePixels="true" Margin="7,2,2,2" Height="7" HorizontalAlignment="Right">
+                                    <Path Data="M 0 0.5 L 5 0.5" Stroke="{TemplateBinding Foreground}"/>
+                                    <Path Data="M -0.5 3 L 5.5 3 L 2.5 6 Z" Fill="{TemplateBinding Foreground}"/>
+                                </Canvas>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Background" TargetName="Bd" Value="#FF404040"/>
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="true">
+                                    <Setter Property="Background" TargetName="Bd" Value="#C2E0FF"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Foreground" Value="#FF686868"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Source={x:Static SystemParameters.HighContrast}}" Value="true">
+                        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <SolidColorBrush x:Key="ToolBarMenuBorder" Color="#808080"/>
+            <SolidColorBrush x:Key="ToolBarSubMenuBackground" Color="#FDFDFD"/>
+            <Style x:Key="ToolBarThumbStyle" TargetType="{x:Type Thumb}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Thumb}">
+                            <Border SnapsToDevicePixels="True" Padding="{TemplateBinding Padding}" Background="Transparent">
+                                <Rectangle>
+                                    <Rectangle.Fill>
+                                        <DrawingBrush ViewboxUnits="Absolute" ViewportUnits="Absolute" Viewport="0,0,4,4" Viewbox="0,0,4,4" TileMode="Tile">
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <GeometryDrawing Brush="White" Geometry="M 1 1 L 1 3 L 3 3 L 3 1 z"/>
+                                                    <GeometryDrawing Brush="{StaticResource ToolBarGripper}" Geometry="M 0 0 L 0 2 L 2 2 L 2 0 z"/>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Cursor" Value="SizeAll"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="ToolBarMainPanelBorderStyle" TargetType="{x:Type Border}">
+                <Setter Property="Margin" Value="0,0,11,0"/>
+                <Setter Property="CornerRadius" Value="3,3,3,3"/>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Source={x:Static SystemParameters.HighContrast}}" Value="true">
+                        <Setter Property="CornerRadius" Value="0,0,0,0"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="MiToolBar" TargetType="{x:Type ToolBar}">
+                <Setter Property="Background" Value="{StaticResource ToolBarHorizontalBackground}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ToolBar}">
+                            <Grid x:Name="Grid" Margin="3,1,1,1" SnapsToDevicePixels="true">
+                                <Grid x:Name="OverflowGrid" HorizontalAlignment="Right">
+                                    <ToggleButton x:Name="OverflowButton" ClickMode="Press" FocusVisualStyle="{x:Null}" IsChecked="{Binding IsOverflowOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" IsEnabled="{TemplateBinding HasOverflowItems}" Style="{StaticResource ToolBarHorizontalOverflowButtonStyle}" Foreground="#FF929292" Background="#FF1C1C1C" BorderBrush="{x:Null}"/>
+                                    <Popup x:Name="OverflowPopup" AllowsTransparency="true" Focusable="false" IsOpen="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom" StaysOpen="false">
+                                        <Themes:SystemDropShadowChrome x:Name="Shdw" Color="Transparent">
+                                            <Border x:Name="ToolBarSubMenuBorder" BorderBrush="#FF333333" BorderThickness="1" Background="Black" RenderOptions.ClearTypeHint="Enabled">
+                                                <ToolBarOverflowPanel x:Name="PART_ToolBarOverflowPanel" KeyboardNavigation.DirectionalNavigation="Cycle" FocusVisualStyle="{x:Null}" Focusable="true" Margin="2" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle" WrapWidth="200"/>
+                                            </Border>
+                                        </Themes:SystemDropShadowChrome>
+                                    </Popup>
+                                </Grid>
+                                <Border x:Name="MainPanelBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" Style="{StaticResource ToolBarMainPanelBorderStyle}">
+                                    <DockPanel KeyboardNavigation.TabIndex="1" KeyboardNavigation.TabNavigation="Local">
+                                        <Thumb x:Name="ToolBarThumb" Margin="-3,-1,0,0" Padding="6,5,1,6" Style="{DynamicResource ToolBarThumbStyle_Mi}" Width="10" Background="#FFDC1717"/>
+                                        <ContentPresenter x:Name="ToolBarHeader" ContentSource="Header" HorizontalAlignment="Center" Margin="4,0,4,0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+                                        <ToolBarPanel x:Name="PART_ToolBarPanel" IsItemsHost="true" Margin="0,1,2,2" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                    </DockPanel>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsOverflowOpen" Value="true">
+                                    <Setter Property="IsEnabled" TargetName="ToolBarThumb" Value="false"/>
+                                </Trigger>
+                                <Trigger Property="Header" Value="{x:Null}">
+                                    <Setter Property="Visibility" TargetName="ToolBarHeader" Value="Collapsed"/>
+                                </Trigger>
+                                <Trigger Property="ToolBarTray.IsLocked" Value="true">
+                                    <Setter Property="Visibility" TargetName="ToolBarThumb" Value="Collapsed"/>
+                                </Trigger>
+                                <Trigger Property="HasDropShadow" SourceName="OverflowPopup" Value="true">
+                                    <Setter Property="Margin" TargetName="Shdw" Value="0,0,5,5"/>
+                                    <Setter Property="SnapsToDevicePixels" TargetName="Shdw" Value="true"/>
+                                    <Setter Property="Color" TargetName="Shdw" Value="#71000000"/>
+                                </Trigger>
+                                <Trigger Property="Orientation" Value="Vertical">
+                                    <Setter Property="Margin" TargetName="Grid" Value="1,3,1,1"/>
+                                    <Setter Property="Style" TargetName="OverflowButton" Value="{StaticResource ToolBarVerticalOverflowButtonStyle}"/>
+                                    <Setter Property="Height" TargetName="ToolBarThumb" Value="10"/>
+                                    <Setter Property="Width" TargetName="ToolBarThumb" Value="Auto"/>
+                                    <Setter Property="Margin" TargetName="ToolBarThumb" Value="-1,-3,0,0"/>
+                                    <Setter Property="Padding" TargetName="ToolBarThumb" Value="5,6,6,1"/>
+                                    <Setter Property="Margin" TargetName="ToolBarHeader" Value="0,0,0,4"/>
+                                    <Setter Property="Margin" TargetName="PART_ToolBarPanel" Value="1,0,2,2"/>
+                                    <Setter Property="DockPanel.Dock" TargetName="ToolBarThumb" Value="Top"/>
+                                    <Setter Property="DockPanel.Dock" TargetName="ToolBarHeader" Value="Top"/>
+                                    <Setter Property="HorizontalAlignment" TargetName="OverflowGrid" Value="Stretch"/>
+                                    <Setter Property="VerticalAlignment" TargetName="OverflowGrid" Value="Bottom"/>
+                                    <Setter Property="Placement" TargetName="OverflowPopup" Value="Right"/>
+                                    <Setter Property="Margin" TargetName="MainPanelBorder" Value="0,0,0,11"/>
+                                    <Setter Property="Background" Value="{StaticResource ToolBarVerticalBackground}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Source={x:Static SystemParameters.HighContrast}}" Value="true">
+                        <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ToolBarThumbStyle_Mi" TargetType="{x:Type Thumb}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Thumb}">
+                            <Border SnapsToDevicePixels="True" Padding="{TemplateBinding Padding}" Background="Transparent" Margin="3,1,-2,0">
+                                <Rectangle Margin="-4,0,0,0" Stroke="{x:Null}" HorizontalAlignment="Left" Width="5" Fill="{DynamicResource MiBrush}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Cursor" Value="SizeAll"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+
+
+
         </ResourceDictionary>
 
     </Application.Resources>

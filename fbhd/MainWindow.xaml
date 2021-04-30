@@ -6,9 +6,10 @@
         xmlns:local="clr-namespace:fbhd"
         xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing" xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" xmlns:ee="http://schemas.microsoft.com/expression/2010/effects" xmlns:ec="http://schemas.microsoft.com/expression/2010/controls" xmlns:pi="http://schemas.microsoft.com/prototyping/2010/interactivity" x:Name="window" x:Class="fbhd.MainWindow"
         mc:Ignorable="d"
-        Title="FBDL-GUI" Height="453.151" Width="605.592" Background="Black" Loaded="Window_Loaded" SnapsToDevicePixels="True" DataContext="{StaticResource fakedatacontext}" TextOptions.TextFormattingMode="Display" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" UseLayoutRounding="True" WindowStartupLocation="CenterScreen" Icon="media/lines-rubby.png" PreviewMouseDown="window_PreviewMouseDown" Topmost="False">
+        Title="FBDL-GUI" Height="453.151" Width="605.592" Background="Black" Loaded="Window_Loaded" SnapsToDevicePixels="True"  TextOptions.TextFormattingMode="Display" WindowStyle="None" AllowsTransparency="True" ResizeMode="NoResize" UseLayoutRounding="True" WindowStartupLocation="CenterScreen" Icon="media/lines-rubby.png" PreviewMouseDown="window_PreviewMouseDown" Topmost="False">
 
     <Window.Resources>
+
         <local:TaskStatusToTaskBarProgressState x:Key="TaskStatusToTaskBarProgressState"/>
         <local:BooleanToVisibilityInverted x:Key="BooleanToVisibilityInverted"/>
         <local:TaskObjToPropertiesVisibility x:Key="TaskObjToPropertiesVisibility"/>
@@ -28,6 +29,26 @@
         <local:SelectedTasksToUIVisibilityConverter x:Key="SelectedTasksToUIVisibilityConverter"/>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
+        <Image x:Key="NewTaskIcon" Source="new-task-lite-16-white.png" Width="16" Height="16"/>
+        <Image x:Key="ParseAllIcon" Source="media/parse-all-16-white-blue-yellow.png" Width="16" Height="16"/>
+        <Image x:Key="DloadAllIcon" Source="media/dload-all-thin-16-white-yellow.png" Width="16" Height="16"/>
+        <Image x:Key="DeleteAllIcon" Source="media/delete-all-16-white.png" Width="16" Height="16"/>
+        <Image x:Key="ParseIcon" Source="media/parse-16-white-blue.png" Width="16" Height="16"/>
+        <Image x:Key="DloadIcon" Source="media/dload-thin-16-white.png" Width="16" Height="16"/>
+        <Image x:Key="DeleteTaskIcon" Source="media/delete-16-white.png" Width="16" Height="16"/>
+        <Image x:Key="AddBellIcon" Source="media/new-bell-filled-16-white-green.png" Width="16" Height="16"/>
+        <Image x:Key="StartBellIcon" Source="media/start-bell-filled-16-white-cyan.png" Width="16" Height="16"/>
+        <Image x:Key="StopBellIcon" Source="media/stop-bell-filled-16-white-lightred.png" Width="16" Height="16"/>
+        <Image x:Key="GlobalSettingsIcon" Source="media/sett-2.png" Width="16" Height="16"/>
+        <Image x:Key="CopyIcon" Source="media/copy-16-white.png" Width="16" Height="16"/>
+        <Image x:Key="CopyLinkIcon" Source="new-task-lite-16-white.png" Width="16" Height="16"/>
+        <Image x:Key="CopyVideoIcon" Source="media/copy-16-white-V.png" Width="16" Height="16"/>
+        <Image x:Key="CopyAudioIcon" Source="media/copy-16-white-A-shifted.png" Width="16" Height="16"/>
+        <Image x:Key="CopyThumbIcon" Source="media/copy-16-white-T.png" Width="16" Height="16"/>
+        <Image x:Key="FolderIcon" Source="media/folder-16-white.png" Width="16" Height="16"/>
+        <Image x:Key="SearchIcon13" Source="media/search-13-white.png" Width="16" Height="16"/>
+
+        <Image x:Key="ServerIcon" Source="new-task-lite-16-white.png" Width="16" Height="16"/>
         <Style x:Key="GroupBoxStyle1" TargetType="{x:Type GroupBox}">
             <Setter Property="BorderBrush" Value="#D5DFE5"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -2242,6 +2263,165 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <ItemsPanelTemplate x:Key="TaksListBoxPanelTemplate">
+
+
+            <StackPanel x:Name="StackFBHDTasks" IsItemsHost="True" Orientation="Vertical" Height="Auto" Margin="0" ClipToBounds="True"/>
+        </ItemsPanelTemplate>
+        <DataTemplate  x:Key="TasksLisBoxItemTemplete" DataType="{x:Type local:FBHDTask}" >
+            <Grid Background="#00303030" >
+                <local:TaskComponent url="{Binding Url}" DataContext="{Binding}" taskStatus="{Binding Status}" isResolved="{Binding IsResolved}"   Height="Auto" isSelected="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinHeight="24"/>
+
+            </Grid>
+        </DataTemplate>
+        <SolidColorBrush x:Key="ListBorder" Color="#828790"/>
+        <Style x:Key="ListBoxStyle1" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ListBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                            <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}" Template="{DynamicResource scrolfalt}">
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </ScrollViewer>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsGrouping" Value="true"/>
+                                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ListBoxItemStyle1" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="Padding" Value="2,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <Border x:Name="Bd" BorderThickness="1" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" Background="#00000000" BorderBrush="#00000000">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#FF8F8E8E"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="true"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Background" TargetName="Bd" Value="#FF323232"/>
+                            </MultiTrigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ListBoxResolutionPicker" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ListBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" d:LayoutOverrides="Width"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsGrouping" Value="true"/>
+                                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ItemsPanelTemplate x:Key="LBResolutionPickerPanelTemplate">
+            <WrapPanel IsItemsHost="True" MaxWidth="289"/>
+        </ItemsPanelTemplate>
+        <DataTemplate DataType="local:Resolution" x:Key="LBResolutionPickerItemTemplate">
+            <Grid Margin="4,2" Background="#00000000">
+                <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="{Binding}" Width="Auto" Margin="4,2"/>
+            </Grid>
+        </DataTemplate>
+        <Style x:Key="LBResolutionPickerItemContainerTemplate" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="Padding" Value="2,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <ControlTemplate.Resources>
+                            <Storyboard x:Key="Highlight">
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="Bd">
+                                    <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#FF05E4B1"/>
+                                </ColorAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Bd">
+                                    <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                            <Storyboard x:Key="UnHighlight">
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="Bd">
+                                    <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#7F959595"/>
+                                </ColorAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Bd">
+                                    <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.85"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </ControlTemplate.Resources>
+                        <Border x:Name="Bd" BorderThickness="1" Background="#0005E4B1" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" BorderBrush="#7F959595" Margin="6,4" Opacity="0.85">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="4,2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard x:Name="UnHighlight_BeginStoryboard" Storyboard="{StaticResource UnHighlight}"/>
+                                </Trigger.ExitActions>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard x:Name="Highlight_BeginStoryboard" Storyboard="{StaticResource Highlight}"/>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
     </Window.Resources>
     <Window.TaskbarItemInfo>
         <TaskbarItemInfo ProgressValue="{Binding SelectedTask.downloadingPercent, FallbackValue=0}" ProgressState="{Binding SelectedTask.Status, Converter={StaticResource TaskStatusToTaskBarProgressState}}"/>
@@ -2278,26 +2458,26 @@
 
                     <MenuItem Header="Task" Style="{DynamicResource miMenuItemStyle}" ItemsPanel="{DynamicResource ItemsPanelTemplateMi}" ItemContainerStyle="{DynamicResource MenuItemItemsContanerMi}" UsesItemContainerTemplate="True" >
 
-                        <MenuItem Header="New" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="addButton_Click"/>
-                        <MenuItem Header="Parse all" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
-                        <MenuItem Header="Download all" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
-                        <MenuItem Header="Delete all" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
-                        <MenuItem Header="Export Input list" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                        <MenuItem Header="New" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="addButton_Click" Icon="{StaticResource NewTaskIcon}"/>
+                        <MenuItem Header="Parse all" Style="{DynamicResource miMenuItemChildTtypeStyle}" Icon="{DynamicResource ParseAllIcon}"/>
+                        <MenuItem Header="Download all" Icon="{DynamicResource DloadAllIcon}"  Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                        <MenuItem Header="Delete all" Icon="{DynamicResource DeleteAllIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                        <MenuItem Header="Export Input"   Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
 
-                        <MenuItem Header="Copy to Clip" Style="{StaticResource miMenuItemChildTtypeStyle}" UsesItemContainerTemplate="True" >
+                        <MenuItem Header="Copy to Clip" Icon="{DynamicResource CopyIcon}" Style="{StaticResource miMenuItemChildTtypeStyle}" UsesItemContainerTemplate="True" >
 
-                            <MenuItem Header="ffmpeg command" Style="{DynamicResource miMenuItemChildTtypeStyle}" />
+                            <MenuItem Header="ffmpeg command" Icon="{DynamicResource CopyIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}" />
 
-                            <MenuItem Header="post url" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
-                            <MenuItem Header="thumb url" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                            <MenuItem Header="post url" Icon="{DynamicResource CopyLinkIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                            <MenuItem Header="thumb url" Icon="{DynamicResource CopyThumbIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
 
-                            <MenuItem Header="video url" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
-                            <MenuItem Header="audio url" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
-                            <MenuItem Header="output location" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                            <MenuItem Header="video url" Icon="{DynamicResource CopyVideoIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                            <MenuItem Header="audio url" Icon="{DynamicResource CopyAudioIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                            <MenuItem Header="output location" Icon="{DynamicResource FolderIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
                         </MenuItem>
                     </MenuItem>
                     <MenuItem Header="Options" Style="{DynamicResource miMenuItemStyle}">
-                        <MenuItem Header="Globale output directory" Style="{DynamicResource miMenuItemChildTtypeStyle}" UsesItemContainerTemplate="True">
+                        <MenuItem Header="Globale output directory" Icon="{DynamicResource DownloadAllIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}" UsesItemContainerTemplate="True">
                             <MenuItem Header="Select Folder" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
                             <Separator Foreground="#FF854545" Background="#FFA42C2C" Style="{DynamicResource miseparator}"/>
                             <MenuItem Header="C:\TOOLS\fbhd-gui"/>
@@ -2316,11 +2496,11 @@
 
                     </MenuItem>
                     <MenuItem Header="Presets" Style="{DynamicResource miMenuItemStyle}">
-                        <MenuItem x:Name="loadListWatcherPresetButt" Header="Load ListWatcher Preset" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="loadListWatcherPresetButt_Click"/>
+                        <MenuItem x:Name="loadListWatcherPresetButt" Icon="{DynamicResource AddBellIcon}" Header="Load ListWatcher Preset" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="loadListWatcherPresetButt_Click"/>
                     </MenuItem>
                     <MenuItem Header="Tools" Style="{DynamicResource miMenuItemStyle}">
-                        <MenuItem x:Name="Custom_List_Watcher_Wizard" Header="Custom List Watcher Wizard" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="fsdmnewswatchButt_Click" IsCheckable="True" Checked="fsdmnewswatchButt_Checked" Unchecked="fsdmnewswatchButt_Unchecked"/>
-                        <MenuItem x:Name="testwindowmuit" Header="__dev__show__window" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="testwindowmuit_Click"/>
+                        <MenuItem x:Name="Custom_List_Watcher_Wizard" Header="Custom List Watcher Wizard" Style="{DynamicResource miMenuItemChildTtypeStyle}" IsCheckable="True" Unchecked="fsdmnewswatchButt_Unchecked"/>
+                        <MenuItem x:Name="testwindowmuit" Header="__dev__show__window" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="testwindowmuit_Click" Visibility="Collapsed"/>
                     </MenuItem>
                     <MenuItem Header="Server" Style="{DynamicResource miMenuItemStyle}">
 
@@ -2338,15 +2518,130 @@
                         <MenuItem x:Name="devShowNotification" Header="ShowNotification" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="devShowNotification_Click"/>
                         <MenuItem x:Name="devRemoveLatestNewsItem" Header="RemoveLatestNewsItem" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="devRemoveLatestNewsItem_Click"/>
                         <MenuItem x:Name="devActivateXMLLW" Header="XMLLW toggle" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="devActivateXMLLW_Click"/>
-                        <MenuItem x:Name="devFakeCheck" Header="FakeCheck" Click="devFakeCheck_Click" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                        <MenuItem x:Name="uriTestsDev" Header="uriTestsDev" Click="uriTestsDev_Click" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
                         <MenuItem x:Name="menuItem" Header="toggle regex tester" IsCheckable="True" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
-                        <MenuItem x:Name="prettifyXmlDoc" Header="Prettify" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="prettifyXmlDoc_Click"/>
+                        <MenuItem x:Name="showPostDev" Header="show post" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="showPostDev_Click"/>
                         <MenuItem x:Name="factoryConfigButt" Header="factory config" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="factoryConfigButt_Click"/>
                     </MenuItem>
                 </Menu>
                 <Grid x:Name="toolbox_grd" Height="27" Margin="10,55,2,0" VerticalAlignment="Top">
+                    <ToolBarTray Background="#00000000" d:LayoutOverrides="VerticalAlignment, LeftMargin, RightMargin, LeftPosition, RightPosition" Height="29">
+                        <ToolBar x:Name="toolBar_Task" Height="29" HorizontalAlignment="Left" Margin="0" Background="Black" Foreground="#FFC9C9C9" Header="" IsManipulationEnabled="True" Style="{DynamicResource MiToolBar}">
+                            <Button x:Name="NewTaskToolButton" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" Click="addButton_Click">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="image4" Source="media/add-task-16-white-green.png" Height="16" Margin="0,0,0.5,0"/>
+                                    <TextBlock x:Name="textBlock5" Margin="0" TextWrapping="Wrap" Text="Add Order" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
+                                </Grid>
+                            </Button>
+                            <Button x:Name="StartToolButton"  HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding HasSelection}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="image9" Source="media/start-16-white-vs-like.png" Height="16" Margin="0,0,0.5,0"/>
+                                    <TextBlock x:Name="textBlock10" Margin="0" TextWrapping="Wrap" Text="Delete" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
+                                </Grid>
+                            </Button>
+                            <Button x:Name="ParseToolBtt" Click="ParseCommaneHandeler" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding HasSelection}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="image8" Source="media/parse-16-white-blue.png" Height="16" Margin="0,0,0.5,0" Width="16"/>
+                                    <TextBlock x:Name="textBlock9" Margin="0" TextWrapping="Wrap" Text="Delete" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
+                                </Grid>
+                            </Button>
+                            <Button x:Name="DloadToolButt" Click="Run_ffmpeg_Click" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="image2" Source="media/dload-thin-16-white.png" Height="16" Margin="0,0,0.5,0" Width="16"/>
+                                    <TextBlock x:Name="textBlock2" Margin="0" TextWrapping="Wrap" Text="Delete" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
+                                </Grid>
+                            </Button>
+                            <Button x:Name="DeleteAllToolBut" Click="ClearAllCommaneHandeler" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" d:LayoutOverrides="TopMargin, BottomMargin" IsEnabled="{Binding HasSelection}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image  x:Name="image5" Source="media/delete-16-white.png" Height="16" Margin="0,0,0.5,0"/>
+                                    <TextBlock x:Name="textBlock6" Margin="0" TextWrapping="Wrap" Text="Delete" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
+                                </Grid>
+                            </Button>
+                            <Grid x:Name="separator_Copy4" Margin="4,0" Width="3" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                <Grid x:Name="line5" Margin="0" Width="1" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF46464A"/>
+                            </Grid>
+                            <Button x:Name="CopyCommand" Click="copy_to_clip_button" Tag="command" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                                <Image  x:Name="image10" Source="media/copy-16-white-commandline.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            </Button>
+                            <Button x:Name="CopyVideo" Click="copy_to_clip_button" Tag="video" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                                <Image  x:Name="image3" Source="media/copy-16-white-V.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            </Button>
+                            <Button x:Name="CopyAudio" Click="copy_to_clip_button" Tag="audio" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                                <Image  x:Name="image11" Source="media/copy-16-white-A-shifted.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            </Button>
+                            <Button x:Name="CopyThumb" Click="copy_to_clip_button" Tag="thumb" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                                <Image  x:Name="image12" Source="media/copy-16-white-T.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            </Button>
+                        </ToolBar>
+                        <ToolBar x:Name="toolBar_General_Copy" Height="29" HorizontalAlignment="Left" Margin="0" Style="{DynamicResource MiToolBar}" Background="Black">
+                            <ComboBox x:Name="comboBox_Copy" Margin="2,0" Background="Black" BorderBrush="#FF2F2F37" Style="{DynamicResource mi_flat_combo}" Width="80" ToolTip="Overriding behaviour" SelectedIndex="0">
+                                <ComboBoxItem Content="Override" />
+                                <ComboBoxItem Content="Enumerate" Foreground="#FFC5C5C5" Style="{x:Null}" />
+                                <ComboBoxItem Content="Skip"/>
+                                <ComboBoxItem Content="Prompt"/>
+                            </ComboBox>
+                            <Button x:Name="NewItemDefinitionToolButton1" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="image17" Source="media/folder-16-white.png" Height="16" Margin="0,0,0.5,0"/>
+                                    <TextBlock x:Name="textBlock3" Margin="0" TextWrapping="Wrap" Text="New Item" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
+                                </Grid>
+                            </Button>
+                            <Button x:Name="OpenItemsManagerToolButton1" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="image18" Source="media/sett-2.png" Height="16" Margin="0,0,0.5,0"/>
+                                    <TextBlock x:Name="textBlock4" Margin="0" TextWrapping="Wrap" Text="Items Manager" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
+                                </Grid>
+                            </Button>
+                        </ToolBar>
+                        <ToolBar x:Name="toolBar_General_Copy1" Height="29" HorizontalAlignment="Left" Margin="0" Style="{DynamicResource MiToolBar}" Background="Black">
+                            <ToggleButton x:Name="toggleButton" Content="Server" Margin="4,0" Template="{DynamicResource ToggleButtonmi2050}" Foreground="#FFFF8811" Checked="toggleButton_Checked" Unchecked="toggleButton_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="#FF707070"/>
+                        </ToolBar>
+                        <ToolBar x:Name="toolBar_General" Height="29" HorizontalAlignment="Left" Margin="0" Style="{DynamicResource MiToolBar}" Background="Black">
+                            <Button x:Name="LoadClwToolButt" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding ExistsSelectedOrder, ElementName=window, Mode=OneWay}" Click="loadListWatcherPresetButt_Click">
+                                <Image  x:Name="image13" Source="media/new-bell-filled-16-white-green.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            </Button>
+                            <Button x:Name="StartAllCLW" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding ExistsSelectedOrder, ElementName=window, Mode=OneWay}" Click="StartAllCLW_Click">
+                                <Image  x:Name="image14" Source="media/start-bell-filled-16-white-cyan.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            </Button>
+                            <Button x:Name="StopAllCLW" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding ExistsSelectedOrder, ElementName=window, Mode=OneWay}" Click="StopAllCLW_Click">
+                                <Image  x:Name="image15" Source="media/stop-bell-filled-16-white-lightred.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            </Button>
+                            <Button x:Name="OpenCLWwindowToolButt" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding ExistsSelectedOrder, ElementName=window, Mode=OneWay}">
+                                <Image  x:Name="image16" Source="media/window-bell-filled-16-white-white.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            </Button>
+                        </ToolBar>
+                    </ToolBarTray>
+
                     <ToggleButton x:Name="server_toggle" Content="Server OFF" HorizontalAlignment="Right" Margin="0,4,0,0" Template="{DynamicResource ToggleButtonpOWER}" Background="Black" BorderBrush="#FF2F2F37" Foreground="#FF7A837A" Visibility="Collapsed"/>
-                    <StackPanel x:Name="toolBox" Margin="0,0,69,4" Orientation="Horizontal" Background="Black">
+                    <StackPanel x:Name="toolBox" Margin="0,0,69,4" Orientation="Horizontal" Background="Black" d:IsHidden="True" Visibility="Collapsed">
                         <local:ButtonMi x:Name="start_butt_Copy" HorizontalAlignment="Center" Margin="2,0" VerticalAlignment="Center" Width="Auto" iconSource="media/new-item-16-white-thick-smaller.png" textcaption="New" captionVisibility="Visible" Click="addButton_Click" captionMargin="2,0,0,0"/>
                         <Grid x:Name="separator_Copy" Margin="4,0" Width="3" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <Grid x:Name="line1" Margin="0" Width="1" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF46464A"/>
@@ -2368,14 +2663,13 @@
                         <Grid x:Name="separator_Copy3" Margin="4,1.5" Width="3" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <Grid x:Name="line4" Margin="0" Width="1" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF46464A"/>
                         </Grid>
-                        <local:ButtonMi x:Name="cp_command_butt" HorizontalAlignment="Center" Margin="4,3.5,0,3.5" VerticalAlignment="Center" Width="16" iconSource="media/copy-16-white-commandline.png" textcaption="" captionVisibility="Visible" captionMargin="4,0,2,0" OverridesDefaultStyle="True" PreviewMouseLeftButtonUp="Run_ffmpeg_PreviewMouseLeftButtonUp" isDisabled="{Binding SelectedTask.IsResolved, Converter={StaticResource InvertBool}, FallbackValue=true}" Click="copy_to_clip_button" Tag="command"/>
-                        <local:ButtonMi x:Name="copy_video_butt" HorizontalAlignment="Center" Margin="0,3.5" VerticalAlignment="Center" Width="16" iconSource="media/copy-16-white-V.png" textcaption="" captionVisibility="Visible" captionMargin="4,0,2,0" OverridesDefaultStyle="True" PreviewMouseLeftButtonUp="Run_ffmpeg_PreviewMouseLeftButtonUp" isDisabled="{Binding SelectedTask.IsResolved, Converter={StaticResource InvertBool}, FallbackValue=true}" Click="copy_to_clip_button" Tag="video"/>
-                        <local:ButtonMi x:Name="cp_audio_butt" HorizontalAlignment="Center" Margin="0,3.5" VerticalAlignment="Center" Width="16" iconSource="media/copy-16-white-A-shifted.png" textcaption="" captionVisibility="Visible" captionMargin="4,0,2,0" OverridesDefaultStyle="True" PreviewMouseLeftButtonUp="Run_ffmpeg_PreviewMouseLeftButtonUp" isDisabled="{Binding SelectedTask.IsResolved, Converter={StaticResource InvertBool}, FallbackValue=true}" Click="copy_to_clip_button" Tag="audio"/>
-                        <local:ButtonMi x:Name="cp_thumb_butt" HorizontalAlignment="Center" Margin="0,3.5,4,3.5" VerticalAlignment="Center" Width="16" iconSource="media/copy-16-white-T.png" textcaption="" captionVisibility="Visible" captionMargin="4,0,2,0" OverridesDefaultStyle="True" PreviewMouseLeftButtonUp="Run_ffmpeg_PreviewMouseLeftButtonUp" isDisabled="{Binding SelectedTask.IsResolved, Converter={StaticResource InvertBool}, FallbackValue=true}" Click="copy_to_clip_button" Tag="thumb"/>
+                        <local:ButtonMi x:Name="cp_command_butt" HorizontalAlignment="Center" Margin="4,3.5,0,3.5" VerticalAlignment="Center" Width="16" iconSource="media/copy-16-white-commandline.png" textcaption="" captionVisibility="Visible" captionMargin="4,0,2,0" OverridesDefaultStyle="True" PreviewMouseLeftButtonUp="Run_ffmpeg_PreviewMouseLeftButtonUp" isDisabled="{Binding SelectedTask.IsResolved, Converter={StaticResource InvertBool}, FallbackValue=true}" Tag="command"/>
+                        <local:ButtonMi x:Name="copy_video_butt" HorizontalAlignment="Center" Margin="0,3.5" VerticalAlignment="Center" Width="16" iconSource="media/copy-16-white-V.png" textcaption="" captionVisibility="Visible" captionMargin="4,0,2,0" OverridesDefaultStyle="True" PreviewMouseLeftButtonUp="Run_ffmpeg_PreviewMouseLeftButtonUp" isDisabled="{Binding SelectedTask.IsResolved, Converter={StaticResource InvertBool}, FallbackValue=true}" Tag="video"/>
+                        <local:ButtonMi x:Name="cp_audio_butt" HorizontalAlignment="Center" Margin="0,3.5" VerticalAlignment="Center" Width="16" iconSource="media/copy-16-white-A-shifted.png" textcaption="" captionVisibility="Visible" captionMargin="4,0,2,0" OverridesDefaultStyle="True" PreviewMouseLeftButtonUp="Run_ffmpeg_PreviewMouseLeftButtonUp" isDisabled="{Binding SelectedTask.IsResolved, Converter={StaticResource InvertBool}, FallbackValue=true}" Tag="audio"/>
+                        <local:ButtonMi x:Name="cp_thumb_butt" HorizontalAlignment="Center" Margin="0,3.5,4,3.5" VerticalAlignment="Center" Width="16" iconSource="media/copy-16-white-T.png" textcaption="" captionVisibility="Visible" captionMargin="4,0,2,0" OverridesDefaultStyle="True" PreviewMouseLeftButtonUp="Run_ffmpeg_PreviewMouseLeftButtonUp" isDisabled="{Binding SelectedTask.IsResolved, Converter={StaticResource InvertBool}, FallbackValue=true}" Tag="thumb"/>
                         <Grid x:Name="separator_Copy2" Margin="4,1.5" Width="3" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center">
                             <Grid x:Name="line3" Margin="0" Width="1" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF46464A"/>
                         </Grid>
-                        <ToggleButton x:Name="toggleButton" Content="Server" Margin="8,0,0,0" Width="66" Template="{DynamicResource ToggleButtonmi2050}" Foreground="#FFFF8811" Checked="toggleButton_Checked" Unchecked="toggleButton_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="#FF707070"/>
 
                     </StackPanel>
 
@@ -2399,27 +2693,7 @@
                             <local:ButtonMi x:Name="removeSelected" Grid.Column="4" HorizontalAlignment="Center" Margin="3.5,1" VerticalAlignment="Center" iconSource="media/redx-16-red2.png" Width="16" ToolTip="Remove Item" Visibility="{Binding HasSelection, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Click="removeSelected_Click"/>
                             <local:ButtonMi x:Name="importListButt" Grid.Column="6" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" d:LayoutOverrides="Height" iconSource="media/blank-file-4-16 (2)-bright-snaped-list.png" Width="Auto" ToolTip="Import list" Click="importListButt_Click"/>
                         </Grid>
-                        <ScrollViewer Margin="0,33,0,0" Template="{DynamicResource scrolfalt}" VerticalScrollBarVisibility="Auto" Width="188" HorizontalAlignment="Left" >
-                            <ItemsControl x:Name="mainlist" Margin="0" ItemsSource="{Binding Tasks}" Background="#00535353" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Top">
-
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-
-
-                                        <StackPanel x:Name="StackFBHDTasks" IsItemsHost="True" Orientation="Vertical" Height="Auto" Margin="0" ClipToBounds="True"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate  DataType="local:FBHDTask" >
-                                        <Grid Background="#00303030" d:DesignWidth="144" d:DesignHeight="34">
-                                            <local:TaskComponent url="{Binding Url}" DataContext="{Binding}" taskStatus="{Binding Status}" isResolved="{Binding IsResolved}"   Height="Auto" isSelected="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" MinHeight="24"/>
-
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-
-                            </ItemsControl>
-                        </ScrollViewer>
+                        <ListBox x:Name="TasksListBox" ItemTemplate="{DynamicResource TasksLisBoxItemTemplete}" ItemsPanel="{DynamicResource TaksListBoxPanelTemplate}" ItemsSource="{Binding Tasks}" Style="{DynamicResource ListBoxStyle1}" Background="Black" BorderBrush="{x:Null}" Foreground="#FFE0E0E0" ItemContainerStyle="{DynamicResource ListBoxItemStyle1}" HorizontalContentAlignment="Stretch" SelectedItem="{Binding SelectedTask}" Margin="0,33,0,0" d:LayoutOverrides="Width"/>
                     </Grid>
                 </GroupBox>
                 <StackPanel x:Name="grd_Current_selected" Margin="218,95,0,53" Orientation="Vertical" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=TaskWiewTabSwitch, FallbackValue=Collapsed}">
@@ -2434,7 +2708,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock x:Name="label_Propery" Margin="4,0,0,0" TextWrapping="Wrap" Foreground="#FFCFCFCF" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Title"/>
 
-                                <TextBox x:Name="tb_property_title" Style="{DynamicResource SimpleTextBox}" Foreground="#FFB6B2B2" Background="{x:Null}" BorderBrush="#FF2F2F37" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" Margin="18,0,18.455,0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Grid.Column="1" VerticalAlignment="Center" TextChanged="tb_property_title_TextChanged" Text="{Binding SelectedTask.TaskProperties.titleSettings.Query, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" GotFocus="tb_property_title_GotFocus" QueryCursor="tb_property_title_QueryCursor" MouseLeftButtonDown="tb_property_title_MouseLeftButtonDown" Loaded="tb_property_title_Loaded" LostFocus="tb_property_title_LostFocus" ManipulationStarted="tb_property_title_ManipulationStarted"/>
+                                <TextBox x:Name="tb_property_title" Style="{DynamicResource SimpleTextBox}" Foreground="#FFB6B2B2" Background="{x:Null}" BorderBrush="#FF2F2F37" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" Margin="18,0,18.455,0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Grid.Column="1" VerticalAlignment="Center" TextChanged="tb_property_title_TextChanged" Text="{Binding SelectedTask.TaskProperties.titleSettings.Query, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                                 <Button x:Name="butt_propety_title_piker" Content="Button" Template="{DynamicResource butt_open_title_piker}" Background="#FF040405" Foreground="#FFD5D5D5" Margin="5.478,9,5.479,9" Click="butt_propety_title_piker_Click" Grid.Column="2" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                                 <Popup x:Name="popup_titles_picker" Margin="0" StaysOpen="False" HorizontalAlignment="Center" Grid.Column="2" PopupAnimation="Fade" Placement="Center" VerticalAlignment="Center">
                                     <Border HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" BorderBrush="#FFA09999" BorderThickness="1" Padding="0,8,0,7" >
@@ -2456,7 +2730,8 @@
                             </Grid>
                             <Grid x:Name="grd_PropertyResolution" Height="Auto" Margin="10,0,2,0" Visibility="{Binding SelectedTask.HasVideo, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}">
                                 <TextBlock x:Name="lbl" Margin="4,6,0,0" TextWrapping="Wrap" Foreground="#FFCFCFCF" Text="Resolution" VerticalAlignment="Top" HorizontalAlignment="Left" Width="113"/>
-                                <local:ResolutionPicker x:Name="resolutionPicker" Height="Auto" Width="Auto" d:LayoutOverrides="Height" Margin="0,26,0,0" Resolutions="{Binding SelectedTask, Converter={StaticResource taskToAvailableResolutions}}" selectedResolution="{Binding SelectedTask.TaskProperties.resolutionSettings.UserPicked, Mode=TwoWay}" PickedResolutionChanged="resolutionPicker_ResolutionPicked" ForegroundPicked="#FF20C9BF"/>
+                                <!--<local:ResolutionPicker x:Name="resolutionPicker" Height="Auto" Width="Auto" d:LayoutOverrides="Height" Margin="0,26,0,0" Resolutions="{Binding SelectedTask, Converter={StaticResource taskToAvailableResolutions}, Mode=OneWay}" selectedResolution="{Binding SelectedTask.TaskProperties.resolutionSettings.UserPicked, Mode=TwoWay}" PickedResolutionChanged="resolutionPicker_ResolutionPicked" ForegroundPicked="#FF20C9BF" Visibility="Collapsed" d:IsHidden="True"/>-->
+                                <ListBox x:Name="LBResolutionPicker" Margin="23,26,24,10" Style="{DynamicResource ListBoxResolutionPicker}" ItemsPanel="{DynamicResource LBResolutionPickerPanelTemplate}" ItemTemplate="{DynamicResource LBResolutionPickerItemTemplate}" ItemContainerStyle="{DynamicResource LBResolutionPickerItemContainerTemplate}" Background="#FF0C0C0C" BorderBrush="{x:Null}" Foreground="#FFDEDEDE" ItemsSource="{Binding SelectedTask.TaskProperties.resolutionSettings.Available , Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" SelectedItem="{Binding SelectedTask.TaskProperties.resolutionSettings.UserPicked, Mode=TwoWay}" SelectionChanged="LBResolutionPicker_SelectionChanged" MinHeight="20"/>
                             </Grid>
                         </StackPanel>
                     </GroupBox>
@@ -2616,7 +2891,7 @@
                         <TextBlock x:Name="lbl_TasksCount" TextWrapping="Wrap" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" Text="{Binding TasksCount, ConverterParameter=count, FallbackValue=Ready, Mode=OneWay, StringFormat=Tasks: \{0:D\}}" Margin="9,2,9,3" Grid.Column="4" Opacity="0.85" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                         <TextBlock x:Name="ffmpegProcesses" TextWrapping="Wrap" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" Text="{Binding RunningFfmpegCount, StringFormat=FF: \{0\}}" Margin="8,3" Grid.Column="5" Opacity="0.85" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                         <local:ButtonMi x:Name="terminal" Margin="2,2,2,3" VerticalAlignment="Stretch" iconSource="media/console-16-white.png" Width="Auto" HorizontalAlignment="Stretch" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-                        <local:ButtonMi x:Name="serverButt" Grid.Column="2" Margin="0,10,22,0" VerticalAlignment="Top" iconSource="media/mi-simple-xml-16-white.png" captionVisibility="Visible" textcaption="Server" HorizontalAlignment="Right" Width="0" Foreground="#FFB6B2B2" Visibility="{Binding IsServerRunning, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=VISIBLE}" Height="0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                        <local:ButtonMi d:Visibility="Visible"   x:Name="serverButt" Grid.Column="2" Margin="0" VerticalAlignment="Stretch" iconSource="media/mi-simple-xml-16-white.png" captionVisibility="Visible" textcaption="Server" HorizontalAlignment="Stretch" Width="Auto" Foreground="#FFB6B2B2" Visibility="{Binding IsServerRunning, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=VISIBLE, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <Grid Grid.Column="3" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
                             <Border Margin="0" BorderBrush="#FF2F2F37" BorderThickness="1,0" HorizontalAlignment="Left" Visibility="{Binding ExistLoadedCLWatchers, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Grid x:Name="CustomLW" HorizontalAlignment="Left">
@@ -2664,7 +2939,7 @@
             </StackPanel>
 
         </Border>
-        <Grid x:Name="regextests" Margin="123,180,22,27" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=menuItem}">
+        <Grid x:Name="regextests" Margin="123,180,22,27" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=menuItem, FallbackValue=collapsed}">
             <TextBlock x:Name="devresult" Height="49" TextWrapping="Wrap" Text="result" VerticalAlignment="Bottom" Background="#FF323232" Foreground="#FFECECEC"/>
             <TextBox x:Name="devregex" Height="67" TextWrapping="Wrap" Text="regex" VerticalAlignment="Top" Background="#FF383838" Foreground="White" TextChanged="devregex_TextChanged"/>
             <TextBox x:Name="devregex_iinput" TextWrapping="Wrap" Text="input" Background="#FF383838" Foreground="White" Margin="0,82,0,97"/>

@@ -354,15 +354,7 @@ namespace fbhd
 
         
 
-        private void typePickerCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (coreTaskObject != null)
-            {
-
-                
-                coreTaskObject.Type = typePickerCombo.Value;
-            }
-        }
+       
 
         private void userControl_Loaded(object sender, RoutedEventArgs e)
         {
@@ -395,6 +387,16 @@ namespace fbhd
         private void resetTask_Click(object sender, RoutedEventArgs e)
         {
             this.coreTaskObject.Status = TaskStatus.pending;
+        }
+
+        private void abort_butt_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void kill_butt_Click(object sender, RoutedEventArgs e)
+        {
+            coreTaskObject.KillFfmpegProcess();
         }
     }
 

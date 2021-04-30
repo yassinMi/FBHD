@@ -345,7 +345,7 @@
             </ControlTemplate.Triggers>
         </ControlTemplate>
     </UserControl.Resources>
-    <Border x:Name="grd_main" Background="{Binding isSelected, ElementName=userControl, Converter={StaticResource selectedToBackColor}, FallbackValue=Transparent }" Padding="0,1" BorderBrush="{Binding isSelected, ElementName=userControl, ConverterParameter=border, Converter={StaticResource selectedToBackColor}, FallbackValue=Transparent }" BorderThickness="1" >
+    <Border x:Name="grd_main" Padding="0,1" BorderThickness="1" Background="Transparent" >
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="Status">
                 <VisualState x:Name="Resolved">
@@ -364,20 +364,8 @@
                 </VisualState>
             </VisualStateGroup>
             <VisualStateGroup x:Name="HoverStatus">
-                <VisualState x:Name="Hover">
-                    <Storyboard>
-                        <ColorAnimationUsingKeyFrames Duration="800" Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)" Storyboard.TargetName="grd_main">
-                            <EasingColorKeyFrame KeyTime="0" Value="#FF2c2c2c"/>
-                        </ColorAnimationUsingKeyFrames>
-                    </Storyboard>
-                </VisualState>
-                <VisualState x:Name="normal">
-                    <Storyboard>
-                        <ColorAnimationUsingKeyFrames   Duration="1000" Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)" Storyboard.TargetName="grd_main">
-                            <EasingColorKeyFrame KeyTime="0"  Value="#00656565"/>
-                        </ColorAnimationUsingKeyFrames>
-                    </Storyboard>
-                </VisualState>
+                <VisualState x:Name="Hover"/>
+                <VisualState x:Name="normal"/>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
         <Grid Background="#00000000">

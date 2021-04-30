@@ -1,0 +1,3 @@
+this is a symbolik link
+referencing to the real file: C:\TOOLS\fbhd-gui\ffmpeg\ffmpeg.exe
+for saving space 

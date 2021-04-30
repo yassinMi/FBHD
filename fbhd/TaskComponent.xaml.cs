@@ -33,10 +33,7 @@ namespace fbhd
         {
             InitializeComponent();
 
-            Binding s_b = new Binding("isSelected");
-            s_b.Source = this;
-            s_b.Converter = new selectedToBackgroundColorConverter();
-            grd_main.SetBinding(Grid.BackgroundProperty, s_b);
+          
 
 
             animateDownloadingIcon();
@@ -382,12 +379,14 @@ namespace fbhd
 
         private void userControl_MouseEnter(object sender, MouseEventArgs e)
         {
+            return; // 26-04 listBox 
             VisualStateManager.GoToState(this, "Hover", true);
 
         }
 
         private void userControl_MouseLeave(object sender, MouseEventArgs e)
         {
+            return; //// 26-04 listBox 
             VisualStateManager.GoToState(this, "normal", true);
 
         }
@@ -399,6 +398,7 @@ namespace fbhd
 
         private void userControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            return; // 26-04 listBox 
             // select
             this.isSelected = !this.isSelected;
         }

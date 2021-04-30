@@ -110,3 +110,7 @@ C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Release\CLWControl.g.cs
 C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Release\CLWControl.baml
 C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Release\CLWItemPresenter.g.cs
 C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Release\CLWItemPresenter.baml
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\curl\curl.exe
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\ffmpeg\ffmpeg.exe
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\releases-notes.md
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\scripts\server-python.py

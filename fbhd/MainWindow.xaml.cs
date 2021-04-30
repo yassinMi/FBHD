@@ -40,7 +40,8 @@ namespace fbhd
 
             webServer = new WebServer();
             // DataContext = mainSession;
-            mainSession = (Session) this.DataContext;
+            mainSession =  new Session();
+            DataContext = mainSession;
            
 
 
@@ -155,22 +156,8 @@ namespace fbhd
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Binding lb = new Binding();
-            lb.Source = resolutionPicker;
-            lb.Path = new PropertyPath(ResolutionPicker.selectedResolutionProperty);
-
-            lb.Converter = new ResolutionPickerConverter();
-            lb.StringFormat = "mlf";
-
-            //LabelPickedResolution .SetBinding(TextBlock.TextProperty, lb);
-
-            
-
-            return;
            
-
-           // label_islistening.SetBinding(TextBlock.TextProperty, noneSelectedLabel_bd);
-        }
+         }
 
 
         public void updateMyBidings()
@@ -354,17 +341,17 @@ namespace fbhd
 
             if (mainSession.SelectedTask == task)
             {
-                task.IsSelected = false;
+              //  task.IsSelected = false; //lb
                 int ix = mainSession.Tasks.IndexOf(task) +1;
-                if (mainSession.Tasks.Count > ix)
-                ((FBHDTask)mainSession.Tasks[ ix ]).IsSelected = true;
-                else
-                {
-                    if(ix - 2>-1)
-                    (mainSession.Tasks[ix - 2]).IsSelected = true;
+               // if (mainSession.Tasks.Count > ix)
+               // ((FBHDTask)mainSession.Tasks[ ix ]).IsSelected = true;
+              //  else
+               // {
+               //     if(ix - 2>-1)
+                 //   (mainSession.Tasks[ix - 2]).IsSelected = true;
                     
 
-                }
+               // }
 
 
             }
@@ -424,16 +411,17 @@ namespace fbhd
             mainSession.Tasks.Add(nwtsk);
             mainSession.HasTasks = true; // this true value does not go anywhere it just triggers the setter so that the notif gets fired
             mainSession.TasksCount = 222; // this setter only notifies the change 
-
+            TasksListBox.SelectedItem = nwtsk;
+            TasksListBox.ScrollIntoView(nwtsk);
         }
 
 
 
 
-        public uint exportTasks(string saveAs= MI.MAIN_PATH+ "\\tasks.txt", string template="$url\r\n")
+        public uint exportTasks(string saveAs= null, string template="$url\r\n")
         {
 
-
+            if (saveAs == null) saveAs = MI.APP_DATA + "\\Exported-tasks.txt";
 
             string stringified = "";
            var  tasks = mainSession.Tasks;
@@ -472,6 +460,8 @@ namespace fbhd
             }
         }
 
+        public List<string> verboseStatusStack { get; internal set; } = new List<string>();
+
         // Using a DependencyProperty as the backing store for isSomethingSelected.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty isSomethingSelectedProperty =
             DependencyProperty.Register("isSomethingSelected", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
@@ -492,13 +482,26 @@ namespace fbhd
             
         }
 
+        private async void ClearAllCommaneHandeler(object sender, RoutedEventArgs e)
+        {
+
+             }
+
+        private async void ParseCommaneHandeler(object sender, RoutedEventArgs e)
+        {
+            if (mainSession.SelectedTask == null)
+                return;
+
+            mainSession.SelectedTask.Post = await mainSession.SelectedTask.StartResolve();
+            // resolutionPicker.GetBindingExpression(ResolutionPicker.ResolutionsProperty).UpdateTarget();
+        }
         private async void Parse_butt_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             if (mainSession.SelectedTask == null)
                 return;
 
             mainSession.SelectedTask.Post = await mainSession.SelectedTask.StartResolve();
-            resolutionPicker.GetBindingExpression(ResolutionPicker.ResolutionsProperty).UpdateTarget();
+           // resolutionPicker.GetBindingExpression(ResolutionPicker.ResolutionsProperty).UpdateTarget();
         }
 
         private void Run_ffmpeg_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -512,7 +515,6 @@ namespace fbhd
 
             
 
-           // TextTrailingCharacterEllipsis uio = new TextTrailingCharacterEllipsis(70, tf);
            
         }
 
@@ -611,18 +613,48 @@ namespace fbhd
                 });
 
             });
+            webServer.onError += new EventHandler<string>((sender_, str) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    mainSession.IsServerRunning = false;
+                    MessageBox.Show(str);
+                });
 
-            ws.Start();
+            });
+            ws.onProcessExited += (s, er) => {
+                Dispatcher.Invoke(() =>
+                {
+                    if (toggleButton.IsChecked.HasValue)
+                    {
+                        if (toggleButton.IsChecked.Value == true)
+                        {
+                            toggleButton.IsChecked = false;
+                        }
+                    }
+                });
+               
+               
+            };
+
+          bool success=  ws.Start();
+            if (!success)
+            {
+               
+            }
 
         }
 
         private void toggleButton_Unchecked(object sender, RoutedEventArgs e)
         {
-            webServer.Stop();
             server_toggle.Content = "Server Off";
             mainSession.IsServerRunning = false;
-
             ((SolidColorBrush)server_toggle.Foreground).Color = Colors.Gray;//"#FF83CE7F"
+
+            if (webServer.IsListening == false) return;
+            webServer.Stop();
+           
+
 
         }
 
@@ -928,24 +960,20 @@ namespace fbhd
         private void copy_to_clip_button(object sender, RoutedEventArgs e)
         {
 
-            try
-            {
+          
 
             
-            string from = (string)((ButtonMi)sender).Tag;
+            string from = (string)((Button)sender).Tag;
             string textToCopy = "";
             switch (from)
             {
                 case "command":
-                    textToCopy = "cp_command not implemented yet, look for me in mainWindow's code behind";
+                    textToCopy = "cp_command not implemented yet";
                     break;
                 case "video":
-                    string pickedReso = resolutionPicker.selectedResolution.serialized;
+                    string pickedReso = mainSession.SelectedTask.ResolvedResolution.serialized;// resolutionPicker.selectedResolution.serialized;
                     textToCopy = mainSession.SelectedTask.Post.Value.QualityLabels.Find((Q) =>
-                (Q.qualityName ==
-                (pickedReso))
-                ).videoUrl;
-                        testCurl(textToCopy);
+                (Q.qualityName ==(pickedReso)) ).videoUrl;
                     break;
                 case "audio":
                     textToCopy = mainSession.SelectedTask.Post.Value.audioUrl ;
@@ -961,11 +989,9 @@ namespace fbhd
 
             Clipboard.SetText(textToCopy);
 
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("something went wrong");
-            }
+            MI.Verbose(from + " copied", 2);
+            
+            
         }
 
         private void SearchQueryControl_onIsEmptyChanged(object sender, bool e)
@@ -1207,28 +1233,21 @@ namespace fbhd
 
         private void devActivateXMLLW_Click(object sender, RoutedEventArgs e)
         {
-            var fsdmpresetlw =  XMLLW.LoadXMLPreset(File.ReadAllText(MI.XMLFSDM_PRESET));
-            fsdmpresetlw.NewItems += (s, news) =>
-            {
-                MessageBox.Show($"new {news.Count} news");
-                MessageBox.Show(news[0].ExpandoObj.title);
-            };
-            fsdmpresetlw.InitialReferenceContent = File.ReadAllText(MI.FSDM_News_Ref_PATH);
-            fsdmpresetlw.StartWatching();
+            
 
         }
 
         private async void loadListWatcherPresetButt_Click(object sender, RoutedEventArgs e)
         {
             Ookii.Dialogs.Wpf.VistaOpenFileDialog vofd = new VistaOpenFileDialog();
-            vofd.DefaultExt = "xml";
-            vofd.InitialDirectory = MI.MAIN_PATH + "\\xml";
+            vofd.DefaultExt = ".xml";
+            vofd.InitialDirectory = MI.APP_DATA ;
              bool? success= vofd.ShowDialog(this);
             if (!success.HasValue) return;
             if (!success.Value) return;
 
-           bool loaded = await mainSession.LoadXMLLW(vofd.FileName);
-            if(loaded)
+           CustomLW loaded = await mainSession.LoadXMLLW(vofd.FileName);
+            if(loaded!=null)
             MessageBox.Show("preset loaded successfilly");
         }
 
@@ -1238,23 +1257,23 @@ namespace fbhd
 
 
             var myConfig = new Config();
-            myConfig.CLWPresetsDeclarations = new List<Config.CLWPresetDeclaration>()
+            myConfig.CLWPresetsDeclarations = new List<CLWPresetDeclaration>()
             {
 
-                new Config.CLWPresetDeclaration()
+                new CLWPresetDeclaration()
                 {
-                    Path=MI.XML_DIR+"\\fsdmNewsX.xml", AutoStart = true
+                    Path=MI.CLW_PRESETS_DIR+"\\fsdmNewsX.xml", AutoStart = true
                 },
-                 new Config.CLWPresetDeclaration()
+                 new CLWPresetDeclaration()
                 {
-                    Path=MI.XML_DIR+"\\fsdmUploads.xml", AutoStart = false
+                    Path=MI.CLW_PRESETS_DIR+"\\fsdmUploads.xml", AutoStart = false
                 }
             };
            
             return;
             Ookii.Dialogs.Wpf.VistaOpenFileDialog opener = new VistaOpenFileDialog();
 
-            opener.InitialDirectory = MI.XML_DIR;
+            opener.InitialDirectory = MI.CLW_PRESETS_DIR;
             opener.ShowDialog();
 
             var parsed = XElement.Parse(File.ReadAllText(opener.FileName));
@@ -1267,6 +1286,60 @@ namespace fbhd
             var proceed = MessageBox.Show("this will override the config file including the prefered clw presets!", "sure?", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
             if(proceed == MessageBoxResult.OK)
             Config.FactoryConfig().Save();
+        }
+
+        private void showPostDev_Click(object sender, RoutedEventArgs e)
+        {
+            var av = mainSession.SelectedTask.TaskProperties.resolutionSettings.Available;
+            foreach (var item in av)
+            {
+                Debug.WriteLine(item.serialized);
+
+            }
+            try
+            {
+                string av2 = mainSession.SelectedTask.TaskProperties.resolutionSettings.UserPicked.serialized;
+                Debug.WriteLine(av2);
+
+            }
+            catch (Exception)
+            {
+
+            }
+            Debug.WriteLine(log);
+        }
+
+        private void LBResolutionPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            return;
+            mainSession.SelectedTask.TaskProperties.resolutionSettings.UserPicked = (Resolution)LBResolutionPicker.SelectedItem;
+            Debug.WriteLine(mainSession.SelectedTask.TaskProperties.resolutionSettings.UserPicked.ToString());
+        }
+
+        private void uriTestsDev_Click(object sender, RoutedEventArgs e)
+        {
+            //                                     https://video.fcmn1-1.fna.fbcdn.net/v/t42.1790-2/118863551_370940204305719_7513385478080044646_n.mp4?_nc_cat=101&ccb=1-3&_nc_sid=5aebc0&efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfYXVkaW9fYWFjcF82NF9mcmFnXzJfYXVkaW8ifQ%3D%3D&_nc_ohc=bk12BoIHEFoAX-BUu6D&_nc_ht=video.fcmn1-1.fna&oh=5582579a423b6fe6f479bf8ff08f3e7d&oe=6088B07D
+            string formed =  FFMPEG.UrlAdd443Port("https://video.fcmn1-1.fna.fbcdn.net/v/t42.1790-2/118863551_370940204305719_7513385478080044646_n.mp4?_nc_cat=101&ccb=1-3&_nc_sid=5aebc0&efg=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfYXVkaW9fYWFjcF82NF9mcmFnXzJfYXVkaW8ifQ%3D%3D&_nc_ohc=bk12BoIHEFoAX-BUu6D&_nc_ht=video.fcmn1-1.fna&oh=5582579a423b6fe6f479bf8ff08f3e7d&oe=6088B07D");
+            Debug.WriteLine(formed);
+        }
+
+        private void StartAllCLW_Click(object sender, RoutedEventArgs e)
+        {
+            if (mainSession.CustomListWatchers == null) return;
+            foreach (var item in mainSession.CustomListWatchers)
+            {
+                if (item.IsWatching) continue;
+                item.StartWatching();
+            }
+        }
+
+        private void StopAllCLW_Click(object sender, RoutedEventArgs e)
+        {
+            if (mainSession.CustomListWatchers == null) return;
+            foreach (var item in mainSession.CustomListWatchers)
+            {
+                item.StopWatching();
+            }
         }
     }
 

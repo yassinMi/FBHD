@@ -512,15 +512,19 @@ namespace fbhd
 
     public class MI
     {
-        public static string FFMPEG_PATH = "C:\\TOOLS\\fbhd-gui\\ffmpeg\\ffmpeg.exe";
+        public static string FFMPEG_PATH =  Environment.CurrentDirectory+"\\ffmpeg\\ffmpeg.exe";
+        public static string CURL_PATH = Environment.CurrentDirectory + "\\curl\\curl.exe";
+        public static string APP_DATA = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Mi\\FBHD";
         public static MainWindow mw = (MainWindow)Application.Current.MainWindow;
-        internal static string HTML_CONTAINER_PATH = "C:\\TOOLS\\fbhd-gui\\html";
-        internal const string MAIN_PATH = "C:\\TOOLS\\fbhd-gui";
+        public static string MAIN_PATH = Environment.CurrentDirectory;
         internal const string FSDM_News_Ref_PATH = "C:\\TOOLS\\fbhd-gui\\fbhd-fsdm-news-watcher-reference.html";
-        public const string DEFAULT_GLOBAL_OUTPUT_DIR = "C:\\TOOLS\\fbhd-gui\\output\\";
-        internal const string XMLFSDM_PRESET= "C:\\TOOLS\\fbhd-gui\\xml\\fsdmNews.xml";
-        internal const string XML_DIR= "C:\\TOOLS\\fbhd-gui\\xml";
-        internal const string CONFIG_FILE = "C:\\TOOLS\\fbhd-gui\\xml\\config.mi.xml";
+        //public const string DEFAULT_GLOBAL_OUTPUT_DIR = "C:\\TOOLS\\fbhd-gui\\output\\";
+        public static string DEFAULT_GLOBAL_OUTPUT_DIR = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)+"\\FBHD Output" ;
+
+        public static string CLW_PRESETS_DIR= MAIN_PATH +  "\\CLW Presets";
+        public static string APP_CONFIG_FILE =  APP_DATA + "\\config.mi.xml";
+        internal static string TEMP_HTML_FILES = APP_DATA +  "\\Temp HTML";
+        internal static string SCRIPTS_DIR = Environment.CurrentDirectory + "\\scripts";
 
         public static List<Resolution> standardResolutionSet {
             get
@@ -549,12 +553,39 @@ namespace fbhd
 
         }
 
-        public static void Verbose(string VerboseStatus)
+        public static async void Verbose(string VerboseStatus, int DurationInSeconds=-1)
         {
 
-            mw.Dispatcher.Invoke(() =>
+           await  mw.Dispatcher.Invoke(async () =>
             {
-                mw.verboseStatus = VerboseStatus;
+                if (VerboseStatus == null)
+                {
+                    mw.verboseStatusStack.Clear();
+                    mw.verboseStatus = null;
+                    return;
+                }
+                mw.verboseStatusStack.Add(VerboseStatus);
+                
+                mw.verboseStatus = mw.verboseStatusStack.Last();
+               
+               
+                if (DurationInSeconds != -1)
+                {
+                    await Task.Delay(1000 * DurationInSeconds);
+                    mw.verboseStatusStack.Remove(VerboseStatus);
+
+                    if (mw.verboseStatusStack.Count > 0)
+                    {
+                        mw.verboseStatus = mw.verboseStatusStack.Last();
+                    }
+                    else
+                    {
+                        mw.verboseStatus = null;
+                    }
+                }
+               
+
+
             });
 
         }
@@ -936,7 +967,17 @@ namespace fbhd
     public class FFMPEG
     {
 
-
+        public FFMPEG()
+        {
+            this.OnProgress += (s, prog) =>
+            {
+                if (!this.IsDownloading)
+                {
+                    this.IsDownloading = true;
+                    this.OnDownloadng?.Invoke(this, this.TotalDuration);
+                }
+            };
+        }
         struct Args
         {
             public Args(int capacity)
@@ -977,6 +1018,17 @@ namespace fbhd
         }
 
 
+        /// <summary>
+        /// experimental: this is how the ssl connection problem was solved, basically adding the port component to the uri 
+        /// </summary>
+        public static string UrlAdd443Port(string url)
+        {
+            var asUri = new Uri(url);
+            string SchemeAndServer = asUri.GetComponents(UriComponents.Scheme| UriComponents.HostAndPort|UriComponents.PathAndQuery, UriFormat.Unescaped);
+
+            return SchemeAndServer;
+
+        }
 
         public static bool hasVideo(TaskType type)
         {
@@ -1022,7 +1074,11 @@ namespace fbhd
                 metatitle = "",
                 outputFile = task.OutputFile,
                 thumb = post.Images.First().Value;
-                
+            // ## 27-04-2021 ssl connection problem: experimental fix
+            videoStream = UrlAdd443Port(videoStream);
+            audioStram = UrlAdd443Port(audioStram);
+            thumb = UrlAdd443Port(thumb);
+            // ##
 
             string args;
             if (hasVideo(type))
@@ -1231,37 +1287,228 @@ namespace fbhd
             }
 
         }
+
+       
+        /// <summary>
+        /// takes raw ffmpeg stdout content and rutuns an exception object if that content represents a known error 
+        /// rreturns null otherwise
+        /// </summary>
+        internal static Exception ParseError(string data)
+        {
+            Exception outp = new Exception();
+            if(data.Contains("HTTP error 403 Forbidden"))
+            {
+                return new Exception("Error 403 Forbidden, try resolving the link again");
+
+            }
+
+
+            return null;
+        }
+
+
+
+
+        public async Task<bool> Abort()
+        {
+
+            if (Process == null)
+            {
+                MessageBox.Show("prcess null");
+                return false;
+            }
+            //ffmpeg_process_ref.StandardInput.WriteLine("\x3");
+            //ffmpeg_process_ref.StandardInput.Flush();
+
+          
+            if (Fucs.AttachConsole((uint)Process.Id))
+            {
+                Fucs.SetConsoleCtrlHandler(null, true);
+
+                try
+                {
+                    if (!Fucs.GenerateConsoleCtrlEvent(Fucs.CTRL_C_EVENT, 0))
+                        return false;
+                    await Task.Run(() =>
+                    {
+                        Process.WaitForExit();
+                    });
+
+
+                }
+                finally
+                {
+                    Fucs.SetConsoleCtrlHandler(null, false);
+                    Fucs.FreeConsole();
+
+                }
+                return true;
+            }
+
+            return true;
+        }
+        public void Kill()
+        {
+            Process.Kill();
+        }
+
+        public Process Process { get; set; }
+
+
+        /// <summary>
+        /// catches errors from the stdout currentely suported error: 403 forbidden
+        /// </summary>
+        public event EventHandler<Exception> OnError;
+
+        /// <summary>
+        /// fired repeatedly as the stdout prints progress information
+        /// </summary>
+        public event EventHandler<FFMPEGProgress> OnProgress;
+
+        /// <summary>
+        /// fired when the process object is instantiated, 
+        /// </summary>
+        public event EventHandler<Process> OnProcess;
+        /// <summary>
+        /// fired when stdout first prints the information that specifies a stream duration
+        /// </summary>
+        public event EventHandler<TimeSpan> OnTotalDuration;
+        public event EventHandler<int> OnExitedSuccessfully;
+        public event EventHandler<int> OnExitedWithError;
+        public event EventHandler<int> OnExited;
+        /// <summary>
+        /// fired right after the first OnProgress event, passing the TotalDuration as the event arg
+        /// </summary>
+        public event EventHandler<TimeSpan> OnDownloadng;
+
+        public event EventHandler OnRunning; 
+
+
+
+
+
+
+
+        //public event EventHandler<Exception> OnError;
+
+
+        public StringBuilder Builder { set; get; } = new StringBuilder();
+        public TimeSpan TotalDuration { set; get; } = new TimeSpan(0, 0, 50);
+        public bool IsDownloading { get; private set; }
+
+        /// <summary>
+        /// official ffmpeg running method// moved from fucs on 28-04-2021
+        /// </summary>
+        public async Task<int> Run(string ffmpegArgs)
+        {
+            Process =Fucs. constructProcess(MI.FFMPEG_PATH, ffmpegArgs);
+            // parent_task_object.ffmpeg_process_ref = process;
+            OnProcess?.Invoke(this, Process);
+
+           
+
+            DataReceivedEventHandler hndl = ((sender, args) =>
+            {
+                if (args.Data == null)
+                    return;
+                Builder.AppendLine(args.Data);
+
+                TimeSpan? maybeTotalDuration = FFMPEG.parseDuration(args.Data);
+                if (maybeTotalDuration != null)
+                {
+                    TotalDuration = (TimeSpan)maybeTotalDuration;
+                    OnTotalDuration?.Invoke(this, TotalDuration);
+                }
+                FFMPEGProgress prog = FFMPEGProgress.FromStdoutLine(args.Data, TotalDuration);
+                if (!prog.isNull)
+                {
+                    OnProgress?.Invoke(this,prog);
+                }
+
+                var maybeKnownError = ParseError(args.Data);
+                if (maybeKnownError != null)
+                {
+                    OnError?.Invoke(this, maybeKnownError);
+                }
+
+            });
+          //  Process.OutputDataReceived += hndl;
+            Process.ErrorDataReceived += hndl;
+            MI.Verbose("starting ffmpeg..");
+
+            await Task.Run(new Action(() =>
+            {
+                Process.Start();
+                Process.BeginErrorReadLine();
+                Process.BeginOutputReadLine();
+            }), new System.Threading.CancellationToken());
+            //MI.Verbose("ffmpeg is runing");
+            OnRunning?.Invoke(this, new EventArgs());
+            await Task.Run(new Action(() =>
+            {
+                Process.WaitForExit();
+            }));
+            //MI.Verbose(null);
+            OnExited?.Invoke(this, Process.ExitCode);
+            if ((Process.ExitCode != 0) && (Process.ExitCode != 255))
+            {
+               
+                OnExitedWithError?.Invoke(this, Process.ExitCode);
+            }
+            else
+            {
+                OnExitedSuccessfully?.Invoke(this, Process.ExitCode);
+            }
+
+            return Process.ExitCode;// process.ExitCode; //because dummy 
+        }
+
+
+
+
+
     }
 
 
 
-    public struct ResolutionSettings
+    public class ResolutionSettings : INotifyPropertyChanged
     {
         public enum FallBackBehaviour
         {
             GoHigher, GoLower, Closest
         }
 
+
+        private void notif(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+
         public Resolution UserPicked
         {
             get { return userPickedResolution; }
-            set { userPickedResolution = value; }
+            set { userPickedResolution = value; notif(nameof(UserPicked)); }
         }
         private Resolution userPickedResolution;
         private List<Resolution> available;
         public List<Resolution> Available
         {
             get { return available; }
-            set { available = value; }
+            set { available = value;
+                notif(nameof(Available));
+                notif(nameof(UserPicked)); }
         }
         public bool isChoiceStandard;
         public bool isChoiceTargeted;
         public FallBackBehaviour fallBackBehaviour;
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
         internal Resolution getResult()
         {
             // MessageBox.Show("het");
-            if (userPickedResolution == null)
+            if (UserPicked == null)
             {
                 //MessageBox.Show("het2");
 
@@ -1521,6 +1768,25 @@ namespace fbhd
         }
 
 
+
+        /// <summary>
+        /// iterates over all directories listed in the PATH env var and their direct sub files searching for a file that matches the specified predicate
+        /// NOTE: the predicate takes the whole filepath and not just the file name, use Path.getFileName to exctract the filname
+        ///  </summary>
+        public static bool ExecutableExistsInThePath(Predicate<string> match)
+        {
+            string path = Environment.GetEnvironmentVariable("path");
+            // MessageBox.Show(path);
+            foreach (var dir in path.Split(new char[] { ';' }))
+            {
+                if (!Directory.Exists(dir)) continue;
+                string exists = Directory.GetFiles(dir).ToList().Find(match );
+                if (exists != null) return true;
+            }
+            return false;
+        }
+
+
         /// <summary>
         /// mi string to time span converter that uses a DateTime object and some regex adjustement under the hood
         /// NOTE: on missMatch, null value is returned,
@@ -1692,68 +1958,20 @@ namespace fbhd
 
 
 
-        public static async Task<int> run_ffmpeg_task(string ffmpegArgs, Action<FFMPEG.FFMPEGProgress> onProgress, FBHDTask parent_task_object)
-        {
-            StringBuilder builder = new StringBuilder();
-            Process process = constructProcess(MI.FFMPEG_PATH, ffmpegArgs);
-            parent_task_object.ffmpeg_process_ref = process;
-
-            TimeSpan totalDuration = new TimeSpan(0, 0, 50);
-
-            DataReceivedEventHandler hndl = ((sender, args) =>
-            {
-                if (args.Data == null)
-                    return;
-                builder.AppendLine(args.Data);
-
-                TimeSpan? maybeTotalDuration = FFMPEG.parseDuration(args.Data);
-                if (maybeTotalDuration != null)
-                {
-                    totalDuration = (TimeSpan)maybeTotalDuration;
-                }
-                FFMPEG.FFMPEGProgress prog = FFMPEG.FFMPEGProgress.FromStdoutLine(args.Data, totalDuration);
-                if (!prog.isNull)
-                {
-                    onProgress(prog);
-                }
-            });
-            process.OutputDataReceived += hndl;
-            process.ErrorDataReceived += hndl;
-            MI.Verbose("starting ffmpeg..");
-
-            await Task.Run(new Action(() =>
-           {
-               process.Start();
-               process.BeginErrorReadLine();
-               process.BeginOutputReadLine();
-           }), new System.Threading.CancellationToken());
-            // System.Threading.CancellationToken v = new System.Threading.CancellationToken();
-            // v.
-            MI.Verbose("ffmpeg.exe is runing");
-            await Task.Run(new Action(() =>
-            {
-                process.WaitForExit();
-            }));
-            //await Task.Delay(30000);
-            MI.Verbose(null);
-            if ((process.ExitCode != 0) && (process.ExitCode != 255))
-            {
-                string error = builder.ToString();
-                MessageBox.Show(error.Substring(Math.Max(0, error.Length - 700)));
-            }
-            return process.ExitCode;// process.ExitCode; //because dummy 
-        }
+      
 
 
-
-
-
+        /// <summary>
+        /// deprecated and ruined on 24-04-2021 due to changing the html temp to app data,
+        /// curl WebClient should be used now
+        /// 
         /// <summary>
         /// runs the python fetching and resolving script and gets back the raw serialize
         /// result from it's stdout and created the appropriate post object
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
+        [Obsolete("use curl instead", true)]
         public static async Task<Post> run_py_resolver(Uri url)
         {
             StringBuilder py_raw_output = new System.Text.StringBuilder();
@@ -1784,9 +2002,11 @@ namespace fbhd
 
 
 
-
-
+        [Obsolete("use curl instead",true)]
         /// <summary>
+        /// deprecated and ruined on 24-04-2021 due to changing the html temp to app data,
+        /// curl WebClient should be used now
+        /// 
         /// runs the python fetching script and gets back the raw html content from its
         /// output file 
         /// </summary>
@@ -1797,7 +2017,7 @@ namespace fbhd
 
             StringBuilder html_content = new StringBuilder();
             string outputFile = url.AbsoluteUri.GetHashCode() + ".html";
-            string python_args = ".\\scripts\\fetch-python.py " + url.AbsoluteUri + " .\\html\\" + outputFile;
+            string python_args = ".\\scripts\\fetch-python.py " + url.AbsoluteUri + " " +$"{MI.TEMP_HTML_FILES}\\{outputFile}";
             Process process = constructProcess("python.exe", python_args);
             process.StartInfo.WorkingDirectory = "C:\\TOOLS\\fbhd-gui";
             DataReceivedEventHandler py_hndl = ((sender, args) =>
@@ -1821,7 +2041,7 @@ namespace fbhd
             string result = (html_content.ToString());
             if (result.Contains("success:"))
             {
-                return File.ReadAllText("C:\\TOOLS\\fbhd-gui\\html\\" + outputFile);
+                return File.ReadAllText(MI.TEMP_HTML_FILES+"\\" + outputFile);
 
             }
 
@@ -1966,6 +2186,12 @@ namespace fbhd
         }
 
 
+
+
+        public Resolution()
+        {
+
+        }
         /// <summary>
         /// construct a Resolution obj from an integer specifying the resolution value e.g 720 , 
         /// Note that this cannot istantiate the Source resolution
@@ -2021,6 +2247,10 @@ namespace fbhd
             return isSource ? "Source" : (asInt.ToString() + "p");
         }
 
+        public override string ToString()
+        {
+            return isSource ? "Source" : (asInt.ToString() + "p");
+        }
         public string toString()
         {
             return isSource ? "Source" : (asInt.ToString() + "p");
@@ -2042,18 +2272,52 @@ namespace fbhd
         public Process py_server;
         public WebServer()
         {
-            py_server = Fucs.constructProcess("python.exe", ".\\scripts\\server-python.py");
+            
+           
+            
+            py_server = Fucs.constructProcess("python.exe", Fucs.qoute( MI.SCRIPTS_DIR+ "\\server-python.py"));
+            onProcessExited += onExited;
+            py_server.Exited += (s, e) => { onProcessExited?.Invoke(this, e); };
         }
 
         public bool IsListening { get; set; } = false;
 
+        /// <summary>
+        /// called when a user request is recieved, passin the string the user has entered as is without and validations
+        /// </summary>
         public event EventHandler<string> onRequest;
+
+        /// <summary>
+        /// fired when python writes something unexceced to the stdout, 
+        /// </summary>
+        public event EventHandler<string> onError;
 
         public event EventHandler<string> onServingStarted;
 
+        /// <summary>
+        /// when the pythn process exits, fired in all cases
+        /// </summary>
+        public event EventHandler onProcessExited;
 
-        public void Start()
+        public void onExited(object s , EventArgs e)
         {
+            IsListening = false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>the return value only indicates wether the process has started , and not whether the server is listening</returns>
+        public bool Start()
+        {
+
+            bool existsPython = Fucs.ExecutableExistsInThePath((f) => (Path.GetFileName(f).ToLower() == "python.exe"));
+
+            if (!existsPython)
+            {
+                MessageBox.Show("Python executable doesn't exist in the PATH ");
+                return false;
+            }
 
             DataReceivedEventHandler hndl = ((sender, args) =>
             {
@@ -2062,12 +2326,8 @@ namespace fbhd
 
                 if (args.Data.Contains("serving at port"))
                 {
-                    if (onServingStarted != null)
-                    {
-                        // MessageBox.Show("fireing startted");
-                        onServingStarted(this, args.Data);
-                        IsListening = true;
-                    }
+                    onServingStarted?.Invoke(this, args.Data);
+                    IsListening = true;
                     return;
                 }
 
@@ -2082,10 +2342,17 @@ namespace fbhd
                     return;
                 }
 
-                if (onRequest != null)
-                {
-                    onRequest(this, args.Data);
+                // NOTE/ script v2.0.0 update: requests are prefixed wuth "mi_request: " to help differentating between rqeuets and pythong errors
+
+                if (args.Data.StartsWith("mi_request: ")){
+                    // this should be a user request
+                    onRequest?.Invoke(this, args.Data.Substring(12));
+                    return;
                 }
+                // only errors or unexcpected loggings are left, 
+                onError?.Invoke(this, args.Data);
+                   
+                
             });
             py_server.OutputDataReceived += hndl;
             py_server.ErrorDataReceived += hndl;
@@ -2096,6 +2363,7 @@ namespace fbhd
                 py_server.BeginOutputReadLine();
 
             });
+            return true;
         }
         public void Stop()
         {
@@ -2132,7 +2400,13 @@ namespace fbhd
        
         public abstract  Headers DefaultHeaders { get; }
         public abstract  string ProcessFileName { get; }
-        public abstract string makeArgs(string url, Headers headers, string outputFile);
+
+        /// <summary>
+        /// used for better loggings , instead of printing the wholre processName that may include full paths
+        /// </summary>
+        public abstract string Name { get; }
+
+        public abstract string makeArgs(string url, Headers headers, string outputFile, bool followRedirects);
         public abstract bool success(int exitCode);
 
 
@@ -2148,20 +2422,20 @@ namespace fbhd
             bool shouldKeepFile = !(saveAs == null);
             string output = "";
             string tempHTMLFile = shouldKeepFile?saveAs: "temp,"+ DateTime.Now.GetHashCode().ToString();
-            string args = makeArgs(url, headers, tempHTMLFile );
+            string args = makeArgs(url, headers, tempHTMLFile , true);
             Process webClientProcess = Fucs.constructProcess(ProcessFileName, args);
             StringBuilder cachedStdout = new StringBuilder();
             webClientProcess.OutputDataReceived += (s, e) => { cachedStdout.Append(e.Data); };
-            webClientProcess.StartInfo.WorkingDirectory = "C:\\TOOLS\\fbhd-gui\\html\\";
+            webClientProcess.StartInfo.WorkingDirectory = MI.TEMP_HTML_FILES;
             /// ## RUNNING ##
-            MI.Verbose($"starting {ProcessFileName}..");
+            MI.Verbose($"starting {Name}..");
             await Task.Run(new Action(() =>
             {
                 webClientProcess.Start();
                 webClientProcess.BeginErrorReadLine();
                 webClientProcess.BeginOutputReadLine();
             }));
-            MI.Verbose($"{ProcessFileName} is runing");
+            MI.Verbose($"{Name} is runing");
             await Task.Run(new Action(() =>
             {
                 webClientProcess.WaitForExit();
@@ -2173,8 +2447,8 @@ namespace fbhd
 
             if (success(webClientProcess.ExitCode ))
             {
-                output = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\html\\"+tempHTMLFile);
-               if(!shouldKeepFile) File.Delete("C:\\TOOLS\\fbhd-gui\\html\\"+tempHTMLFile)  ;
+                output = File.ReadAllText(MI.TEMP_HTML_FILES+ "\\"+tempHTMLFile);
+               if(!shouldKeepFile) File.Delete(MI.TEMP_HTML_FILES + "\\" +tempHTMLFile)  ;
                 return output;
             }
             else
@@ -2189,25 +2463,30 @@ namespace fbhd
         /// get text using a temp html file, workes somilar to GetText but returns detailed information including the process exit code, the time spent
         /// </summary>
         /// <param name="saveAs">assigning this will cause the temp html to be saved under a custome name, and kept safe after the task completes</param>
-        public async Task<GetTextResult> GetTextAdvanced(string url, Headers headers = null, string saveAs = null)
+        public async Task<GetTextResult> GetTextAdvanced(string url, Headers headers = null, string saveAs = null,bool followRedireects=false)
         {
             bool shouldKeepFile = !(saveAs == null);
             string output = "";
-            string tempHTMLFile = shouldKeepFile ? saveAs : "temp," + DateTime.Now.GetHashCode().ToString();
-            string args = makeArgs(url, headers, tempHTMLFile);
+
+            string tempHTMLFile = saveAs;
+            if (!shouldKeepFile)
+            {
+                tempHTMLFile = MI.TEMP_HTML_FILES+  "\\"+"temp," + DateTime.Now.GetHashCode().ToString();
+            }
+            string args = makeArgs(url, headers, tempHTMLFile, followRedireects);
             Process webClientProcess = Fucs.constructProcess(ProcessFileName, args);
             StringBuilder cachedStdout = new StringBuilder();
             webClientProcess.OutputDataReceived += (s, e) => { cachedStdout.Append(e.Data); };
-            webClientProcess.StartInfo.WorkingDirectory = "C:\\TOOLS\\fbhd-gui\\html\\";
+            webClientProcess.StartInfo.WorkingDirectory = MI.TEMP_HTML_FILES;
             /// ## RUNNING ##
-            MI.Verbose($"starting {ProcessFileName}..");
+            MI.Verbose($"starting {Name}..");
             await Task.Run(new Action(() =>
             {
                 webClientProcess.Start();
                 webClientProcess.BeginErrorReadLine();
                 webClientProcess.BeginOutputReadLine();
             }));
-            MI.Verbose($"{ProcessFileName} is runing");
+            MI.Verbose($"{Name} is runing");
             await Task.Run(new Action(() =>
             {
                 webClientProcess.WaitForExit();
@@ -2219,8 +2498,8 @@ namespace fbhd
 
             if (success(webClientProcess.ExitCode))
             {
-                output = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\html\\" + tempHTMLFile);
-                if (!shouldKeepFile) File.Delete("C:\\TOOLS\\fbhd-gui\\html\\" + tempHTMLFile);
+                output = File.ReadAllText( tempHTMLFile);
+                if (!shouldKeepFile) File.Delete( tempHTMLFile);
                 return new GetTextResult() {Text = output, Success = true, ClientExitCode = webClientProcess.ExitCode, RunningTime = webClientProcess.StartTime- webClientProcess.ExitTime };
             }
             else
@@ -2274,14 +2553,14 @@ namespace fbhd
                 };
             webClientProcess.StartInfo.WorkingDirectory = "C:\\TOOLS\\fbhd-gui\\";
             /// ## RUNNING ##
-            MI.Verbose($"starting {ProcessFileName}..");
+            MI.Verbose($"starting {Name}..");
             await Task.Run(new Action(() =>
             {
                 webClientProcess.Start();
                 webClientProcess.BeginErrorReadLine();
                 webClientProcess.BeginOutputReadLine();
             }));
-            MI.Verbose($"{ProcessFileName} is runing");
+            MI.Verbose($"{Name} is runing");
             await Task.Run(new Action(() =>
             {
                 webClientProcess.WaitForExit();
@@ -2387,24 +2666,26 @@ namespace fbhd
                 }
             }
 
-            public override string ProcessFileName { get { return "curl.exe"; } }
+            public override string ProcessFileName { get { return MI.CURL_PATH; } }
+
+            public override string Name{ get {   return "cURL";}}
 
 
             /// <summary>
             /// instantites a new cURL object and uses its GetTextAdvanced method, 
             /// </summary>
-            public static async Task<cURL.GetTextResult> GetTextStatic(string url, Headers headers)
+            public static async Task<cURL.GetTextResult> GetTextStatic(string url, Headers headers, bool folowRedirects)
             {
-                return await new cURL().GetTextAdvanced(url, headers);
+                return await new cURL().GetTextAdvanced(url, headers , null, folowRedirects);
                
             }
             
             
 
-            public override string makeArgs(string url, Headers headers, string outputFile)
+            public override string makeArgs(string url, Headers headers, string outputFile, bool folowRedirects = false)
             {
                 string args = "";
-
+                args += (folowRedirects ? " -L " : "");
                 args += $" --url {Fucs.qoute(url)}";
                 args += $" -o {Fucs.qoute(outputFile)}";
 
@@ -2415,6 +2696,7 @@ namespace fbhd
                 }
 
                 return args;
+
             }
 
             public override bool success(int exitCode){  return exitCode == 0; }
@@ -2476,8 +2758,39 @@ namespace fbhd
                 var v = new Headers();
                 v.Add("user-agent", Headers.USER_AGENT);
                 return v;
-                
-               
+            }
+        }
+
+        /// <summary>
+        /// these cookies are critical for fbhd post parsing to work, not using them will result in fb 
+        /// sending a minimal response that suits lite browsers and doesn't include all the information were looking for e.g quality labels, audio stream..   
+        /// </summary>
+        public static Headers FB_Fake_Browser_For_HD_Videos 
+        {
+            get
+            {
+                var v = new Headers();
+                v.Add("user-agent", Headers.USER_AGENT);
+                //  v.Add("sec-ch-ua", "\"Google Chrome\";v=\"87\", \"\\\"Not;A\\\\Brand\";v=\"99\", \"Chromium\";v=\"87\"");
+                // commented out because there seem to be some quote escaping issues, fortunatly this one
+                //is not critical 
+                v.Add("accept", "text/html");
+                v.Add("sec-ch-ua-mobile", "?0");
+                v.Add("accept-encoding", "");
+                v.Add("sec-fetch-mode", "navigate");
+                v.Add("accept-language", "en-US,en;q=0.9");
+                v.Add("sec-fetch-dest", "document");
+
+                return v;
+                /* some cokies as taken from chrome dev tools
+                "sec-ch-ua": "\"Google Chrome\";v=\"87\", \"\\\"Not;A\\\\Brand\";v=\"99\", \"Chromium\";v=\"87\"",
+                "accept":"text/html",
+                "sec-ch-ua-mobile": "?0",
+                "accept-encoding":"",
+                "sec-fetch-mode": "navigate" ,
+                "accept-language": "en-US,en;q=0.9" ,
+                "sec-fetch-dest": "document"
+                */
             }
         }
 
@@ -2551,7 +2864,7 @@ namespace fbhd
             catch (Exception)
             {
                 //File.WriteAllText(MI.MAIN_PATH+"\\log.failedtoparse.txt", rawItem);
-                MessageBox.Show("failed to parse an element,\nraw content dumped at log.failedtoparse.txt");
+               // MessageBox.Show("failed to parse an element,\nraw content dumped at log.failedtoparse.txt");
                 return null;
             }
             
@@ -3192,7 +3505,7 @@ namespace fbhd
 
 
             
-            var r =   await WebClient.cURL.GetTextStatic(queryUrl.AbsoluteUri, Headers.DefaultFbWatchHeaders);
+            var r =   await WebClient.cURL.GetTextStatic(queryUrl.AbsoluteUri, Headers.DefaultFbWatchHeaders, true);
 
 
             if (!r.Success)
@@ -3263,16 +3576,21 @@ namespace fbhd
     public enum DownloadClients { curl,powershell,ffmpeg}
 
     [Serializable]
+    public class CLWPresetDeclaration
+    {
+        public string Path { get; set; }
+        public bool AutoStart { get; set; }
+        public bool AutoLoad { get; set; }
+    }
+    [Serializable]
     public class Config
     {
-        [Serializable]
-        public struct CLWPresetDeclaration { public string Path { get; set; } public bool AutoStart { get; set; }
-            public bool AutoLoad { get; set; }
-        }
+       
 
         public List<CLWPresetDeclaration> CLWPresetsDeclarations { get; set; } = new List<CLWPresetDeclaration>();
 
 
+        public string GlobalOutputDirectory { get; set; } = MI.DEFAULT_GLOBAL_OUTPUT_DIR;
 
         public List<string> RecentGlobalDirectories { get; set; } = new List<string>();
         public OverrideBehaviour DefaultOverrideBehaviour { get; set; } = OverrideBehaviour.Override;
@@ -3283,19 +3601,21 @@ namespace fbhd
 
         static XmlSerializer sr = new XmlSerializer(typeof(Config));
 
-        public void Save(string saveAS = MI.CONFIG_FILE)
+        public void Save(string saveAS =null)
         {
+            if (saveAS == null) saveAS = MI.APP_CONFIG_FILE;
             using (var stream = File.Open(saveAS, FileMode.Create))
             {
                 sr.Serialize(stream, this);
             }
         }
 
-        public static Config Load(string ConfigFile = MI.CONFIG_FILE)
+        public static Config Load(string ConfigFile =null)
         {
+            if(ConfigFile==null) ConfigFile = MI.APP_CONFIG_FILE;
             if (!File.Exists(ConfigFile)) {
-                Trace.Assert(false, $"Mi: Config Loader: file '{ConfigFile}' does not exist");
-                return null;
+                Config.FactoryConfig().Save();
+                return FactoryConfig();
             }
             using (var stream = File.OpenRead(ConfigFile))
             {
@@ -3317,12 +3637,27 @@ namespace fbhd
     public class Session : INotifyPropertyChanged 
     {
 
+        private string printSpectioalFolder (Environment.SpecialFolder sf)
+        {
+            return sf.ToString() + ": " + Environment.GetFolderPath(sf); 
+        }
 
         public Session()
         {
 
+            if (!Directory.Exists(MI.TEMP_HTML_FILES)) Directory.CreateDirectory(MI.TEMP_HTML_FILES);
+            bool curlExists = File.Exists(  Environment.CurrentDirectory+ "\\curl\\curl.exe");
+            bool ffmpegExists = File.Exists(Environment.CurrentDirectory + "\\ffmpeg\\ffmpeg.exe");
+
+          Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\mi\\fbhd");
+            
+            Trace.Assert(curlExists, "couldnt find the curl executable at .\\curl\\curl.exe the wpp will not work correctely unless another location is specidied in the settings or it is included in the path.");
+            Trace.Assert(ffmpegExists, "couldnt find the ffmpeg executable at .\\ffmpeg\\ffmpeg.exe the wpp will not work correctely unless another location is specified or it is included in the path.");
 
             MainConfig = Config.Load();
+            if (string.IsNullOrWhiteSpace( MainConfig.GlobalOutputDirectory)==false)
+                GlobalOutputFolder = MainConfig.GlobalOutputDirectory;
+            
             if (MainConfig == null) MainConfig = Config.FactoryConfig();
 
             MainSearch = new Search();
@@ -3357,13 +3692,27 @@ namespace fbhd
                 string presetPath = presetDeclaration.Path;
                 if (presetDeclaration.AutoLoad)
                 {
-                    LoadXMLLW(presetPath);
+                    CustomLW clwObject=null;
+                    Task.Run(async() =>
+                    {
+
+                        clwObject = await LoadXMLLW(presetPath);
+                        
+                           
+                    }).GetAwaiter().GetResult();
+                    if(clwObject != null)
+                    {
+                      //  MessageBox.Show(clwObject.Name);
+                    }
+                   if (presetDeclaration.AutoStart)
+                       clwObject.StartWatching();
+
                 }
 
             }
             OnPropertyChanged(nameof(ExistLoadedCLWatchers));
-
-
+           // Tasks = new BindingList<FBHDTask>();
+            //SelectedTask = null;
         }
 
 
@@ -3549,8 +3898,9 @@ namespace fbhd
 
         /// <summary>
         /// loads the file content, parses it, adds a listwatcher objct to the CustomListWatchers 
-        /// </summary>
-        internal async Task<bool> LoadXMLLW(string fileName)
+        /// returnng the new CustomLW instance on succes and null on failure
+        ///  </summary>
+        internal async Task<CustomLW> LoadXMLLW(string fileName)
         {
             CustomLW newCustomLW  =  XMLLW.LoadXMLPreset(File.ReadAllText(fileName));
 
@@ -3562,7 +3912,7 @@ namespace fbhd
                 if (string.IsNullOrEmpty(newCustomLW.InitialReferenceContent))
                 {
                     MessageBox.Show($"Empty initial data! XMLLW-Loader will attemp to fetch data from {newCustomLW.Href} and override the file:\n {newCustomLW.ReferenceFilePath}  ");
-                    var data = await WebClient.cURL.GetTextStatic(newCustomLW.Href, Headers.FakeUserAgentHeaders);
+                    var data = await WebClient.cURL.GetTextStatic(newCustomLW.Href, Headers.FakeUserAgentHeaders, true);
                     if (data.Success)
                     {
                         File.WriteAllText(newCustomLW.ReferenceFilePath, data.Text);
@@ -3571,7 +3921,7 @@ namespace fbhd
                     else
                     {
                         MessageBox.Show($"couldnt fetch the data, try later\n errorcoe:{data.ClientExitCode}");
-                        return false;// //done//todo: shold inform the caller that things went wrong
+                        return newCustomLW;// //done//todo: shold inform the caller that things went wrong
                     }
                 }
             }
@@ -3579,7 +3929,7 @@ namespace fbhd
             else
             {
                 MessageBox.Show($"Reference file does not exist at {newCustomLW.Href}!\n XMLLW-Loader will attemp to create one with initial data from {newCustomLW.Href} ");
-                var data = await WebClient.cURL.GetTextStatic(newCustomLW.Href, Headers.FakeUserAgentHeaders);
+                var data = await WebClient.cURL.GetTextStatic(newCustomLW.Href, Headers.FakeUserAgentHeaders, true);
                 if (data.Success)
                 {
                     File.WriteAllText(newCustomLW.ReferenceFilePath, data.Text);
@@ -3589,7 +3939,7 @@ namespace fbhd
                 else
                 {
                     MessageBox.Show($"couldnt fetch the data, try later\n errorcoe:{data.ClientExitCode}");
-                    return false;
+                    return null;
                 }
 
             }
@@ -3602,7 +3952,7 @@ namespace fbhd
             };
             CustomListWatchers.Add(newCustomLW);
             OnPropertyChanged(nameof(ExistLoadedCLWatchers));
-            return true;
+            return newCustomLW;
 
         }
     }
@@ -4000,7 +4350,7 @@ namespace fbhd
             
             
 
-                var r = await WebClient.cURL.GetTextStatic(Href, Headers.FakeUserAgentHeaders);
+                var r = await WebClient.cURL.GetTextStatic(Href, Headers.FakeUserAgentHeaders, true);
 
             if (!r.Success)
             {

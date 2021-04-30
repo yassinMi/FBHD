@@ -8,6 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("scripts/server-python.py")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("curl/curl.exe")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("ffmpeg/ffmpeg.exe")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("media/mi-logo-blue-lessglow-nostroke-200x158.png")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("notif-5th.wav")]
 
 

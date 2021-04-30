@@ -48,6 +48,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>FB-ICO.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Expression.Controls, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Expression.Drawing, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -226,6 +229,10 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="media\24px.svg" />
+    <None Include="releases-notes.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <SplashScreen Include="media\Mi-logo-orange-sblackbg-lessglow-nostroke-200x158.png" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -360,7 +367,7 @@
     <Resource Include="media\image-16-16.png" />
   </ItemGroup>
   <ItemGroup>
-    <SplashScreen Include="media\SplashScreen1.png" />
+    <None Include="media\SplashScreen1.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="media\sett16.png" />
@@ -642,11 +649,47 @@
     <Resource Include="down-tri-10x8-orange.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="media\parse-16-white-blue.png" />
+    <Resource Include="media\parse-all-16-white-blue-yellow.png" />
+    <Resource Include="media\delete-all-16-white.png" />
+    <Resource Include="media\dload-all-thin-16-white-yellow.png" />
+    <Resource Include="media\new-bell-filled-16-white-green.png" />
+    <Resource Include="media\pause-bell-filled-16-white-firebrick.png" />
+    <Resource Include="media\start-bell-filled-16-white-cyan.png" />
+    <Resource Include="media\stop-bell-filled-16-white-lightred.png" />
+    <Resource Include="media\window-bell-filled-16-white-white.png" />
+    <Resource Include="media\add-list-item-thick-16-white-green.png" />
+    <Resource Include="media\add-task-16-white-green.png" />
+    <Resource Include="media\add-task-detailed-16-white-green.png" />
+    <Resource Include="media\add-task-thick-16-white-green.png" />
+    <Resource Include="media\start-16-white-vs-like.png" />
+    <Resource Include="FB-ICO.ico" />
+    <Content Include="scripts\server-python.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="bell-16-white-empty-shine.png" />
     <Resource Include="bell-16-orange-empty-shine.png" />
     <Resource Include="bell-16-orange-filled.png" />
     <Resource Include="new-task-lite-16-white.png" />
+    <None Include="media\Mi-logo-blackbg-lessglow-nostroke-200x158.png" />
+    <Resource Include="config.mi.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Content Include="curl\curl.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="curl\note.txt" />
+    <Content Include="ffmpeg\ffmpeg.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="ffmpeg\note.txt" />
+    <Content Include="media\Mi-logo-blue-lessglow-nostroke-200x158.png" />
+    <Resource Include="media\minus-16-white.png" />
+    <Resource Include="minus-16-white.png" />
     <Content Include="notif-5th.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="CLW Presets\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
