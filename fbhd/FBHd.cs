@@ -401,6 +401,7 @@ namespace fbhd
             string url = (string)value;
             if (parameter == null)
             {
+                url = new Uri(url).LocalPath;
                 int i = url.IndexOf("videos/") + 7;
                 if (i < 7)
                 {

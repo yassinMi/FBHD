@@ -1341,6 +1341,19 @@ namespace fbhd
                 item.StopWatching();
             }
         }
+
+       
+
+        private void TasksListBox_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                if (TaskWiewTabSwitch.IsChecked == false)
+                {
+                    TaskWiewTabSwitch.IsChecked = true;
+                }
+            }
+        }
     }
 
 

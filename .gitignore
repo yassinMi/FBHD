@@ -1,4 +1,8 @@
 bin/
 ffmpeg.exe
 curl.exe
+SetupProject1/
+*.yassCmd
 releases archive/
+releases-notes.md
+release-planned.md

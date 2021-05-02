@@ -229,6 +229,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="media\24px.svg" />
+    <None Include="release-planned.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="releases-notes.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -664,6 +667,9 @@
     <Resource Include="media\add-task-thick-16-white-green.png" />
     <Resource Include="media\start-16-white-vs-like.png" />
     <Resource Include="FB-ICO.ico" />
+    <Resource Include="ffmpeg\readme.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Content Include="scripts\server-python.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

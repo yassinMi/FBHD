@@ -36,7 +36,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock x:Name="versionLabel" TextWrapping="Wrap" Text="Version" Foreground="#FFB6B6B6" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBlock x:Name="version" Margin="0" TextWrapping="Wrap" Text="0.2.0-beta (28-04-2021)" Foreground="#FFE2E2E2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBlock x:Name="version" Margin="0" TextWrapping="Wrap" Text="0.3.0-beta (30-04-2021)" Foreground="#FFE2E2E2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <TextBlock x:Name="developerLabel" Margin="0" TextWrapping="Wrap" Text="Developer:" Foreground="#FFB6B6B6" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <TextBlock x:Name="developer" Margin="0" TextWrapping="Wrap" Text="Yass.Mi" Foreground="#FFE2E2E2" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"/>
             <TextBlock x:Name="email" Margin="47,3,0,2" TextWrapping="Wrap" Text="dir16cat17@gmail.com" Foreground="#FF0097FF" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>

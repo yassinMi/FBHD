@@ -445,9 +445,9 @@
                     <ColumnDefinition Width="31"/>
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="PresetPathTB" Grid.Column="2" Margin="10,0" TextWrapping="Wrap" Text="{Binding Path}" Style="{DynamicResource SimpleTextBox}" Background="Black" Foreground="#FFBDBDBD" BorderBrush="#FF2F2F37" VerticalAlignment="Center"/>
-                <Button x:Name="BrowseButton" Content="B" Grid.Column="3" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <CheckBox x:Name="autoLoadCB" Content="" HorizontalAlignment="Center" Margin="0" Width="Auto" Foreground="#FFDEDEDE" VerticalAlignment="Center" ToolTip="Auto load" Grid.Column="1" IsChecked="{Binding AutoLoad, Mode=TwoWay}"/>
                 <CheckBox x:Name="AutoStartCb" Content="" HorizontalAlignment="Center" Margin="0" Width="Auto" d:LayoutOverrides="Width" VerticalAlignment="Center" Foreground="#FFEAEAEA" ToolTip="Auto start" IsChecked="{Binding AutoStart, Mode=TwoWay}"/>
+                <Button x:Name="BrowseButton_Copy" Content="···" Grid.Column="3" Margin="0" Template="{DynamicResource FlatButt}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="28"/>
             </Grid>
         </DataTemplate>
     </Window.Resources>
@@ -460,118 +460,90 @@
         <i:Interaction.Behaviors>
             <ei:FluidMoveBehavior/>
         </i:Interaction.Behaviors>
-        <Grid x:Name="General_Settings" Margin="20,30,20,10" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=GeneralTab}" Grid.RowSpan="2">
-
-            <Grid  d:DesignWidth="262" d:DesignHeight="37" VerticalAlignment="Center" Height="31" Margin="0,58,10,136" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="83"/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="31"/>
-                </Grid.ColumnDefinitions>
-                <TextBox x:Name="PresetPathTB" Grid.Column="1" Margin="10,4" TextWrapping="Wrap" Text="{Binding GlobalOutputDirectory, Mode=TwoWay}" Style="{DynamicResource SimpleTextBox}" Background="Black" Foreground="#FFBDBDBD" BorderBrush="#FF2F2F37" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-                <Button x:Name="BrowseButton" Content="B" Grid.Column="2" Margin="9,5" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-                <TextBlock x:Name="textBlock7" Margin="0" TextWrapping="Wrap" Text="Global Output" Foreground="#FFDEDEDE" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            </Grid>
-            <ToggleButton x:Name="toggleButton" Content="Show ffmpeg window" VerticalAlignment="Top" Margin="0,0,48,0" Template="{DynamicResource mi2049switch}" Foreground="#FFE8E6E6"/>
-            <ToggleButton x:Name="toggleButton_Copy" Content="Raw Download" Margin="0,42,48,0" Template="{DynamicResource mi2049switch}" Foreground="#FFF3F3F3" ToolTip="Download streams as is before processing them" VerticalAlignment="Top"/>
-            <Grid Margin="0,0,0,44" Height="37" VerticalAlignment="Bottom">
-                <Grid.Effect>
-                    <ee:MonochromeEffect Color="#FF818181"/>
-                </Grid.Effect>
-                <ComboBox x:Name="comboBox" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="73" SelectedIndex="1" Margin="0,4" IsReadOnly="True">
-                    <ComboBoxItem Content="curl.exe"/>
-                    <ComboBoxItem Content="ffmpeg"/>
-                    <ComboBoxItem Content="fetcher.py"/>
-                    <ComboBoxItem Content=".net"/>
-                    <ComboBoxItem Content="powershell"/>
-                </ComboBox>
-                <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Download with" Width="85" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
-
-            </Grid>
-            <Grid Height="30" VerticalAlignment="Bottom">
-                <ComboBox x:Name="comboBox1" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="89" SelectedIndex="1" Margin="0,4">
-                    <ComboBoxItem Content="Date and time"/>
-                    <ComboBoxItem Content="Content ID"/>
-                    <ComboBoxItem Content="Url Hash"/>
-                    <ComboBoxItem Content="Random"/>
-                </ComboBox>
-                <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="AutoName method" Width="108" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
-
-            </Grid>
-        </Grid>
-        <Grid x:Name="CLW_Settings" Margin="20,30,20,10" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=CLWTab}" Grid.RowSpan="2">
-            <StackPanel Margin="0,0,0,30" Orientation="Vertical" d:LayoutOverrides="Height">
-                <GroupBox x:Name="gb_AutoLoadList" Header="Auto-Load List" Margin="10,0" TextOptions.TextFormattingMode="Display" HorizontalAlignment="Stretch" Width="Auto" Style="{DynamicResource GroupBoxStyle1}" Foreground="#FFD5D5D5" BorderBrush="#FF2F2F37" UseLayoutRounding="True" Height="159" d:LayoutOverrides="LeftPosition, RightPosition">
-                    <Grid x:Name="grd_wraper" Margin="5,5,-2,5" UseLayoutRounding="True">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="33"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid x:Name="controls" Margin="0,10,0,5" UseLayoutRounding="True">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="33*"/>
-                                <ColumnDefinition Width="33*"/>
-                                <ColumnDefinition Width="34*"/>
-                                <ColumnDefinition Width="33*"/>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="20"/>
-                                <ColumnDefinition Width="20"/>
-                            </Grid.ColumnDefinitions>
-                            <Button x:Name="addItemButt" Content="Button" Template="{DynamicResource buttonPlus}" Background="#FF040405" Foreground="#FF7DCD79" VerticalAlignment="Center" Margin="0,1" Grid.Column="7" Width="16" Height="16" HorizontalAlignment="Right" ToolTip="Add new"/>
-                            <local:ButtonMi x:Name="RemoveItemButt" Grid.Column="6" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" d:LayoutOverrides="Height" iconSource="minus-16-white.png" Width="Auto" ToolTip="Import list"/>
-                        </Grid>
-                        <ListBox x:Name="listBox" Margin="0" Grid.Row="1" Background="Black" Foreground="#FFD6D6D6" BorderBrush="{x:Null}" ItemTemplate="{DynamicResource autoloadClwPresetTemplate}" ItemsSource="{Binding CLWPresetsDeclarations}"/>
-                    </Grid>
-                </GroupBox>
-                <Grid Height="30" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition">
-                    <ComboBox x:Name="comboBox3" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="89" SelectedIndex="1" Margin="0,4">
-                        <ComboBoxItem Content="Date and time"/>
-                        <ComboBoxItem Content="Content ID"/>
-                        <ComboBoxItem Content="Url Hash"/>
-                        <ComboBoxItem Content="Random"/>
+        <Grid x:Name="General_Settings" Margin="20,30,20,4" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=GeneralTab}">
+            <StackPanel Margin="0,0,0,4" Orientation="Vertical" d:LayoutOverrides="Height">
+                <Grid VerticalAlignment="Center" Height="31" Margin="0,4,10,4" d:LayoutOverrides="LeftPosition, RightPosition" >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="83"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="31"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="PresetPathTB" Grid.Column="1" Margin="0,4,10,4" TextWrapping="Wrap" Text="{Binding GlobalOutputDirectory, Mode=TwoWay}" Style="{DynamicResource SimpleTextBox}" Background="Black" Foreground="#FFBDBDBD" BorderBrush="#FF2F2F37"/>
+                    <Button x:Name="BrowseButton" Content="···" Grid.Column="2" Margin="0" Template="{DynamicResource FlatButt}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="28"/>
+                    <TextBlock x:Name="textBlock7" Margin="0" TextWrapping="Wrap" Text="Global Output" Foreground="#FFDEDEDE" VerticalAlignment="Center"/>
+                </Grid>
+                <Grid Height="31" Margin="0,4,122,4" VerticalAlignment="Top">
+                    <Grid.Effect>
+                        <ee:MonochromeEffect Color="#FF818181"/>
+                    </Grid.Effect>
+                    <ComboBox x:Name="comboBox" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="73" SelectedIndex="0" Margin="0,4" IsReadOnly="True">
+                        <ComboBoxItem Content="curl.exe"/>
+                        <ComboBoxItem Content="ffmpeg"/>
+                        <ComboBoxItem Content="powershell"/>
                     </ComboBox>
-                    <TextBlock x:Name="textBlock3" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Default Interval" Width="108" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
+                    <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Download with" Width="85" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
 
                 </Grid>
-                <Grid Height="30" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition">
-                    <ComboBox x:Name="comboBox2" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="89" SelectedIndex="1" Margin="0,4">
-                        <ComboBoxItem Content="Date and time"/>
-                        <ComboBoxItem Content="Content ID"/>
-                        <ComboBoxItem Content="Url Hash"/>
-                        <ComboBoxItem Content="Random"/>
-                    </ComboBox>
-                    <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Default Action" Width="108" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
-
-                </Grid>
-                <Grid Height="30" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition">
-                    <ComboBox x:Name="comboBox4" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="89" SelectedIndex="1" Margin="0,4">
-                        <ComboBoxItem Content="Date and time"/>
-                        <ComboBoxItem Content="Content ID"/>
-                        <ComboBoxItem Content="Url Hash"/>
-                        <ComboBoxItem Content="Random"/>
-                    </ComboBox>
-                    <TextBlock x:Name="textBlock4" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Notification Sound" Width="108" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
-
-                </Grid>
-                <Grid Height="30" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition">
-                    <ComboBox x:Name="comboBox5" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="89" SelectedIndex="1" Margin="0,4">
-                        <ComboBoxItem Content="Date and time"/>
-                        <ComboBoxItem Content="Content ID"/>
-                        <ComboBoxItem Content="Url Hash"/>
-                        <ComboBoxItem Content="Random"/>
-                    </ComboBox>
-                    <TextBlock x:Name="textBlock5" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Notification Sound" Width="108" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
-
-                </Grid>
+                <ToggleButton x:Name="toggleButton" Content="Show ffmpeg window" Margin="0,4,122,4" Template="{DynamicResource MiServerStyleToggle}" Foreground="#FFE8E6E6" d:LayoutOverrides="TopPosition, BottomPosition" Height="31"/>
+                <ToggleButton x:Name="toggleButton_Copy" Content="Raw Download" Margin="0,4,122,4" Template="{DynamicResource MiServerStyleToggle}" Foreground="#FFF3F3F3" ToolTip="Download streams as is before processing them" Height="31"/>
             </StackPanel>
         </Grid>
+        <Grid x:Name="CLW_Settings" Margin="20,30,10,2" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=CLWTab}">
+            <ScrollViewer Margin="0,0,0,2" d:LayoutOverrides="Height" Template="{DynamicResource scrolfalt}" VerticalScrollBarVisibility="Auto">
+                <StackPanel Orientation="Vertical">
+                    <GroupBox x:Name="gb_AutoLoadList" Header="Auto-Load List" Margin="0,0,10,0" TextOptions.TextFormattingMode="Display" HorizontalAlignment="Stretch" Width="Auto" Style="{DynamicResource GroupBoxStyle1}" Foreground="#FFD5D5D5" BorderBrush="#FF2F2F37" UseLayoutRounding="True" d:LayoutOverrides="LeftPosition, RightPosition">
+                        <Grid x:Name="grd_wraper" Margin="5,5,-2,5" UseLayoutRounding="True">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid x:Name="controls" Margin="0,10,0,5" UseLayoutRounding="True">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="33*"/>
+                                    <ColumnDefinition Width="33*"/>
+                                    <ColumnDefinition Width="34*"/>
+                                    <ColumnDefinition Width="33*"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="addItemButt" Content="Button" Template="{DynamicResource buttonPlus}" Background="#FF040405" Foreground="#FF7DCD79" VerticalAlignment="Center" Margin="0,1" Grid.Column="7" Width="16" Height="16" HorizontalAlignment="Right" ToolTip="Add new"/>
+                                <local:ButtonMi x:Name="RemoveItemButt" Grid.Column="6" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" d:LayoutOverrides="Height" iconSource="minus-16-white.png" Width="Auto" ToolTip="Import list"/>
+                            </Grid>
+                            <ListBox x:Name="listBox" Margin="0" Grid.Row="1" Background="Black" Foreground="#FFD6D6D6" BorderBrush="{x:Null}" ItemTemplate="{DynamicResource autoloadClwPresetTemplate}" ItemsSource="{Binding CLWPresetsDeclarations}" MinHeight="30"/>
+                        </Grid>
+                    </GroupBox>
+                    <Grid d:LayoutOverrides="TopPosition, BottomPosition" Width="229" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,4" Height="31">
+                        <TextBlock x:Name="textBlock3" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Default Interval" Width="108" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
+
+                    </Grid>
+                    <Grid d:LayoutOverrides="TopPosition, BottomPosition" Width="229" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,4" Height="31">
+                        <ComboBox x:Name="comboBox2" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="97" SelectedIndex="0" Margin="0,4">
+                            <ComboBoxItem Content="Notification"/>
+                            <ComboBoxItem Content="Popup"/>
+                            <ComboBoxItem Content="None"/>
+                        </ComboBox>
+                        <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Default Action" Width="108" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
+
+                    </Grid>
+                    <Grid d:LayoutOverrides="TopPosition, BottomPosition" Width="229" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,4" Height="31">
+                        <ComboBox x:Name="comboBox4" Style="{DynamicResource mi_flat_combo}" HorizontalAlignment="Right" Width="89" SelectedIndex="0" Margin="0,4">
+                            <ComboBoxItem Content="Default"/>
+                            <ComboBoxItem Content="Custom.."/>
+                        </ComboBox>
+                        <TextBlock x:Name="textBlock4" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Notification Sound" Width="108" Foreground="#FFF7F7F7" VerticalAlignment="Center" ToolTip="in raw download mode, what tool to use for downloading streams"/>
+
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
         <StackPanel x:Name="TabsSwitchGrd" Margin="0,7,0,0" Orientation="Horizontal" Grid.Row="2">
-            <local:RadioWithIcon x:Name="GeneralTab" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/code-in-square-16-white-small.png" Content="General" BorderBrush="{x:Null}" Margin="4,0" d:LayoutOverrides="LeftPosition, RightPosition" IsChecked="True"/>
+            <local:RadioWithIcon x:Name="GeneralTab" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/code-in-square-16-white-small.png" Content="General" BorderBrush="{x:Null}" Margin="4,0" d:LayoutOverrides="LeftPosition, RightPosition"/>
             <local:RadioWithIcon x:Name="SearshTab" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/search-in-square-16-white2.png" Content="Search" BorderBrush="{x:Null}" d:LayoutOverrides="LeftPosition, RightPosition" Margin="4,0"/>
-            <local:RadioWithIcon x:Name="CLWTab" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/search-in-square-16-white2.png" Content="CLW" BorderBrush="{x:Null}" Margin="4,0" d:LayoutOverrides="LeftPosition, RightPosition"/>
+            <local:RadioWithIcon x:Name="CLWTab" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/search-in-square-16-white2.png" Content="CLW" BorderBrush="{x:Null}" Margin="4,0" d:LayoutOverrides="LeftPosition, RightPosition" IsChecked="True"/>
             <local:RadioWithIcon x:Name="searchViewTabSwitch_Copy1" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/search-in-square-16-white2.png" Content="Server" BorderBrush="{x:Null}" Margin="4,0" d:LayoutOverrides="LeftPosition, RightPosition"/>
         </StackPanel>
-        <Button x:Name="SaveConfig" Content="Save" HorizontalAlignment="Right" Margin="0,8,10,10" Grid.Row="1" VerticalAlignment="Center" Click="SaveConfig_Click"/>
+        <Button x:Name="SaveConfig" Content="Save" HorizontalAlignment="Right" Margin="0,0,10,0" Grid.Row="1" VerticalAlignment="Center" Click="SaveConfig_Click" Template="{DynamicResource FlatButt}" Width="42" Height="22"/>
     </Grid>
 </Window>
