@@ -114,4 +114,14 @@ C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\ffmpeg\ffmpeg.exe
 C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\releases-notes.md
 C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\scripts\server-python.py
 C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Release\fbhd.csprojResolveAssemblyReference.cache
-C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\release-planned.md
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\Readme.md
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\icons\CLW-ICO.ico
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\icons\FB-ICO.ico
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\curl\note.txt
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\ffmpeg\note.txt
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\curl\curl-ca-bundle.crt
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Release\SFX\mi-notif-5th.wav
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Release\RangePickerMi.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Release\RangePickerMi.baml
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Release\PostInfoWindow.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Release\PostInfoWindow.baml

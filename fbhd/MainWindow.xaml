@@ -10,6 +10,8 @@
 
     <Window.Resources>
 
+        <local:TimeSpanToStringMi x:Key="TimeSpanToStringMi"/>
+
         <local:TaskStatusToTaskBarProgressState x:Key="TaskStatusToTaskBarProgressState"/>
         <local:BooleanToVisibilityInverted x:Key="BooleanToVisibilityInverted"/>
         <local:TaskObjToPropertiesVisibility x:Key="TaskObjToPropertiesVisibility"/>
@@ -2423,6 +2425,99 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="MiExpanderFlat" TargetType="{x:Type Expander}">
+            <Setter Property="Background" Value="{DynamicResource LightBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Expander}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*" x:Name="ContentRow"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2,2,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleButton Template="{DynamicResource MiExpanderFlat_ToggleButton}" Background="{DynamicResource NormalBrush}" IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" OverridesDefaultStyle="True"/>
+                                    <ContentPresenter Grid.Column="1" Margin="4" RecognizesAccessKey="True" ContentSource="Header"/>
+                                </Grid>
+                            </Border>
+                            <Border Visibility="Collapsed" Grid.Row="1" x:Name="ExpandSite" Background="#00000000" BorderThickness="1,0,1,1" CornerRadius="0,0,2,2">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Focusable="false"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter Property="Visibility" Value="Visible" TargetName="ExpandSite"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Border"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" TargetName="Border"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <ControlTemplate x:Key="MiExpanderFlat_ToggleButton" TargetType="{x:Type ToggleButton}">
+            <ControlTemplate.Resources>
+                <Storyboard x:Key="Storyboard1"/>
+            </ControlTemplate.Resources>
+            <Grid Background="#00000000">
+                <Path HorizontalAlignment="Center" x:Name="Down_Arrow" VerticalAlignment="Center" Fill="Gainsboro" Data="M7.4785256,292.92325C7.9194977,292.48228 8.3604698,292.04131 8.8014412,291.60034 8.8014412,292.04131 8.8014412,292.48228 8.8014412,292.92325 8.3604698,292.92325 7.9194977,292.92325 7.4785256,292.92325z" Stroke="Gainsboro"  UseLayoutRounding="True" SnapsToDevicePixels="True" Width="7" Height="7" Margin="0" Stretch="Fill" Visibility="Collapsed"/>
+                <Path Visibility="Visible" HorizontalAlignment="Center" x:Name="Up_Arrow" VerticalAlignment="Center" Fill="#00444444" Data="M66.145833,156.77083L80.830213,171.4552 66.145833,186.13958z" Width="5" Height="9" Stroke="Gainsboro" Margin="0" Stretch="Fill"/>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Stroke" TargetName="Up_Arrow" Value="#FF06FFA4"/>
+                    <Setter Property="Stroke" TargetName="Down_Arrow" Value="#FF06FFA4"/>
+                    <Setter Property="Fill" TargetName="Down_Arrow" Value="#FF06FFA4"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="true"/>
+                <Trigger Property="IsChecked" Value="true">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource Storyboard1}"/>
+                    </Trigger.EnterActions>
+                    <Setter Property="Visibility" TargetName="Up_Arrow" Value="Collapsed"/>
+                    <Setter Property="Visibility" TargetName="Down_Arrow" Value="Visible"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                    <Setter Property="Fill" Value="{DynamicResource DisabledForegroundBrush}" TargetName="Down_Arrow"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <ControlTemplate x:Key="MiRichTextBoxControlTemplate" TargetType="{x:Type RichTextBox}">
+            <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" >
+                <Grid Background="#00000000" Margin="2" >
+                    <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+
+                </Grid>
+            </Border>
+
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="#FF646464"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <ControlTemplate x:Key="MiRichTB" TargetType="{x:Type RichTextBox}">
+            <Themes:ListBoxChrome x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" RenderMouseOver="{TemplateBinding IsMouseOver}" RenderFocused="{TemplateBinding IsKeyboardFocusWithin}" SnapsToDevicePixels="True">
+                <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+            </Themes:ListBoxChrome>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
 
     </Window.Resources>
     <Window.TaskbarItemInfo>
@@ -2450,10 +2545,67 @@
                         </Grid.ColumnDefinitions>
                         <Button x:Name="exitButton" Content="Button" Template="{DynamicResource buttclose}" Background="#FF040405" Foreground="#FFD5D5D5" VerticalAlignment="Center" Margin="0" Grid.Column="2" Width="16" Height="16" HorizontalAlignment="Center" Click="exitButton_Click"/>
                         <Button x:Name="butt_minimize" Content="Button" Template="{DynamicResource butt_minimize}" Background="#FF040405" Foreground="#FFD5D5D5" VerticalAlignment="Center" Margin="0,1" Grid.Column="1" Width="16" Height="16" HorizontalAlignment="Center" Click="butt_minimize_Click"/>
-                        <local:ButtonMi x:Name="pinWindowButt" HorizontalAlignment="Stretch" Margin="3,4,5,3" VerticalAlignment="Stretch" iconSource="media/pin-2-13BRIGHT-blue.png" Width="Auto" Foreground="#FF3399FF" Click="pinWindowButt_Click" Visibility="Collapsed"/>
-                        <ToggleButton x:Name="onTopToggle" Content="ToggleButton" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="16" Height="16" Style="{DynamicResource pinToggle}" IsChecked="{Binding Topmost, ElementName=window}"/>
+                        <ToggleButton x:Name="onTopToggle" Content="ToggleButton" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="16" Height="16" Style="{DynamicResource pinToggle}" IsChecked="{Binding Topmost, ElementName=window}" ToolTip="Stay on top"/>
                     </Grid>
-                    <TextBox x:Name="tb_search" Foreground="#FFC7C7C7" Background="{x:Null}" BorderBrush="#FF2F2F37" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" Margin="0,3,74,0" TextChanged="tb_property_title_TextChanged" HorizontalAlignment="Right" Width="121" Template="{DynamicResource SearchingTextBoxTemplate}"/>
+                    <Grid HorizontalAlignment="Right" Margin="0,0,74,0" Width="140">
+                        <local:SearchQueryControl x:Name="searchQueryControl2" Margin="5,0" VerticalAlignment="Center" onGo="searchQueryControl2_onGo" >
+                            <local:SearchQueryControl.Template>
+                                <ControlTemplate TargetType="{x:Type local:SearchQueryControl}">
+                                    <Grid Background="#00000000">
+                                        <Border x:Name="Border" BorderThickness="1" Padding="2" CornerRadius="0" BorderBrush="#FF2F2F37">
+
+                                            <!-- The implementation places the Content into the ScrollViewer. It must be named PART_ContentHost for the control to function -->
+                                            <Grid Height="24" Background="Black">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="18"/>
+                                                    <ColumnDefinition Width="18"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock x:Name="PART_PLACEHOLDER" Text="Search Videos" Foreground="Gray" Margin="6,4,0,4" Grid.ColumnSpan="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                                <TextBox x:Name="PART_TEXTBOX" Foreground="#FFDEDDDD" Background="Transparent" Style="{DynamicResource SimpleTextBox}" Grid.ColumnSpan="1" HorizontalAlignment="Stretch" BorderBrush="{x:Null}" Width="Auto" VerticalAlignment="Center" Margin="0,0,5,0" FontSize="13.333" CaretBrush="#FFDEDEDE" />
+                                                <Grid Grid.Column="2" Margin="0" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                    <local:ButtonMi x:Name="PART_GO_BUTTON" iconSource="media/search-13-white.png" Width="Auto" Height="Auto" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" MinWidth="16" MinHeight="16" MaxWidth="16" MaxHeight="16" Margin="0"/>
+                                                </Grid>
+                                                <Grid Grid.ColumnSpan="1" Grid.Column="1" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" Width="16" Height="16">
+                                                    <local:ButtonMi x:Name="PART_RESET_BUTTON" iconSource="media/x-16-white.png" Width="Auto" Height="Auto" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" MinWidth="16" MinHeight="16" MaxWidth="16" MaxHeight="16" d:LayoutOverrides="LeftMargin, RightMargin"/>
+
+
+                                                </Grid>
+
+
+                                            </Grid>
+
+                                        </Border>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsEmpty" Value="true">
+                                            <Setter Property="Visibility" TargetName="PART_PLACEHOLDER" Value="Visible"/>
+                                            <Setter Property="Visibility" TargetName="PART_RESET_BUTTON" Value="COLLAPSED"/>
+
+                                        </Trigger>
+                                        <Trigger Property="IsEmpty" Value="false">
+                                            <Setter Property="Visibility" TargetName="PART_PLACEHOLDER" Value="collapsed"/>
+                                            <Setter Property="Visibility" TargetName="PART_RESET_BUTTON" Value="Visible"/>
+
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Border"/>
+                                            <Setter Property="BorderBrush" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Border"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter Property="BorderBrush" Value="#FF40404B" TargetName="Border"/>
+
+                                        </Trigger>
+
+                                    </ControlTemplate.Triggers>
+
+
+
+                                </ControlTemplate>
+                            </local:SearchQueryControl.Template>
+                        </local:SearchQueryControl>
+                    </Grid>
                 </Grid>
                 <Menu x:Name="menu" Height="24" VerticalAlignment="Top"  Margin="0,27,0,0" Style="{DynamicResource miMenu}"   >
 
@@ -2461,9 +2613,9 @@
                     <MenuItem Header="Task" Style="{DynamicResource miMenuItemStyle}" ItemsPanel="{DynamicResource ItemsPanelTemplateMi}" ItemContainerStyle="{DynamicResource MenuItemItemsContanerMi}" UsesItemContainerTemplate="True" >
 
                         <MenuItem Header="New" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="addButton_Click" Icon="{StaticResource NewTaskIcon}"/>
-                        <MenuItem Header="Parse all" Style="{DynamicResource miMenuItemChildTtypeStyle}" Icon="{DynamicResource ParseAllIcon}"/>
-                        <MenuItem Header="Download all" Icon="{DynamicResource DloadAllIcon}"  Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
-                        <MenuItem Header="Delete all" Icon="{DynamicResource DeleteAllIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                        <MenuItem x:Name="ResolveAllButton" Header="Parse all" Style="{DynamicResource miMenuItemChildTtypeStyle}" Icon="{DynamicResource ParseAllIcon}" Click="ResolveAllButton_Click"/>
+                        <MenuItem x:Name="DownloadAllButton" Header="Download all" Icon="{DynamicResource DloadAllIcon}"  Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="DownloadAllButton_Click"/>
+                        <MenuItem x:Name="DeleteAllButton" Header="Delete all" Icon="{DynamicResource DeleteAllIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="DeleteAllButton_Click"/>
                         <MenuItem Header="Export Input"   Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
 
                         <MenuItem Header="Copy to Clip" Icon="{DynamicResource CopyIcon}" Style="{StaticResource miMenuItemChildTtypeStyle}" UsesItemContainerTemplate="True" >
@@ -2477,15 +2629,19 @@
                             <MenuItem Header="audio url" Icon="{DynamicResource CopyAudioIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
                             <MenuItem Header="output location" Icon="{DynamicResource FolderIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
                         </MenuItem>
+                        <MenuItem x:Name="DownloadRawStreamsButton" Header="Download Raw " Icon="{DynamicResource DloadIcon}"  Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="DownloadRawStreamsButton_Click"/>
                     </MenuItem>
                     <MenuItem Header="Options" Style="{DynamicResource miMenuItemStyle}">
-                        <MenuItem Header="Globale output directory" Icon="{DynamicResource FolderIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}" UsesItemContainerTemplate="True">
-                            <MenuItem Header="Select Folder" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                        <MenuItem x:Name="OutputDirectoryMenuItem" Header="Output directory" Icon="{DynamicResource FolderIcon}" Style="{DynamicResource miMenuItemChildTtypeStyle}" UsesItemContainerTemplate="True" ContextMenuOpening="OutputDirectoryMenuItem_ContextMenuOpening" SubmenuOpened="OutputDirectoryMenuItem_SubmenuOpened">
+                            <MenuItem x:Name="SelectOutputDirectoryMenuItem" Header="Select Folder" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="OutpuFolderButt_Click"/>
                             <Separator Foreground="#FF854545" Background="#FFA42C2C" Style="{DynamicResource miseparator}"/>
-                            <MenuItem Header="C:\TOOLS\fbhd-gui"/>
-                            <MenuItem Header="C:\TOOLS\fbhd-gui\fbhd-songs 04-2021"/>
+                            <MenuItem x:Name="recentOutputDir1" Header="recent_1" Click="recentOutputDir_Click" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                            <MenuItem x:Name="recentOutputDir2" Header="recent_2" Click="recentOutputDir_Click" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                            <MenuItem x:Name="recentOutputDir3" Header="recent_3" Click="recentOutputDir_Click" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                            <MenuItem x:Name="recentOutputDir4" Header="recent_4" Click="recentOutputDir_Click" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                            <MenuItem x:Name="recentOutputDir5" Header="recent_5" Click="recentOutputDir_Click" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
                         </MenuItem>
-                        <MenuItem Header="Override behavior" Style="{DynamicResource miMenuItemChildTtypeStyle}" UsesItemContainerTemplate="true">
+                        <MenuItem Header="Override behavior" Style="{DynamicResource miMenuItemChildTtypeStyle}" UsesItemContainerTemplate="true" Visibility="Collapsed">
 
                         </MenuItem>
                         <MenuItem Header="Download Raw Streams" Style="{DynamicResource miMenuItemChildTtypeStyle}" IsCheckable="true"/>
@@ -2501,8 +2657,9 @@
                         <MenuItem x:Name="loadListWatcherPresetButt" Icon="{DynamicResource AddBellIcon}" Header="Load ListWatcher Preset" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="loadListWatcherPresetButt_Click"/>
                     </MenuItem>
                     <MenuItem Header="Tools" Style="{DynamicResource miMenuItemStyle}">
-                        <MenuItem x:Name="Custom_List_Watcher_Wizard" Header="Custom List Watcher Wizard" Style="{DynamicResource miMenuItemChildTtypeStyle}" IsCheckable="True" Unchecked="fsdmnewswatchButt_Unchecked"/>
-                        <MenuItem x:Name="testwindowmuit" Header="__dev__show__window" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="testwindowmuit_Click" Visibility="Collapsed"/>
+                        <MenuItem x:Name="Custom_List_Watcher_Wizard" Header="Custom List Watcher Wizard" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                        <MenuItem x:Name="Show_Console" Header="Show Console" Style="{DynamicResource miMenuItemChildTtypeStyle}" IsCheckable="True" Checked="Show_Console_Checked" Unchecked="Show_Console_Unchecked"/>
+                        <MenuItem x:Name="Clear_Console" Header="Clear Console" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="Clear_Console_Click"/>
                     </MenuItem>
                     <MenuItem Header="Server" Style="{DynamicResource miMenuItemStyle}">
 
@@ -2516,38 +2673,34 @@
                         <MenuItem Header="Presets help" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
                         <MenuItem x:Name="AboutMenuItem" Header="About" Click="AboutMenuItem_Click" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
                     </MenuItem>
-                    <MenuItem Header="Dev_" Style="{DynamicResource miMenuItemStyle}" Visibility="Collapsed">
+                    <MenuItem x:Name="DevMenu" Header="Dev_" Style="{DynamicResource miMenuItemStyle}" Visibility="{Binding AppInfo.IsDev, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <MenuItem x:Name="devShowNotification" Header="ShowNotification" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="devShowNotification_Click"/>
                         <MenuItem x:Name="devRemoveLatestNewsItem" Header="RemoveLatestNewsItem" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="devRemoveLatestNewsItem_Click"/>
                         <MenuItem x:Name="devActivateXMLLW" Header="XMLLW toggle" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="devActivateXMLLW_Click"/>
                         <MenuItem x:Name="uriTestsDev" Header="uriTestsDev" Click="uriTestsDev_Click" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
-                        <MenuItem x:Name="menuItem" Header="toggle regex tester" IsCheckable="True" Style="{DynamicResource miMenuItemChildTtypeStyle}"/>
+                        <MenuItem x:Name="regextester" Header="toggle regex tester" Style="{DynamicResource miMenuItemChildTtypeStyle}" IsCheckable="True"/>
                         <MenuItem x:Name="showPostDev" Header="show post" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="showPostDev_Click"/>
                         <MenuItem x:Name="factoryConfigButt" Header="factory config" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="factoryConfigButt_Click"/>
+                        <MenuItem x:Name="showMainath" Header="Show MainPath" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="showMainath_Click"/>
+                        <MenuItem x:Name="setRangePickerValue" Header="setRangePickerValue" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="setRangePickerValue_Click"/>
+                        <MenuItem x:Name="Dev_gen_purpose" Header="start down raw" Style="{DynamicResource miMenuItemChildTtypeStyle}" Click="dev_show_range_Click"/>
                     </MenuItem>
                 </Menu>
                 <Grid x:Name="toolbox_grd" Height="27" Margin="10,55,2,0" VerticalAlignment="Top">
                     <ToolBarTray Background="#00000000" d:LayoutOverrides="VerticalAlignment, LeftMargin, RightMargin, LeftPosition, RightPosition" Height="29">
                         <ToolBar x:Name="toolBar_Task" Height="29" HorizontalAlignment="Left" Margin="0" Background="Black" Foreground="#FFC9C9C9" Header="" IsManipulationEnabled="True" Style="{DynamicResource MiToolBar}">
-                            <Button x:Name="NewTaskToolButton" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" Click="addButton_Click">
+                            <Button x:Name="NewTaskToolButton" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" Click="addButton_Click" ToolTip="Add Task">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="16"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Image x:Name="image4" Source="media/add-task-16-white-green.png" Height="16" Margin="0,0,0.5,0"/>
+                                    <Image x:Name="image4" Source="media/add-task-16-white-green.png" Height="16" Margin="0,0,0.5,0" />
                                     <TextBlock x:Name="textBlock5" Margin="0" TextWrapping="Wrap" Text="Add Order" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
                                 </Grid>
                             </Button>
-                            <Button x:Name="StartToolButton"  HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding HasSelection}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="16"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Image x:Name="image9" Source="media/start-16-white-vs-like.png" Height="16" Margin="0,0,0.5,0"/>
-                                    <TextBlock x:Name="textBlock10" Margin="0" TextWrapping="Wrap" Text="Delete" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
-                                </Grid>
+                            <Button x:Name="StartToolButton"  HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding HasSelection}" ToolTip="Resolve &amp;&amp; Download" Click="StartToolButton_Click">
+                                <Image x:Name="image9" Source="media/start-16-white-vs-like.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition" />
                             </Button>
                             <Button x:Name="ParseToolBtt" Click="ParseCommaneHandeler" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding HasSelection}">
                                 <Grid>
@@ -2555,11 +2708,11 @@
                                         <ColumnDefinition Width="16"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Image x:Name="image8" Source="media/parse-16-white-blue.png" Height="16" Margin="0,0,0.5,0" Width="16"/>
+                                    <Image x:Name="image8" Source="media/parse-16-white-blue.png" Height="16" Margin="0,0,0.5,0" Width="16" ToolTip="Resolve"/>
                                     <TextBlock x:Name="textBlock9" Margin="0" TextWrapping="Wrap" Text="Delete" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
                                 </Grid>
                             </Button>
-                            <Button x:Name="DloadToolButt" Click="Run_ffmpeg_Click" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                            <Button x:Name="DloadToolButt" Click="Run_ffmpeg_Click" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}" ToolTip="Download">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="16"/>
@@ -2582,16 +2735,16 @@
                             <Grid x:Name="separator_Copy4" Margin="4,0" Width="3" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center">
                                 <Grid x:Name="line5" Margin="0" Width="1" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#FF46464A"/>
                             </Grid>
-                            <Button x:Name="CopyCommand" Click="copy_to_clip_button" Tag="command" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                            <Button x:Name="CopyCommand" Click="copy_to_clip_button" Tag="command" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}" ToolTip="Copy ffmpeg command">
                                 <Image  x:Name="image10" Source="media/copy-16-white-commandline.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
                             </Button>
-                            <Button x:Name="CopyVideo" Click="copy_to_clip_button" Tag="video" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                            <Button x:Name="CopyVideo" Click="copy_to_clip_button" Tag="video" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}" ToolTip="copy video url">
                                 <Image  x:Name="image3" Source="media/copy-16-white-V.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
                             </Button>
-                            <Button x:Name="CopyAudio" Click="copy_to_clip_button" Tag="audio" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                            <Button x:Name="CopyAudio" Click="copy_to_clip_button" Tag="audio" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}" ToolTip="copy audio url">
                                 <Image  x:Name="image11" Source="media/copy-16-white-A-shifted.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
                             </Button>
-                            <Button x:Name="CopyThumb" Click="copy_to_clip_button" Tag="thumb" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}">
+                            <Button x:Name="CopyThumb" Click="copy_to_clip_button" Tag="thumb" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding SelectedTask.IsResolved, FallbackValue=false}" ToolTip="copy thumbnail url">
                                 <Image  x:Name="image12" Source="media/copy-16-white-T.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
                             </Button>
                         </ToolBar>
@@ -2602,41 +2755,34 @@
                                 <ComboBoxItem Content="Skip"/>
                                 <ComboBoxItem Content="Prompt"/>
                             </ComboBox>
-                            <Button x:Name="NewItemDefinitionToolButton1" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="16"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-                                    <Image x:Name="image17" Source="media/folder-16-white.png" Height="16" Margin="0,0,0.5,0"/>
-                                    <TextBlock x:Name="textBlock3" Margin="0" TextWrapping="Wrap" Text="New Item" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
-                                </Grid>
+                            <Button x:Name="NewItemDefinitionToolButton1" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" Click="OutpuFolderButt_Click">
+                                <Image x:Name="image17" Source="media/folder-16-white.png" Height="16" ToolTip="Set current output directory" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
                             </Button>
-                            <Button x:Name="OpenItemsManagerToolButton1" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}">
+                            <Button x:Name="OpenSettingsToolButt" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" Click="preferencesButt_Click">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="16"/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    <Image x:Name="image18" Source="media/sett-2.png" Height="16" Margin="0,0,0.5,0"/>
+                                    <Image x:Name="image18" Source="media/sett-2.png" Height="16" Margin="0,0,0.5,0" ToolTip="Settings"/>
                                     <TextBlock x:Name="textBlock4" Margin="0" TextWrapping="Wrap" Text="Items Manager" Foreground="#FFD3D0D0" Grid.Column="1" Visibility="Collapsed"/>
                                 </Grid>
                             </Button>
                         </ToolBar>
                         <ToolBar x:Name="toolBar_General_Copy1" Height="29" HorizontalAlignment="Left" Margin="0" Style="{DynamicResource MiToolBar}" Background="Black">
-                            <ToggleButton x:Name="toggleButton" Content="Server" Margin="4,0" Template="{DynamicResource MiServerStyleToggle}" Foreground="#FFFF8811" Checked="toggleButton_Checked" Unchecked="toggleButton_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="#FF707070"/>
+                            <ToggleButton x:Name="toggleButton" Content="Server" Margin="4,0" Template="{DynamicResource MiServerStyleToggle}" Foreground="#FFFF8811" Checked="toggleButton_Checked" Unchecked="toggleButton_Unchecked" HorizontalAlignment="Left" VerticalAlignment="Center" BorderBrush="#FF707070" ToolTip="Python server"/>
                         </ToolBar>
                         <ToolBar x:Name="toolBar_General" Height="29" HorizontalAlignment="Left" Margin="0" Style="{DynamicResource MiToolBar}" Background="Black">
-                            <Button x:Name="LoadClwToolButt" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding ExistsSelectedOrder, ElementName=window, Mode=OneWay}" Click="loadListWatcherPresetButt_Click">
-                                <Image  x:Name="image13" Source="media/new-bell-filled-16-white-green.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            <Button x:Name="LoadClwToolButt" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}"  Click="loadListWatcherPresetButt_Click" ToolTip="Load CLW Preset">
+                                <Image  x:Name="image13" Source="media/new-bell-filled-16-white-green.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition" />
                             </Button>
-                            <Button x:Name="StartAllCLW" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding ExistsSelectedOrder, ElementName=window, Mode=OneWay}" Click="StartAllCLW_Click">
-                                <Image  x:Name="image14" Source="media/start-bell-filled-16-white-cyan.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
+                            <Button x:Name="StartAllCLW" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}"  Click="StartAllCLW_Click" ToolTip="Start All">
+                                <Image  x:Name="image14" Source="media/start-bell-filled-16-white-cyan.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition" />
                             </Button>
-                            <Button x:Name="StopAllCLW" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding ExistsSelectedOrder, ElementName=window, Mode=OneWay}" Click="StopAllCLW_Click">
+                            <Button x:Name="StopAllCLW" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" Click="StopAllCLW_Click" ToolTip="Stop All">
                                 <Image  x:Name="image15" Source="media/stop-bell-filled-16-white-lightred.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
                             </Button>
-                            <Button x:Name="OpenCLWwindowToolButt" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" IsEnabled="{Binding ExistsSelectedOrder, ElementName=window, Mode=OneWay}">
+                            <Button x:Name="OpenCLWwindowToolButt" HorizontalAlignment="Left" Margin="0,2" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}"  ToolTip="Open CLW Manager">
                                 <Image  x:Name="image16" Source="media/window-bell-filled-16-white-white.png" Height="16" Width="16" d:LayoutOverrides="Height, LeftPosition, RightPosition, TopPosition, BottomPosition"/>
                             </Button>
                         </ToolBar>
@@ -2679,7 +2825,7 @@
 
                 <GroupBox x:Name="gb_Input" Header="Input" Margin="10,85,0,25" TextOptions.TextFormattingMode="Display" HorizontalAlignment="Left" Width="203" Style="{DynamicResource GroupBoxStyle1}" Foreground="#FFD5D5D5" BorderBrush="#FF2F2F37" UseLayoutRounding="True">
                     <Grid x:Name="grd_wraper" Margin="5,5,-2,5" UseLayoutRounding="True">
-                        <Grid x:Name="controls" Margin="0,10,0,0" VerticalAlignment="Top" Height="18" UseLayoutRounding="True">
+                        <Grid x:Name="controls" Margin="0,10,0,0" VerticalAlignment="Top" Height="18" UseLayoutRounding="True" MouseLeftButtonDown="controls_MouseLeftButtonDown" Background="#00000000">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
@@ -2690,54 +2836,82 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="addButton" Content="Button" Template="{DynamicResource buttonPlus}" Background="#FF040405" Foreground="#FF7DCD79" VerticalAlignment="Center" Margin="0,1" Grid.Column="7" Width="16" Height="16" HorizontalAlignment="Right" Click="addButton_Click" ToolTip="Add new"/>
+                            <Button x:Name="addButton" Content="Button" Template="{DynamicResource buttonPlus}" Background="#FF040405" Foreground="#FF7DCD79" VerticalAlignment="Center" Margin="0,1" Grid.Column="7" Width="16" Height="16" HorizontalAlignment="Right" Click="addButton_Click" ToolTip="Add Task"/>
                             <local:ButtonMi x:Name="savelist" Grid.Column="5" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" d:LayoutOverrides="Height" iconSource="media/save-16-white.png" Width="16" ToolTip="Save list" Visibility="{Binding HasTasks, Converter={StaticResource BooleanToVisibilityConverter}}" Click="savelist_Click"/>
-                            <local:ButtonMi x:Name="removeSelected" Grid.Column="4" HorizontalAlignment="Center" Margin="3.5,1" VerticalAlignment="Center" iconSource="media/redx-16-red2.png" Width="16" ToolTip="Remove Item" Visibility="{Binding HasSelection, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Click="removeSelected_Click"/>
+                            <local:ButtonMi x:Name="removeSelected" Grid.Column="4" HorizontalAlignment="Center" Margin="3.5,1" VerticalAlignment="Center" iconSource="media/redx-16-red2.png" Width="16" ToolTip="Remove Task" Visibility="{Binding HasSelection, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Click="removeSelected_Click"/>
                             <local:ButtonMi x:Name="importListButt" Grid.Column="6" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center" d:LayoutOverrides="Height" iconSource="media/blank-file-4-16 (2)-bright-snaped-list.png" Width="Auto" ToolTip="Import list" Click="importListButt_Click"/>
                         </Grid>
-                        <ListBox x:Name="TasksListBox" ItemTemplate="{DynamicResource TasksLisBoxItemTemplete}" ItemsPanel="{DynamicResource TaksListBoxPanelTemplate}" ItemsSource="{Binding Tasks}" Style="{DynamicResource ListBoxStyle1}" Background="Black" BorderBrush="{x:Null}" Foreground="#FFE0E0E0" ItemContainerStyle="{DynamicResource ListBoxItemStyle1}" HorizontalContentAlignment="Stretch" SelectedItem="{Binding SelectedTask}" Margin="0,33,0,0" SelectionChanged="TasksListBox_SelectionChanged_1" VerticalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Width="188" Grid.IsSharedSizeScope="True"/>
+                        <ListBox x:Name="TasksListBox" ItemTemplate="{DynamicResource TasksLisBoxItemTemplete}" ItemsPanel="{DynamicResource TaksListBoxPanelTemplate}" ItemsSource="{Binding Tasks}" Style="{DynamicResource ListBoxStyle1}" Background="Black" BorderBrush="{x:Null}" Foreground="#FFE0E0E0" ItemContainerStyle="{DynamicResource ListBoxItemStyle1}" HorizontalContentAlignment="Stretch" SelectedItem="{Binding SelectedTask}" Margin="0,33,0,0" SelectionChanged="TasksListBox_SelectionChanged_1" VerticalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Width="188" Grid.IsSharedSizeScope="True" MouseDown="TasksListBox_MouseDown"/>
                     </Grid>
                 </GroupBox>
                 <StackPanel x:Name="grd_Current_selected" Margin="218,95,0,53" Orientation="Vertical" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=TaskWiewTabSwitch, FallbackValue=Collapsed}">
-                    <local:TaskInfo x:Name="taskInfo" coreTaskObject="{Binding SelectedTask, Mode=OneWay}" Visibility="{Binding HasSelection, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=visible, Mode=OneWay}" Margin="4,0,10,0" IconAudio="media/wav-32-white-sharp.png" IconImage="media/image-32-white-2-square.png" IconVideo="media/video-32-white-rect.png" MediaType="{Binding SelectedTask.MediaType}"/>
-                    <GroupBox x:Name="groupMeta" Header="Properties" Margin="4,10,10,0" BorderBrush="#FF2F2F37" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" Style="{DynamicResource GroupBoxStyle1}" BorderThickness="1" SnapsToDevicePixels="True" Visibility="{Binding SelectedTask.ShouldShowProperties, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=collapsed}" VerticalAlignment="Top" Padding="0,0,0,15">
-                        <StackPanel x:Name="stack_properties" Margin="10,14,-2,-6" Orientation="Vertical" VerticalAlignment="Top">
-                            <Grid x:Name="grd_PropertyTitle" Height="34" Margin="10,2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="16*"/>
-                                    <ColumnDefinition Width="71*"/>
-                                    <ColumnDefinition Width="9*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock x:Name="label_Propery" Margin="4,0,0,0" TextWrapping="Wrap" Foreground="#FFCFCFCF" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Title"/>
+                    <local:TaskInfo x:Name="taskInfo" coreTaskObject="{Binding SelectedTask, Mode=OneWay}" Visibility="{Binding HasSelection, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=visible, Mode=OneWay}" Margin="4,0,10,0" IconAudio="media/wav-32-white-sharp.png" IconImage="media/image-32-white-2-square.png" IconVideo="media/video-32-white-rect.png" MediaType="{Binding SelectedTask.MediaType}" ClickedUrl="taskInfo_ClickedUrl"  ClickedOutputPath="taskInfo_ClickedOutputPath" ClickedInfo="taskInfo_ClickedInfo" />
+                    <GroupBox x:Name="groupMeta" Header="Properties" Margin="4,10,10,0" BorderBrush="#FF2F2F37" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" Style="{DynamicResource GroupBoxStyle1}" BorderThickness="1" SnapsToDevicePixels="True" Visibility="{Binding SelectedTask.ShouldShowProperties, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=collapsed}" VerticalAlignment="Top" Padding="0,0,0,15" MaxHeight="200">
+                        <ScrollViewer x:Name="PropertiesScrollView" Margin="10,14,-2,6" VerticalScrollBarVisibility="Auto" Template="{DynamicResource scrolfalt}">
+                            <StackPanel x:Name="stack_properties" Orientation="Vertical" Width="352">
+                                <Grid x:Name="grd_PropertyTitle" Height="34" Margin="10,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16*"/>
+                                        <ColumnDefinition Width="71*"/>
+                                        <ColumnDefinition Width="9*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock x:Name="label_Propery" Margin="4,0,0,0" TextWrapping="Wrap" Foreground="#FFCFCFCF" HorizontalAlignment="Left" VerticalAlignment="Center" Text="Title"/>
 
-                                <TextBox x:Name="tb_property_title" Style="{DynamicResource SimpleTextBox}" Foreground="#FFB6B2B2" Background="{x:Null}" BorderBrush="#FF2F2F37" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" Margin="18,0,18.455,0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Grid.Column="1" VerticalAlignment="Center" TextChanged="tb_property_title_TextChanged" Text="{Binding SelectedTask.TaskProperties.titleSettings.Query, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                                <Button x:Name="butt_propety_title_piker" Content="Button" Template="{DynamicResource butt_open_title_piker}" Background="#FF040405" Foreground="#FFD5D5D5" Margin="5.478,9,5.479,9" Click="butt_propety_title_piker_Click" Grid.Column="2" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-                                <Popup x:Name="popup_titles_picker" Margin="0" StaysOpen="False" HorizontalAlignment="Center" Grid.Column="2" PopupAnimation="Fade" Placement="Center" VerticalAlignment="Center">
-                                    <Border HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" BorderBrush="#FFA09999" BorderThickness="1" Padding="0,8,0,7" >
-                                        <local:PopupPickerMi x:Name="titlePopupPickerMi" Picked="PopupPickerMi_Picked" PairItems="{Binding SelectedTask.TaskProperties.titleSettings.AvailableTitles}"/>
-                                    </Border>
-                                </Popup>
-                            </Grid>
-                            <Grid x:Name="grd_PropertyTitle_Copy" Height="34" Margin="10,2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="117*"/>
-                                    <ColumnDefinition Width="129*"/>
-                                    <ColumnDefinition Width="30*"/>
-                                    <ColumnDefinition Width="29*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock x:Name="label_Propery1" Margin="4,9.5,0,9.5" TextWrapping="Wrap" Foreground="#FFCFCFCF" Text="Thumbnail" VerticalAlignment="Center"/>
-                                <TextBox x:Name="tb_property_title_Copy" Style="{DynamicResource SimpleTextBox}" Foreground="#FFB6B2B2" Background="{x:Null}" BorderBrush="#FF2F2F37" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" Margin="-48,6,11,6" Grid.Column="1" VerticalAlignment="Center" Text="{}{Source}"/>
-                                <Button x:Name="Butt_pick_thumbnail" Content="Button" Template="{DynamicResource Button_image}" Background="#FF040405" Foreground="#FF7DCD79" Margin="0" SnapsToDevicePixels="True" Tag="mp3" ToolTip="Task type" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                <Button x:Name="butt_property_customize_thumbnail" Content="Button" Template="{DynamicResource butt_open_title_piker}" Background="#FF040405" Foreground="#FFD5D5D5" Margin="6.478,9,5.479,9" Click="butt_minimize_Click" Grid.Column="3" d:LayoutOverrides="TopMargin, BottomMargin"/>
-                            </Grid>
-                            <Grid x:Name="grd_PropertyResolution" Height="Auto" Margin="10,0,2,0" Visibility="{Binding SelectedTask.HasVideo, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}">
-                                <TextBlock x:Name="lbl" Margin="4,6,0,0" TextWrapping="Wrap" Foreground="#FFCFCFCF" Text="Resolution" VerticalAlignment="Top" HorizontalAlignment="Left" Width="113"/>
-                                <!--<local:ResolutionPicker x:Name="resolutionPicker" Height="Auto" Width="Auto" d:LayoutOverrides="Height" Margin="0,26,0,0" Resolutions="{Binding SelectedTask, Converter={StaticResource taskToAvailableResolutions}, Mode=OneWay}" selectedResolution="{Binding SelectedTask.TaskProperties.resolutionSettings.UserPicked, Mode=TwoWay}" PickedResolutionChanged="resolutionPicker_ResolutionPicked" ForegroundPicked="#FF20C9BF" Visibility="Collapsed" d:IsHidden="True"/>-->
-                                <ListBox x:Name="LBResolutionPicker" Margin="23,26,24,10" Style="{DynamicResource ListBoxResolutionPicker}" ItemsPanel="{DynamicResource LBResolutionPickerPanelTemplate}" ItemTemplate="{DynamicResource LBResolutionPickerItemTemplate}" ItemContainerStyle="{DynamicResource LBResolutionPickerItemContainerTemplate}" Background="#FF0C0C0C" BorderBrush="{x:Null}" Foreground="#FFDEDEDE" ItemsSource="{Binding SelectedTask.TaskProperties.resolutionSettings.Available , Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" SelectedItem="{Binding SelectedTask.TaskProperties.resolutionSettings.UserPicked, Mode=TwoWay}" SelectionChanged="LBResolutionPicker_SelectionChanged" MinHeight="20"/>
-                            </Grid>
-                        </StackPanel>
+                                    <TextBox x:Name="tb_property_title" Style="{DynamicResource SimpleTextBox}" Foreground="#FFB6B2B2" Background="{x:Null}" BorderBrush="#FF2F2F37" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" Margin="18,0,18.455,0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Grid.Column="1" VerticalAlignment="Center" TextChanged="tb_property_title_TextChanged" Text="{Binding SelectedTask.TaskProperties.titleSettings.Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip=" " ToolTipOpening="tb_property_title_ToolTipClosing"/>
+                                    <Button x:Name="butt_propety_title_piker" Content="Button" Template="{DynamicResource butt_open_title_piker}" Background="#FF040405" Foreground="#FFD5D5D5" Margin="5.478,9,5.479,9" Click="butt_propety_title_piker_Click" Grid.Column="2" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                                    <Popup x:Name="popup_titles_picker" Margin="0" StaysOpen="False" HorizontalAlignment="Center" Grid.Column="2" PopupAnimation="Fade" Placement="Center" VerticalAlignment="Center">
+                                        <Border HorizontalAlignment="Right" Margin="0" VerticalAlignment="Top" BorderBrush="#FFA09999" BorderThickness="1" Padding="0,8,0,7" >
+                                            <local:PopupPickerMi x:Name="titlePopupPickerMi" Picked="PopupPickerMi_Picked" PairItems="{Binding SelectedTask.TaskProperties.titleSettings.AvailableTitles}"/>
+                                        </Border>
+                                    </Popup>
+                                </Grid>
+                                <Grid x:Name="grg_thumb_settings" Height="34" Margin="10,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="117*"/>
+                                        <ColumnDefinition Width="129*"/>
+                                        <ColumnDefinition Width="30*"/>
+                                        <ColumnDefinition Width="29*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock x:Name="label_Propery1" Margin="4,9.5,0,9.5" TextWrapping="Wrap" Foreground="#FFCFCFCF" Text="Thumbnail" VerticalAlignment="Center"/>
+                                    <TextBox x:Name="tb_property_title_Copy" Style="{DynamicResource SimpleTextBox}" Foreground="#FFB6B2B2" Background="{x:Null}" BorderBrush="#FF2F2F37" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" Margin="-48,6,11,6" Grid.Column="1" VerticalAlignment="Center" Text="{}{Auto}" ToolTipOpening="tb_property_title_Copy_ToolTipOpening" ToolTip=" "/>
+                                    <Button x:Name="Butt_pick_thumbnail" Content="Button" Template="{DynamicResource Button_image}" Background="#FF040405" Foreground="#FF7DCD79" Margin="0" SnapsToDevicePixels="True" Tag="mp3" ToolTip="Task type" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Button x:Name="butt_property_customize_thumbnail" Content="Button" Template="{DynamicResource butt_open_title_piker}" Background="#FF040405" Foreground="#FFD5D5D5" Margin="6.478,9,5.479,9" Grid.Column="3" d:LayoutOverrides="TopMargin, BottomMargin"/>
+                                </Grid>
+                                <Expander x:Name="Resolution_expander" Margin="0" Style="{DynamicResource MiExpanderFlat}" Background="Black" BorderBrush="{x:Null}" Header="Quality" Foreground="#FFDCD9D9" IsExpanded="True">
+                                    <Grid x:Name="grd_resolution_settings" Height="Auto" Margin="0" Visibility="{Binding SelectedTask.HasVideo, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}" VerticalAlignment="Bottom" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition">
+                                        <!--<local:ResolutionPicker x:Name="resolutionPicker" Height="Auto" Width="Auto" d:LayoutOverrides="Height" Margin="0,26,0,0" Resolutions="{Binding SelectedTask, Converter={StaticResource taskToAvailableResolutions}, Mode=OneWay}" selectedResolution="{Binding SelectedTask.TaskProperties.resolutionSettings.UserPicked, Mode=TwoWay}" PickedResolutionChanged="resolutionPicker_ResolutionPicked" ForegroundPicked="#FF20C9BF" Visibility="Collapsed" d:IsHidden="True"/>-->
+                                        <ListBox x:Name="LBResolutionPicker" Margin="23,4,24,4" Style="{DynamicResource ListBoxResolutionPicker}" ItemsPanel="{DynamicResource LBResolutionPickerPanelTemplate}" ItemTemplate="{DynamicResource LBResolutionPickerItemTemplate}" ItemContainerStyle="{DynamicResource LBResolutionPickerItemContainerTemplate}" Background="#FF0C0C0C" BorderBrush="{x:Null}" Foreground="#FFDEDEDE" ItemsSource="{Binding SelectedTask.TaskProperties.resolutionSettings.Available, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" SelectedItem="{Binding SelectedTask.TaskProperties.resolutionSettings.UserPicked, Mode=TwoWay}" SelectionChanged="LBResolutionPicker_SelectionChanged" MinHeight="20"/>
+                                    </Grid>
+                                </Expander>
+                                <Expander x:Name="Crop_expander" Margin="0" Style="{DynamicResource MiExpanderFlat}" Background="Black" BorderBrush="{x:Null}" Header="Trim" Foreground="#FFDCD9D9" Expanded="Crop_expander_Expanded">
+                                    <Grid x:Name="grd_crop" Height="65" Margin="0" VerticalAlignment="Bottom" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="288*"/>
+                                            <ColumnDefinition Width="37*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid Margin="16,7,10,0" Background="#00000000">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="26"/>
+                                                <RowDefinition Height="32"/>
+                                            </Grid.RowDefinitions>
+                                            <local:RangePickerMi x:Name="rangepcker" Margin="10,0" RangeChanged="rangepcker_RangeChanged" Height="22" Grid.Row="1" Loaded="rangepcker_Loaded"/>
+                                            <Grid x:Name="crop_inputs" Margin="0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox x:Name="crop_start_tb" Style="{DynamicResource SimpleTextBox}" Foreground="#FFB6B2B2" Background="{x:Null}" BorderBrush="#FF2F2F37" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" TextChanged="tb_property_title_TextChanged" Text="{Binding SelectedTask.TaskProperties.trimmingSettings.Start, Converter={StaticResource TimeSpanToStringMi}, FallbackValue=00:00, Mode=OneWay}" Margin="42,2,26,2" VerticalAlignment="Center"/>
+                                                <TextBlock x:Name="label_Propery2_Copy" Margin="10,0,0,0" TextWrapping="Wrap" HorizontalAlignment="Left" Text="Start:" Foreground="#FFCFCFCF" d:LayoutOverrides="Height" VerticalAlignment="Center"/>
+                                                <TextBox x:Name="crop_to_tb" Style="{DynamicResource SimpleTextBox}" Foreground="#FFB6B2B2" Background="{x:Null}" BorderBrush="#FF2F2F37" TextOptions.TextFormattingMode="Display" SnapsToDevicePixels="True" CaretBrush="#FFEAEAEA" TextChanged="tb_property_title_TextChanged" Text="{Binding SelectedTask.TaskProperties.trimmingSettings.To, FallbackValue=00:00}" Margin="32,2,43,2" VerticalAlignment="Center" Grid.Column="1"/>
+                                                <TextBlock x:Name="label_Propery2_Copy1" Margin="10,5.5,0,5.5" TextWrapping="Wrap" HorizontalAlignment="Left" Text="To:" Foreground="#FFCFCFCF" VerticalAlignment="Center" Grid.Column="1"/>
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </Expander>
+                            </StackPanel>
+                        </ScrollViewer>
                     </GroupBox>
-                    <Grid x:Name="dev_types_tests" HorizontalAlignment="Right" Height="216" Margin="0,0,9,0" Width="57">
+                    <Grid x:Name="dev_types_tests" Height="216" Margin="20,0,9,0" Visibility="Collapsed">
                         <Button x:Name="set_mkv" Content="mkv" Height="27" Click="set_mkv_Click" VerticalAlignment="Top" Visibility="Collapsed"/>
                         <Button x:Name="set_jpg" Content="jpg" Height="27" Margin="0,27,0,0" Click="set_jpg_Click" VerticalAlignment="Top" Visibility="Collapsed"/>
                         <Button x:Name="set_mp4" Content="mp4" Height="27" Margin="0,54,0,0" Click="set_mp4_Click" VerticalAlignment="Top" Visibility="Collapsed"/>
@@ -2746,6 +2920,15 @@
                         <Button x:Name="set_audio" Content="audio" Height="27" Margin="0,0,0,54" Click="set_audio_Click" VerticalAlignment="Bottom" Visibility="Collapsed"/>
                         <Button x:Name="set_vid" Content="video" Height="27" Margin="0,0,0,27" Click="set_vid_Click" VerticalAlignment="Bottom" Visibility="Collapsed"/>
                         <Button x:Name="set_image" Content="image" Height="27" Click="set_image_Click" VerticalAlignment="Bottom" Visibility="Collapsed"/>
+                        <Border Height="71" Margin="43,32,168,0" VerticalAlignment="Top" x:Name="newOutputFileControl" BorderBrush="#7F24DE92" BorderThickness="1">
+                            <Border.Background>
+                                <LinearGradientBrush EndPoint="0,1.5" StartPoint="0,-0.5">
+                                    <GradientStop Color="Black" Offset="0"/>
+                                    <GradientStop Color="#FF2C2C2C" Offset="0.487"/>
+                                    <GradientStop Color="Black" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
                     </Grid>
                 </StackPanel>
                 <Grid x:Name="searchView_grd" Margin="228,87,10,50" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=searchViewTabSwitch}">
@@ -2892,7 +3075,7 @@
                         <TextBlock x:Name="lbl_Verbose_satus" TextWrapping="Wrap" Foreground="White" TextOptions.TextFormattingMode="Display" Text="{Binding verboseStatus, ConverterParameter=count, ElementName=window, FallbackValue=Ready}" Margin="3,3,0,3" HorizontalAlignment="Left" Grid.Column="1" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                         <TextBlock x:Name="lbl_TasksCount" TextWrapping="Wrap" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" Text="{Binding TasksCount, ConverterParameter=count, FallbackValue=Ready, Mode=OneWay, StringFormat=Tasks: \{0:D\}}" Margin="9,2,9,3" Grid.Column="4" Opacity="0.85" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
                         <TextBlock x:Name="ffmpegProcesses" TextWrapping="Wrap" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" Text="{Binding RunningFfmpegCount, StringFormat=FF: \{0\}}" Margin="8,3" Grid.Column="5" Opacity="0.85" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
-                        <local:ButtonMi x:Name="terminal" Margin="2,2,2,3" VerticalAlignment="Stretch" iconSource="media/console-16-white.png" Width="Auto" HorizontalAlignment="Stretch" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                        <local:ButtonMi x:Name="terminal" Margin="2,2,2,3" VerticalAlignment="Stretch" iconSource="media/console-16-white.png" Width="Auto" HorizontalAlignment="Stretch" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Click="terminal_Click"/>
                         <local:ButtonMi d:Visibility="Visible"   x:Name="serverButt" Grid.Column="2" Margin="0" VerticalAlignment="Stretch" iconSource="media/mi-simple-xml-16-white.png" captionVisibility="Visible" textcaption="Server" HorizontalAlignment="Stretch" Width="Auto" Foreground="#FFB6B2B2" Visibility="{Binding IsServerRunning, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=VISIBLE, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <Grid Grid.Column="3" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
                             <Border Margin="0" BorderBrush="#FF2F2F37" BorderThickness="1,0" HorizontalAlignment="Left" Visibility="{Binding ExistLoadedCLWatchers, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -2925,6 +3108,24 @@
                     <local:RadioWithIcon x:Name="searchViewTabSwitch" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/search-in-square-16-white2.png" Content="Search" BorderBrush="{x:Null}" d:LayoutOverrides="LeftPosition, RightPosition" Margin="4,0"/>
                 </StackPanel>
                 <Button x:Name="button" Content="test xml" HorizontalAlignment="Right" Height="28" Margin="0,53,10,0" VerticalAlignment="Top" Width="52" Click="button_Click_2" Style="{DynamicResource SimpleButton}" BorderBrush="White" Background="White" Visibility="Hidden"/>
+                <Grid x:Name="consoleGrdWraper" Margin="0,87,0,23" RenderTransformOrigin="0.5,0.5" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="47*"/>
+                        <RowDefinition Height="20*"/>
+                    </Grid.RowDefinitions>
+                    <Border x:Name="consoleGrd" Margin="0" Background="#B2000000" d:LayoutOverrides="VerticalAlignment" Grid.Row="1" BorderBrush="#FF2F2F37" BorderThickness="1">
+                        <ScrollViewer x:Name="consoleScrollView" Margin="4" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition" Template="{DynamicResource scrolfalt}" VerticalScrollBarVisibility="Auto" >
+                            <RichTextBox x:Name="ConsoleRTB" Background="#00000000" BorderBrush="#FF3E3E3E" Foreground="Lime" SelectionBrush="#FFACACAC" Template="{DynamicResource MiRichTextBoxControlTemplate}" FontFamily="Consolas">
+                                <FlowDocument>
+                                    <Paragraph>
+                                        <Run Text="Hello World!"/>
+                                    </Paragraph>
+                                </FlowDocument>
+                            </RichTextBox>
+                        </ScrollViewer>
+                    </Border>
+                    <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Stretch" Height="4" Margin="2,0" VerticalAlignment="Top" Grid.Row="1" Background="#00494949"/>
+                </Grid>
 
             </Grid>
         </Border>
@@ -2941,10 +3142,13 @@
             </StackPanel>
 
         </Border>
-        <Grid x:Name="regextests" Margin="123,180,22,27" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=menuItem, FallbackValue=collapsed}">
+        <Grid x:Name="regextests" Margin="25,93,22,27" Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=regextester, FallbackValue=collapsed}">
             <TextBlock x:Name="devresult" Height="49" TextWrapping="Wrap" Text="result" VerticalAlignment="Bottom" Background="#FF323232" Foreground="#FFECECEC"/>
             <TextBox x:Name="devregex" Height="67" TextWrapping="Wrap" Text="regex" VerticalAlignment="Top" Background="#FF383838" Foreground="White" TextChanged="devregex_TextChanged"/>
             <TextBox x:Name="devregex_iinput" TextWrapping="Wrap" Text="input" Background="#FF383838" Foreground="White" Margin="0,82,0,97"/>
+            <Button x:Name="button1" Content="Fill regex pattern with Mi.regextest" HorizontalAlignment="Left" Height="38" Margin="31,0,0,54" VerticalAlignment="Bottom" Width="198" Click="button1_Click_1"/>
+            <Button x:Name="Dev_Apply_testing_function" Content="Apply Mi.TestingFunc on input" Height="38" Margin="234,0,127,54" VerticalAlignment="Bottom" Click="Dev_Apply_testing_function_Click"/>
+            <Button x:Name="Dev_RunMassTeser" Content="RunMassTeser" Height="38" Margin="0,0,28,54" VerticalAlignment="Bottom" Click="Dev_RunMassTeser_Click" HorizontalAlignment="Right" Width="94"/>
 
         </Grid>
 

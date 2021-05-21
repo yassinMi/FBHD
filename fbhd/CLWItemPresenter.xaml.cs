@@ -24,5 +24,67 @@ namespace fbhd
         {
             InitializeComponent();
         }
+
+        private void moreActionsButton_Click(object sender, RoutedEventArgs e)
+        {
+            moreActionsPopup.IsOpen = true;
+            
+        }
+
+        private void CopyUrlButt_Click(object sender, RoutedEventArgs e)
+        {
+
+            Clipboard.SetText(this.linklbl.Text);
+            MI.Verbose("URL copied", 2);
+        }
+
+        private async void DloadButton_Click(object sender, RoutedEventArgs e)
+        {
+
+
+            var url = linklbl.Text;
+            //url = "http://fsdmfes.ac.ma/uploads/Docs/Files/2021-05-20-01-54-05_183bddf1b0d6b398ccf9be4dfe32f87bb0364a09.pdf";
+
+            Uri asUri;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out asUri))
+            {
+                MessageBox.Show("bad url"); return;
+            }
+
+
+            var filename = asUri.LocalPath;
+            filename = System.IO. Path.GetFileName(filename);
+
+            var saveDlg = new Ookii.Dialogs.Wpf.VistaSaveFileDialog();
+            saveDlg.FileName = filename;
+
+            var notCanceled = saveDlg.ShowDialog();
+            if ((!notCanceled.HasValue) || !notCanceled.Value)
+            {
+                // action canceled
+                return;
+            }
+
+            
+            filename = saveDlg.FileName;
+
+            var crl = new WebClient.cURL();
+            var downloadResult= await crl.DownloadBinary(url, filename);
+            if (downloadResult.Success)
+            {
+                MessageBox.Show($"Successfully saved {filename}", "downloaded", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show($"couldn't save file, curl exited with code {downloadResult.agentReturnCode}", "failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+        }
+
+        private void title_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Clipboard.SetText(this.title.Text);
+            MI.Verbose("Title copied", 2);
+        }
     }
 }

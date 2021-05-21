@@ -22,7 +22,10 @@ namespace fbhd
         public AboutWindow()
         {
             InitializeComponent();
+            DataContext = new ApplicationInfo();
         }
+
+
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
@@ -33,6 +36,9 @@ namespace fbhd
         {
 
         }
+
+
+        
 
         private void DragableHead_DragOver(object sender, DragEventArgs e)
         {

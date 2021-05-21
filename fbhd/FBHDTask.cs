@@ -8,6 +8,9 @@ using System.IO;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.Linq;
 
 namespace fbhd
 {
@@ -131,11 +134,29 @@ namespace fbhd
 
 
 
+        private double rawDownloadProgress;
+        public double RawDownloadProgress
+        {
+            set { rawDownloadProgress = value;
+                notif(nameof(RawDownloadProgress));
+                notif(nameof(downloadingPercent));
+
+            }
+            get { return rawDownloadProgress; }
+        }
+
+
+
         public double downloadingPercent
         {
             
             get
             {
+                if (RawDownloadMode)
+                {
+                    return RawDownloadProgress;
+                }
+
                 if (ffmpegProgress.isNull == true)
                     return 0;
 
@@ -301,6 +322,13 @@ namespace fbhd
         }
 
 
+       
+
+
+        
+
+
+
 
         /// <summary>
         /// indecates wheather the current type is a video type: i.e: mkv | mp4
@@ -325,12 +353,14 @@ namespace fbhd
 
 
 
-        public async void StartDownload(Post post)
+        public async Task<int> StartDownload(Post post)
         {
+            int downloadActionErrorCode=2; //1 makeArgs, 2: general , 3: pull error
            // MessageBox.Show("mi FBHDTask. startDownload not implemented yet");
 
             //####  DOWNLOAD  ####
             Status = TaskStatus.downloading;
+            this.ProgressCaption = "Wait..";
 
 
             EventHandler<FFMPEG.FFMPEGProgress> onProgAction = (object s,FFMPEG.FFMPEGProgress progress) =>
@@ -351,24 +381,55 @@ namespace fbhd
 
             OutputFile = OutputDirectory + Fucs.filenamify(taskProperties.titleSettings.getResult()
                 + $".{FFMPEG.getExtention(Type)}");
-            string ffmpegArgs = FFMPEG.MakeArgs(this);
-            
+            string ffmpegArgs;
+            try
+            {
+                ffmpegArgs =  FFMPEG.MakeArgs(this);
+            }
+            catch (Exception MakeArgsException)
+            {
+                FailureReason = "Error in FFMPEG.MakeArgs: " + Environment.NewLine +
+                    MakeArgsException.Message;
+                Status = TaskStatus.failed;
+                return 1; //error 1 means make args exception
+
+            }
+
+
             // MessageBox.Show(ffmpegArgs);
             // return;
             // MessageBox.Show(ffmpegArgs);
-            mw.comma.Text = ffmpegArgs;
-            
+            //mw.devregex.Text = ffmpegArgs;
+            mw.ConsoleRTB.Document.Blocks.Add(new Paragraph(new Run("ffmpeg "+ffmpegArgs)));
+            mw.ConsoleRTB.ScrollToEnd();
+            mw.consoleScrollView.ScrollToEnd();
+
             FfmpegTask = new FFMPEG();
             FfmpegTask.OnProgress += onProgAction;
+            FfmpegTask.OnDownloadng+= (s, code) => {
+                this.Dispatcher.Invoke(() =>
+                {
+                    ProgressCaption = "Downloading..";
+                });
+            };
 
-           
             FfmpegTask.OnExitedWithError += (s, code) => {
                 this.Dispatcher.Invoke(() =>
                 {
-                   // MessageBox.Show(FfmpegTask.Builder.ToString().Substring(FfmpegTask.Builder.ToString().Length - 400));
+                    // mw.devregex_iinput.Text = FfmpegTask.Builder.ToString();
+                    // MessageBox.Show(FfmpegTask.Builder.ToString().Substring(Math.Max(0,  FfmpegTask.Builder.ToString().Length - 1200)));
+                    // todo: fill commandline interface with the ffmpeg output
+                    mw.ConsoleRTB.Document.Blocks.Add(new Paragraph(
+                        new Run("----------------------" + Environment.NewLine +
+                        FfmpegTask.Builder.ToString())
+                        { Foreground = new SolidColorBrush(Colors.Yellow) }));
+                    mw.ConsoleRTB.ScrollToEnd();
+                    mw.consoleScrollView.ScrollToEnd();
+
                     FailureReason += $"ffmpg exited with code: {code} " ;
                     Status = TaskStatus.failed;
-                    return;
+
+                    return ;
                 });
             };
 
@@ -383,9 +444,18 @@ namespace fbhd
                 this.Dispatcher.Invoke(() =>
                 {
                     FailureReason += $"{err.Message}.{Environment.NewLine}";
+                    MI.DumpError(err, "Download Action");
+
+                    if(FailureReason.Contains("pull"))
+                    downloadActionErrorCode = 3 ;
+
+
                 });
             };
-            FfmpegTask.OnRunning += (s, rr) => { MI.Verbose("ffmpeg is running"); };
+            FfmpegTask.OnRunning += (s, rr) => {
+                MI.Verbose("ffmpeg is running");
+                FailureReason = "";
+            };
             MI.Verbose("Starting ffmpeg..");
 
 
@@ -406,14 +476,21 @@ namespace fbhd
                 this.IsAborted = true;
 
             }
+
+            //unsafe loop, keeps retrying on pull errors
+            if (downloadActionErrorCode == 3)
+            {
+                return await StartDownload(Post.Value);
+            }
+            return downloadActionErrorCode;
            
         }
-
+        public event EventHandler Resolved;
 
         public async Task<Post?> StartResolve()
         {
 
-            // #### validate ####
+            // #### validate url ####
             Uri uri;
             if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
             {
@@ -421,58 +498,82 @@ namespace fbhd
                 Status = TaskStatus.failed;
                 return null;
             }
-            bool exixts = CheckExistentHTML();
-            //MessageBox.Show(exixts.ToString());
+            ExistsCachedHTML = CheckExistentHTML();
+
             // ####  RESOLVE  ####
             Status = TaskStatus.resolving;
             Post post;
-            try
+            string PagContent; // will hold either the cached page content or a new fetched one
+
+            if (ExistsCachedHTML && !IsResolved) //use the cached page 
             {
-                if (exixts && !IsResolved)
+                PagContent = File.ReadAllText(makeHTMLFileName());
+            }
+            else  //fetch new page 
+            {
+                string tempHtmlFileName = makeHTMLFileName();
+                // fetch post and cach htmk file
+                var PostResult = await new WebClient.cURL().GetTextAdvanced(Url, Headers.FB_Fake_Browser_For_HD_Videos, tempHtmlFileName, true);
+                if (!PostResult.Success)
                 {
-
-                    post =fbhd.Post.fromHTMLContent(File.ReadAllText(makeHTMLFileName()),
-                    StandardPostProperties.stdTitles, StandardPostProperties.stdImages);
-
-
+                    FailureReason = $"curl exited with code: {PostResult.ClientExitCode}";
+                    MI.DumpError(new Exception($"fetching failed, task url: {Url}"),"resolve action");
+                    Status = TaskStatus.failed;
+                    IsResolved = false;
+                    return null;
                 }
-                else
-                {
-                    string tempHtmlFileName = MI.TEMP_HTML_FILES + "\\" + (Url.GetHashCode()) + ".html";
-                    WebClient.GetTextResult PostResult = await new WebClient.cURL().GetTextAdvanced(Url,
-                        Headers.FB_Fake_Browser_For_HD_Videos,
-                       tempHtmlFileName, true
-                        );
-                    if (!PostResult.Success)
-                    {
-                        FailureReason = $"curl exited with code: {PostResult.ClientExitCode}";
-                        Status = TaskStatus.failed;
-                        return null;
-                    }
-                    post = fbhd.Post.fromHTMLContent(PostResult.Text,
-                        StandardPostProperties.stdTitles, StandardPostProperties.stdImages);
-
-                }
-                //Post post = Post.fromHTMLContent(System.IO.File.ReadAllText("C:\\TOOLS\\fbhd-gui\\html\\dummy.html"));
+                PagContent = PostResult.Text;
 
             }
-            catch (Exception hy)
-            {
-                FailureReason = hy.Message;
-                Status = TaskStatus.failed;
 
-                throw;
+            try
+            {
+                IsResolved = false;
+
+                post = fbhd.Post.fromHTMLContent(PagContent,
+                        StandardPostProperties.stdTitles, StandardPostProperties.stdImages);
+
+            }
+            catch (Exception ParsingException)
+            {
+
+                FailureReason = ParsingException.Message;
+                Status = TaskStatus.failed;
+                MI.DumpError(ParsingException, "resolve action");
+
+                //throw;
+                //trace
+                IsResolved = false;
                 return null;
             }
 
+
+            //validate post object
+            if (post.isSomethingWentWrongPage == true)
+            {
+                FailureReason = "host returned Something Went Wrong page";
+                MI.DumpError(new Exception("host returned Something Went Wrong page"), "resolve action");
+
+                Status = TaskStatus.failed;
+                return post;
+            }
             if (post.isPrivate == true)
             {
                 FailureReason = "Target content is private.";
                 Status = TaskStatus.failed;
                 return post;
             }
+            // this validator is obsolete after the DashManifest update
+            if (string.IsNullOrWhiteSpace(post.audioUrl) == true)
+            {
+                FailureReason = "Parsing failed: Audio Url is Missing.";
+                Status = TaskStatus.failed;
+                return post;
+            }
 
             //todo creat an onResolved event 
+            // # update properties 
+
             var rs = TaskProperties.resolutionSettings;
             rs.Available = post.AvailableResolutions;
             rs.isChoiceTargeted = true;
@@ -480,10 +581,13 @@ namespace fbhd
             var ts = TaskProperties.titleSettings;
 
             ts.PostObj = post;
+            TaskProperties.trimmingSettings=new TrimmingSettings(post.Duration);
 
             this.IsResolved = true;
+            Resolved?.Invoke(this, new EventArgs());
+
             notif(nameof(AvailableTitles));
-            //MessageBox.Show(post.audioUrl);
+           // notif(nameof(TrimmingTo));
 
             Status = TaskStatus.pending;
             return post;
@@ -492,7 +596,150 @@ namespace fbhd
 
 
 
+        public string getChosedVideoStream()
+        {
+            string resolutionstr = taskProperties.resolutionSettings.getResult().serialized;
 
+            VideoRepresentation? pickedVr= this.Post.Value.DashManifest.VideoRepresentations.Find((vr) =>vr.FBQualityLabel== resolutionstr);
+            if (pickedVr == null) throw new Exception("pickedVr NullRef");
+            return pickedVr.Value.BaseUrl;
+
+        }
+
+        private bool rawDownloadMode;
+        public bool RawDownloadMode
+        {
+            set { rawDownloadMode = value; notif(nameof(RawDownloadMode)); }
+            get { return rawDownloadMode; }
+        }
+
+
+        private string progressCaption;
+        public string ProgressCaption
+        {
+            set { progressCaption = value; notif(nameof(ProgressCaption)); }
+            get { return progressCaption; }
+        }
+
+
+
+
+        public async void StartStart()
+        {
+
+
+
+            Post= await StartResolve();
+            
+            if(IsResolved&& Post.HasValue)
+            StartDownload(Post.Value);
+            return;
+        }
+
+
+        public struct DownloadRawResult
+        {
+           public int totalResourcesCC, SuccessfullyDownloadedCC;
+        }
+
+        public async Task<DownloadRawResult> StartDownloadRawStreams()
+        {
+
+
+            var result= new DownloadRawResult();
+            RawDownloadMode = true;
+            WebClient.cURL crl = new WebClient.cURL();
+            crl.AfterArgs = " -k"; // insecure flag solves the connection was reset and the error 60 problems
+            string name = Fucs.filenamify(taskProperties.titleSettings.getResult());
+
+            // # setting up curl downloader
+            crl.DateRecieved += (s, e) => {
+               // MI.ConsoleLog("[curl]: " + e);
+            };
+            crl.onProgress += (s, e) => {
+
+                this.RawDownloadProgress = e.Percent*100;
+                
+                MI.ConsoleLog(e.Percent.ToString());
+            };
+            crl.ProcessExited += (s,e) => {
+                MI.ConsoleLog($"[curl exited with code {e}]");
+            };
+
+             Status = TaskStatus.downloading;
+
+
+            result.totalResourcesCC = 3;
+            // # video
+            ProgressCaption = "[1/3]: video stream";
+            string VidOutputFileName = $"{OutputDirectory}{name}-vid-rc";
+            MI.ConsoleLog($"downloading raw video at {VidOutputFileName}");
+            var chosedVidUrl = FFMPEG.UrlAdd443Port(getChosedVideoStream()); // this seems to solve the curl 34 error oppen ssl connection was reset after many tests
+            WebClient.DownloadResult vidDLResult;
+            do
+            {
+                vidDLResult = await crl.DownloadBinary(chosedVidUrl, VidOutputFileName);
+                MI.ConsoleLog($"[curl returned code {vidDLResult.agentReturnCode}]");
+
+            } while (vidDLResult.agentReturnCode==35);
+            if (vidDLResult.Success)
+            {
+                result.SuccessfullyDownloadedCC++;
+            }
+            else
+            {
+                MI.ConsoleLog($"[curl failed with code {vidDLResult.agentReturnCode}]");
+            }
+            //# image
+            ProgressCaption = "[2/3]: image stream";
+            string ImgOutputFileName = $"{OutputDirectory}{name}-img-rc";
+            MI.ConsoleLog($"downloading raw image at {ImgOutputFileName}");
+            string choosedThumb = Fucs.getFirstNonNull(Post.Value.Images.ToList().ConvertAll<string>((item) => item.Value).ToArray());
+            WebClient.DownloadResult ImgDLResult;
+            do
+            {
+                ImgDLResult = await crl.DownloadBinary(choosedThumb, ImgOutputFileName);
+                MI.ConsoleLog($"[curl returned code {ImgDLResult.agentReturnCode}]");
+
+            } while (ImgDLResult.agentReturnCode == 35);
+            if (ImgDLResult.Success)
+            {
+                result.SuccessfullyDownloadedCC++;
+            }
+            else
+            {
+                MI.ConsoleLog($"[curl failed with code {ImgDLResult.agentReturnCode}]");
+            }
+
+
+            //# audio
+            ProgressCaption = "[3/3]: audio stream";
+            string AudOutputFileName = $"{OutputDirectory}{name}-aud-rc";
+            MI.ConsoleLog($"downloading raw audio at {AudOutputFileName}");
+            string choosedAud = Post.Value.audioUrl;
+            WebClient.DownloadResult AudDLResult;
+            do
+            {
+                AudDLResult = await crl.DownloadBinary(choosedAud, AudOutputFileName);
+                MI.ConsoleLog($"[curl returned code {AudDLResult.agentReturnCode}]");
+
+            } while (AudDLResult.agentReturnCode == 35);
+            if (AudDLResult.Success)
+            {
+                result.SuccessfullyDownloadedCC++;
+            }
+            else
+            {
+                MI.ConsoleLog($"[curl failed with code {AudDLResult.agentReturnCode}]");
+            }
+
+
+
+            Status = TaskStatus.pending;
+
+            return result;
+
+        }
 
 
 
@@ -530,7 +777,7 @@ namespace fbhd
         }
 
         /// <summary>
-        /// specifies wheather or not a pre-fetched HTML fle exists in the html countainer folder
+        /// indicates whether or not a pre-fetched HTML fle exists in the html countainer folder
         /// used for avoiding re fetching the same content, 
         /// NOTE: this does'nt performe the file chekint this is just a get/set property ,
         /// that said, use the CheckExistentHTML methode to update this
@@ -590,7 +837,7 @@ namespace fbhd
         {
             string args = "/select,\"" + OutputFile + "\"";
             args = args+"";
-            MessageBox.Show(args);
+           // MessageBox.Show(args);
             Process p = Fucs.constructProcess("explorer", args );
             await Task.Run(new Action(() => {
                 p.Start();
@@ -605,11 +852,21 @@ namespace fbhd
         {
             try
             {
-                await Task.Run(new Action(() => {
+                if (File.Exists(OutputFile))
+                {
+                    await Task.Run(new Action(() => {
 
-                    File.Delete(OutputFile);
+                        File.Delete(OutputFile);
 
-                }));
+                    }));
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show("File does not exist");
+                    return false;
+
+                }
 
             }
             catch (Exception)
@@ -624,7 +881,7 @@ namespace fbhd
 
         string makeHTMLFileName()
         {
-            return MI.TEMP_HTML_FILES + "\\" + this.url.GetHashCode().ToString() + ".html";
+            return MI.TEMP_HTML_FILES + "\\" + Math.Abs( this.url.GetHashCode()).ToString() + ".html";
         }
 
 

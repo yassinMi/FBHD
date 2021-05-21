@@ -30,9 +30,15 @@ namespace fbhd
         private void proceed()
         {
             //return;
-            if(tb_url.Text == "")
+            if(tb_url.Text == "" && ApplicationInfo.IsDev)
             {
-                tb_url.Text = "https://www.facebook.com/1018880351564908/posts/3119790674807188/https://www.facebook.com/274711329850736/videos/1885892988208359/https://www.facebook.com/fatty0028/videos/446807919611792/https://www.facebook.com/ChillKKoMusic/videos/542385369786669/https://www.facebook.com/TheGalaxyNS/videos/899251123836087/;https://www.facebook.com/247282553161497/posts/306715487218203/https://www.facebook.com/TheGalaxyNS/videos/243434217053056/https://www.facebook.com/103828303794732/videos/108587426652153/https://www.facebook.com/backgroundmusicstore/videos/1088943091584575/https://www.facebook.com/backgroundmusicstore/videos/776990662996052/";
+                // dev only autofill for testing purposes
+                tb_url.Text = "https://www.facebook.com/1018880351564908/posts/3119790674807188/https://www.facebook.com/fatty0028/videos/446807919611792/https://www.facebook.com/ChillKKoMusic/videos/542385369786669/https://www.facebook.com/TheGalaxyNS/videos/899251123836087/;https://www.facebook.com/TheGalaxyNS/videos/243434217053056/https://www.facebook.com/103828303794732/videos/108587426652153/https://www.facebook.com/backgroundmusicstore/videos/1088943091584575/";
+            }
+            if(tb_url.Text == "mi")
+            {
+                // dev and production auto fill (should not stay around in stable versions)
+                tb_url.Text = "https://www.facebook.com/1018880351564908/posts/3119790674807188/https://www.facebook.com/fatty0028/videos/446807919611792/https://www.facebook.com/ChillKKoMusic/videos/542385369786669/https://www.facebook.com/TheGalaxyNS/videos/899251123836087/;https://www.facebook.com/TheGalaxyNS/videos/243434217053056/https://www.facebook.com/103828303794732/videos/108587426652153/https://www.facebook.com/backgroundmusicstore/videos/1088943091584575/";
             }
             List<string> urls =  Fucs.extractUrls(tb_url.Text);
             foreach (string url_item in urls)

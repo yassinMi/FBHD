@@ -1,0 +1,101 @@
+﻿<UserControl x:Name="userControl" x:Class="fbhd.RangePickerMi"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:fbhd"
+             mc:Ignorable="d" d:DesignWidth="217" UseLayoutRounding="True" Height="32" SnapsToDevicePixels="True">
+    <UserControl.Resources>
+        <local:RangePickerPercentToPosition x:Key="RangePickerPercentToPosition"/>
+        <Style x:Key="ThumbMiHandleStyle" d:IsControlPart="True" TargetType="{x:Type Thumb}">
+            <Setter Property="SnapsToDevicePixels" Value="true"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid>
+                            <Path  x:Name="Handle" Data="m 97.895833,80.041667 5.291667,5.291666 0,11.90625 H 92.604167 l 0,-11.90625 z" Stretch="Fill" Stroke="{TemplateBinding BorderBrush}" UseLayoutRounding="False" Width="12" Height="16" Fill="{TemplateBinding Background}" AllowDrop="True" MouseLeftButtonDown="MaxHandle_MouseLeftButtonDown" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <!--<Setter   Property="Stroke" TargetName="Handle" Value="#FF05A277"/>-->
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Storyboard x:Key="minHandleFocus">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="ThumbMin">
+                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#FF26B08A"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="minHandleUnfocus">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="ThumbMin">
+                <EasingColorKeyFrame KeyTime="0:0:0.2" Value="#FF4C4F4F"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="maxHandleFocus">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="ThumbMax">
+                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#FF26B08A"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="maxHandleUnfocus">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="ThumbMax">
+                <EasingColorKeyFrame KeyTime="0:0:0.2" Value="#FF4C4F4F"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+
+        <Storyboard x:Key="innerBorderFocus">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="InnerBorder">
+                <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#FFB8BBBA"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="innerBorderUnfocus">
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="InnerBorder">
+                <EasingColorKeyFrame KeyTime="0:0:0.2" Value="#FF4C4F4F"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="Storyboard1"/>
+    </UserControl.Resources>
+    <UserControl.Triggers>
+
+        <EventTrigger SourceName="ThumbMax" RoutedEvent="FrameworkElement.MouseEnter" >
+            <BeginStoryboard Storyboard="{StaticResource maxHandleFocus}"/>
+            <BeginStoryboard x:Name="innerBorderFocus_BeginStoryboard" Storyboard="{StaticResource innerBorderFocus}"/>
+        </EventTrigger>
+        <EventTrigger SourceName="ThumbMax" RoutedEvent="FrameworkElement.MouseLeave" >
+            <BeginStoryboard Storyboard="{StaticResource maxHandleUnfocus}"/>
+            <BeginStoryboard x:Name="innerBorderUnfocus_BeginStoryboard1" Storyboard="{StaticResource innerBorderUnfocus}"/>
+        </EventTrigger>
+
+
+        <EventTrigger RoutedEvent="UIElement.MouseEnter" SourceName="ThumbMin">
+            <BeginStoryboard Storyboard="{StaticResource minHandleFocus}"/>
+            <BeginStoryboard x:Name="innerBorderFocus_BeginStoryboard1" Storyboard="{StaticResource innerBorderFocus}"/>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="UIElement.MouseLeave" SourceName="ThumbMin">
+            <BeginStoryboard x:Name="minHandleUnfocus_BeginStoryboard" Storyboard="{StaticResource minHandleUnfocus}"/>
+            <BeginStoryboard x:Name="innerBorderUnfocus_BeginStoryboard" Storyboard="{StaticResource innerBorderUnfocus}"/>
+        </EventTrigger>
+
+    </UserControl.Triggers>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Border x:Name="OutterBorder" Margin="0" BorderThickness="1" BorderBrush="#FF2F2F37">
+            <Border x:Name="InnerBorder" Margin="0" BorderThickness="1" Background="{DynamicResource MiBrush}" BorderBrush="#FFACACAC"/>
+        </Border>
+        <Canvas Margin="0" Grid.Row="1">
+            <Path x:Name="MinHandle" Data="m 97.895833,80.041667 5.291667,5.291666 0,11.90625 H 92.604167 l 0,-11.90625 z" Stretch="Fill" Stroke="#FFE8E8E8" UseLayoutRounding="False" Width="12" Height="16"  Margin="0" StrokeDashArray="1 0" Fill="#00000000" Visibility="Collapsed"/>
+            <Thumb x:Name="ThumbMin" Canvas.Left="30" Style="{DynamicResource ThumbMiHandleStyle}" Canvas.Top="0" DragStarted="thumb_DragStarted" DragDelta="thumb_DragDelta" Background="{DynamicResource MiBrush}" BorderBrush="#FF4C4F4F" MouseEnter="ThumbMin_MouseEnter" MouseLeave="ThumbMin_MouseLeave"/>
+            <Thumb x:Name="ThumbMax" Canvas.Left="195" Style="{DynamicResource ThumbMiHandleStyle}" Canvas.Top="0" DragStarted="thumb_DragStarted" DragDelta="thumb_DragDelta" BorderBrush="#FF4C4F4F" Background="{DynamicResource MiBrush}" MouseEnter="ThumbMax_MouseEnter" MouseLeave="ThumbMax_MouseLeave"/>
+
+        </Canvas>
+
+    </Grid>
+</UserControl>

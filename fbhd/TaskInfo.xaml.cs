@@ -158,6 +158,12 @@ namespace fbhd
         public event PropertyChangedEventHandler PropertyChanged;
 
 
+        public event EventHandler ClickedUrl;
+        public event EventHandler ClickedOutputPath;
+        public event EventHandler ClickedInfo;
+
+
+
 
 
 
@@ -347,8 +353,10 @@ namespace fbhd
             }
         }
 
-        private void abort_butt_Click(object sender, RoutedEventArgs e)
+        private async void abort_butt_Click(object sender, RoutedEventArgs e)
         {
+            await Task.Delay(1);
+
             coreTaskObject.aborteFfmpegProcess();
         }
 
@@ -377,11 +385,16 @@ namespace fbhd
 
         private async void miDeleteFile_Click(object sender, RoutedEventArgs e)
         {
-            bool success = await coreTaskObject.DeleteOutputFile();
-            if (success)
+            var confirm = MessageBox.Show($"file {coreTaskObject.OutputFile} will be deleted", "confirm", MessageBoxButton.OKCancel, MessageBoxImage.Information);
+            if(confirm == MessageBoxResult.OK)
             {
-                MessageBox.Show("file deleted");
+                bool success = await coreTaskObject.DeleteOutputFile();
+                if (success)
+                {
+                    MessageBox.Show("File deleted","success", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
+            
         }
 
         private void resetTask_Click(object sender, RoutedEventArgs e)
@@ -397,6 +410,21 @@ namespace fbhd
         private void kill_butt_Click(object sender, RoutedEventArgs e)
         {
             coreTaskObject.KillFfmpegProcess();
+        }
+
+        private void lblTaskName_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ClickedUrl?.Invoke(this, new EventArgs());
+        }
+
+        private void lbl_outputPath_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ClickedOutputPath?.Invoke(this, new EventArgs());
+        }
+
+        private void ShowInfoWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClickedInfo?.Invoke(this, new EventArgs());
         }
     }
 

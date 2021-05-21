@@ -17,7 +17,7 @@
     <Border BorderBrush="#FF333333" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="16"/>
+                <RowDefinition Height="20"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
@@ -113,7 +113,7 @@
                     </Grid>
                 </Border>
             </Grid>
-            <local:ButtonMi x:Name="CloseButt" HorizontalAlignment="Right" Height="16" Margin="0,0,5,0" VerticalAlignment="Top" Width="16" iconSource="media/x-16-white.png" Click="CloseButt_Click"/>
+            <local:ButtonMi x:Name="CloseButt" HorizontalAlignment="Right" Height="16" Margin="0,4,5,0" VerticalAlignment="Top" Width="16" iconSource="media/x-16-white.png" Click="CloseButt_Click"/>
 
 
         </Grid>

@@ -9,6 +9,34 @@
              d:DesignHeight="115" d:DesignWidth="400" TextOptions.TextFormattingMode="Display">
     <UserControl.Resources>
         <local:EmptyTextConverter x:Key="EmptyTextConverter"/>
+        <Style x:Key="MiTB_Highlightable" TargetType="{x:Type TextBlock}">
+            <Style.Resources>
+                <Storyboard x:Key="zaga"/>
+                <Storyboard x:Key="Highlight">
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" >
+                        <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#FFFFFF"/>
+                    </ColorAnimationUsingKeyFrames>
+                </Storyboard>
+                <Storyboard x:Key="uNHighlight">
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" >
+                        <EasingColorKeyFrame KeyTime="0:0:0.2" Value="#FFC1C1C1"/>
+                    </ColorAnimationUsingKeyFrames>
+                </Storyboard>
+            </Style.Resources>
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+            <Setter Property="TextTrimming" Value="None"/>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="FrameworkElement.Loaded"/>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard x:Name="Highlight_BeginStoryboard" Storyboard="{StaticResource Highlight}"/>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard  Storyboard="{StaticResource uNHighlight}"/>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <Grid>
 
@@ -20,16 +48,57 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock x:Name="title" Height="Auto" Margin="10,0,23,2" Text="{Binding Title, FallbackValue='ivezho hmozehoi hemzoihmioze zlvkjlk lzjml zmjml ezml kmlze mlhmoei '}" FontSize="14.667" Foreground="#FFD1D1D1" UseLayoutRounding="True" TextWrapping="Wrap" ClipToBounds="True" SnapsToDevicePixels="True"/>
+                    <TextBlock x:Name="title" Height="Auto" Margin="10,0,23,2" Text="{Binding Title, FallbackValue='ivezho hmozehoi hemzoihmioze zlvkjlk lzjml zmjml ezml kmlze mlhmoei '}" FontSize="14.667" Foreground="#FFD1D1D1" UseLayoutRounding="True" TextWrapping="Wrap" ClipToBounds="True" SnapsToDevicePixels="True" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}" Style="{DynamicResource MiTB_Highlightable}" MouseLeftButtonUp="title_MouseLeftButtonUp"/>
                     <TextBlock x:Name="subTitle" Height="Auto" Margin="10,2,23,2" Text="{Binding SubTitle, FallbackValue=SUB TITLE}" Foreground="#FF929292" UseLayoutRounding="True" TextWrapping="Wrap" ClipToBounds="True" SnapsToDevicePixels="True" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Visibility="{Binding SubTitle, ConverterParameter=true, Converter={StaticResource EmptyTextConverter}}"/>
-                    <TextBlock x:Name="linklbl" Height="Auto" Margin="10,7,31,6" TextWrapping="Wrap" Text="{Binding Link, FallbackValue=https://abc.com/News/1}" Foreground="#FF007ACC" Cursor="Hand" Grid.Row="2" VerticalAlignment="Center" MaxHeight="32" TextTrimming="CharacterEllipsis">
+                    <TextBlock x:Name="linklbl" Height="Auto" Margin="10,7,31,6" TextWrapping="Wrap" Text="{Binding Link, FallbackValue=https://abc.com/News/1}" Foreground="#FF007ACC" Cursor="Hand" Grid.Row="2" VerticalAlignment="Center" MaxHeight="32" TextTrimming="CharacterEllipsis" ToolTip="{Binding Text, RelativeSource={RelativeSource Self}}">
 						<i:Interaction.Triggers>
 							<i:EventTrigger EventName="MouseLeftButtonDown">
 								<ei:LaunchUriOrFileAction Path="{Binding Text, ElementName=linklbl}"/>
 							</i:EventTrigger>
 						</i:Interaction.Triggers>
                     </TextBlock>
-                    <local:ButtonMi HorizontalAlignment="Right" Margin="0,0,10,0" Grid.Row="1" Width="Auto" iconSource="media/arow-down-white-mi-7x7.png" VerticalAlignment="Center" Grid.RowSpan="2" textcaption="More properties"/>
+                    <Grid HorizontalAlignment="Right" Height="16" Margin="0,10,5,0" VerticalAlignment="Top" Width="16">
+                        <Button x:Name="moreActionsButton" HorizontalAlignment="Left" Margin="0" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" ToolTip="Menu" Click="moreActionsButton_Click" BorderThickness="0">
+                            <Grid Height="16" Width="16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Image x:Name="image2" Source="media/3dots-vertical-16-white.png" Height="16" Margin="0,0,0.5,0" Width="16"/>
+                                <Popup x:Name="moreActionsPopup" Margin="0,0,0,-2" PopupAnimation="Slide" Placement="Left" StaysOpen="False">
+                                    <Border BorderBrush="#FF5B5A5A" BorderThickness="1">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Button x:Name="DloadButton" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" ToolTip="Download" HorizontalAlignment="Left" Margin="2,2,0,2" BorderThickness="0" Click="DloadButton_Click">
+                                                <Grid Height="16" Background="#00000000">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="18"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Image x:Name="image1" Source="media/dload-thin-16-white.png" Height="16" Width="16" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    <TextBlock x:Name="textBlock" Height="16" Margin="0" TextWrapping="Wrap" Text="Download" VerticalAlignment="Center" Foreground="#FFDEDEDE"  Grid.Column="1"/>
+                                                </Grid>
+                                            </Button>
+                                            <Button x:Name="CopyUrlButt" VerticalAlignment="Center" Style="{DynamicResource SimplerStyleMi}" Background="#00000000" BorderBrush="{x:Null}" ToolTip="Copy URL to clip" HorizontalAlignment="Left" Margin="2,2,0,2" Grid.Row="1" BorderThickness="0" Click="CopyUrlButt_Click">
+                                                <Grid Height="16" Background="#00000000">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="18"/>
+                                                        <ColumnDefinition/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock x:Name="textBlock1" Height="16" Margin="0" TextWrapping="Wrap" Text="Copy Url" VerticalAlignment="Center" Foreground="#FFDEDEDE"  Grid.Column="1"/>
+                                                    <Image x:Name="image3" Source="media/copy-fancy-16-whte-big.png" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+                        </Button>
+
+                    </Grid>
 
                 </Grid>
             </Border>

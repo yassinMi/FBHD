@@ -156,7 +156,11 @@ namespace fbhd
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-           
+            ApplicationInfo i = new ApplicationInfo();
+            if (ApplicationInfo.IsDev)
+            {
+               
+            }
          }
 
 
@@ -169,7 +173,7 @@ namespace fbhd
             titlePopupPickerMi.GetBindingExpression(PopupPickerMi.PairItemsProperty).UpdateTarget();
             taskInfo.GetBindingExpression(Grid.VisibilityProperty).UpdateTarget();
             groupMeta.GetBindingExpression(GroupBox.VisibilityProperty).UpdateTarget();
-            grd_PropertyResolution.GetBindingExpression(Grid.VisibilityProperty).UpdateTarget();
+           // grd_PropertyResolution.GetBindingExpression(Grid.VisibilityProperty).UpdateTarget();
 
         }
         private void dragable_DragOver(object sender, DragEventArgs e)
@@ -203,59 +207,10 @@ namespace fbhd
         private void GoButton_Click(object sender, RoutedEventArgs e)
         {
 
-            //string ui = char.ConvertFromUtf32(int.Parse("0647", NumberStyles.AllowHexSpecifier));
-           string ui =  Fucs.decodeUtf("");
-            MessageBox.Show(ui);
-            return;
-           
-                //      here the action run its command on cmd 
-              
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
-                startInfo.FileName = "ffmpeg.exe";
-                startInfo.Arguments = "-i \"cs-aot92.mp4\" \"cs-aot9.mkv\" -y";
-            startInfo.WorkingDirectory = "C:\\TOOLS\\fbhd";
+         
 
-            startInfo.CreateNoWindow = false;
-            
-           startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardInput = true;
-
-            startInfo.UseShellExecute = false;
-            process.StartInfo = startInfo;
-
-
-            process.Exited += new EventHandler((object s, EventArgs er) =>
-            {
-                MessageBox.Show("process exited with code: ");
-               
-               
-            });
-            process.OutputDataReceived += new System.Diagnostics.DataReceivedEventHandler((object s , System.Diagnostics.DataReceivedEventArgs ar)=> {
-
-
-                MessageBox.Show(ar.Data);
-            });
-            
-
-            process.Start();
-           
-           
-
-            outp = process.StandardOutput;
-            // process.BeginOutputReadLine();
-
-
-
-           
-
-
-           // MessageBox.Show("au");
-            
-
-            string[] args = Environment.GetCommandLineArgs();
-            
-
+         
+          
 
 
         }
@@ -267,14 +222,7 @@ namespace fbhd
 
         private async  void read_Click(object sender, RoutedEventArgs e)
         {
-           Process my=  Fucs.constructProcess("python.exe", "C:\\TOOLS\\fbhd-gui\\scripts\\stdout.py");
-
-            
-            my.Start();
-            my.StandardInput.AutoFlush = true;
-            await Task.Delay(2000);
            
-            my.StandardInput.WriteLine("\x3");
 
             
            
@@ -341,17 +289,28 @@ namespace fbhd
 
             if (mainSession.SelectedTask == task)
             {
+                //select the next or previous task behavior
               //  task.IsSelected = false; //lb
                 int ix = mainSession.Tasks.IndexOf(task) +1;
-               // if (mainSession.Tasks.Count > ix)
-               // ((FBHDTask)mainSession.Tasks[ ix ]).IsSelected = true;
-              //  else
-               // {
-               //     if(ix - 2>-1)
-                 //   (mainSession.Tasks[ix - 2]).IsSelected = true;
+               if (mainSession.Tasks.Count > ix)
+                {
+                    //select next task
+                    FBHDTask nextTask=((FBHDTask)mainSession.Tasks[ ix ]);
+                    TasksListBox.SelectedItem = nextTask;
+
+                }
+                else
+                {
+                   // select previous task
+                      if(ix - 2 > -1)
+                    {
+                        FBHDTask nextTask = ((FBHDTask)mainSession.Tasks[ix - 2]);
+                        TasksListBox.SelectedItem = nextTask;
+
+                    }
                     
 
-               // }
+                }
 
 
             }
@@ -390,7 +349,7 @@ namespace fbhd
         }
         */
 
-        public void addNewFBHDTask(string url_, TaskType type)
+        public void addNewFBHDTask(string url_, TaskType type, bool autoSelect = true)
         {
             FBHDTask nwtsk = new FBHDTask(mainSession.Tasks);
 
@@ -407,11 +366,21 @@ namespace fbhd
             ts.Query = "{Auto}";
             ts.SourceFallbacks =
                 StandardPostProperties.stdTitles;
+            nwtsk.Resolved += (s, e) =>
+            {
+                //todo restrict only current selected task
+                if (mainSession.SelectedTask == null) return;
+                if (mainSession.SelectedTask.IsResolved == false) return;
+                rangepcker.Range = mainSession.SelectedTask.TaskProperties.trimmingSettings.NormalizedRange;
+                crop_start_tb.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+                crop_to_tb.GetBindingExpression(TextBox.TextProperty).UpdateTarget();
+
+            }; 
             nwtsk.TaskProperties.titleSettings = ts;
             mainSession.Tasks.Add(nwtsk);
             mainSession.HasTasks = true; // this true value does not go anywhere it just triggers the setter so that the notif gets fired
             mainSession.TasksCount = 222; // this setter only notifies the change 
-            TasksListBox.SelectedItem = nwtsk;
+            if(autoSelect) TasksListBox.SelectedItem = nwtsk;
             TasksListBox.ScrollIntoView(nwtsk);
         }
 
@@ -525,6 +494,7 @@ namespace fbhd
 
         private void tb_property_title_TextChanged(object sender, TextChangedEventArgs e)
         {
+            
         }
 
         private void resolutionPicker_ResolutionPicked(object sender, ResolutionPicker.ResolutionPickedArgs e)
@@ -842,81 +812,9 @@ namespace fbhd
         private async void button_Click_2(object sender, RoutedEventArgs e)
         {
 
-            TaskbarItemInfo = new System.Windows.Shell.TaskbarItemInfo();
-
-           // TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
-           // TaskbarItemInfo.ProgressValue = 0.9;
-                var notim= new System.Windows.Media.Imaging.BitmapImage(new Uri("C:\\TOOLS\\fbhd-gui\\fbhd\\fbhd\\media\\bell-16-orange-filled.png"));
-            TaskbarItemInfo.Overlay = notim;
-
-            // TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.None;
-            TaskbarItemInfo.Description = "fbhd - 5 news from DOCS";
-            TaskbarItemInfo.ThumbButtonInfos = new System.Windows.Shell.ThumbButtonInfoCollection();
-            ThumbButtonInfo ty;
-            System.Windows.Shell.ThumbButtonInfo tb = new ThumbButtonInfo();
-            tb.ImageSource = notim;
-            tb.Description = "start list watcher";
-            tb.Command = ApplicationCommands.NotACommand;
-            tb.IsEnabled = true;
-            tb.IsInteractive = true;
-            tb.CommandTarget = this;
-            tb.DismissWhenClicked = true;
-            tb.Click += (s,ee) => { MessageBox.Show("ok"); };
-            tb.DismissWhenClicked = true;
-            System.Windows.Shell.ThumbButtonInfoCollection  tbc= new ThumbButtonInfoCollection();
-            tbc.Add(tb);
-            TaskbarItemInfo.ThumbButtonInfos = tbc;
-                return;
-
-            string xpreset = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\xml\\testxml.xml");
-            string htmldata = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\xml\\textxmlcontent.html");
-            var temp = XElement.Parse("<tr><td valign=\"top\"></td><td><a href=\"/uploads/Docs/\">Parent Directory</a>       </td><td></td><td align=\"right\">  - </td><td></td></tr>");
-
-                                      //<tr><td valign="top"></td><td><a href="/uploads/Docs/">Parent Directory</a>       </td><td>&nbsp;</td><td align="right">  - </td><td>&nbsp;</td></tr>
-            MessageBox.Show(temp.ToString());
-            return;
-            XParserTag xparser = new XParserTag(temp, new wraper(null, null) { Output = htmldata });
-
-
-            string xn = "<par xmlns:x=\"my custom shit\"> <x:myDiv><x:regular normal=\"true\" /> bla bla bla </x:myDiv></par>";
-            var parsed =  XElement.Parse(xn);
-            var hasns = (XElement)parsed.FirstNode;
-            var regular = (XElement)hasns.FirstNode;
-           // string pre = regular.GetDefaultNamespace().ToString();
-           // MessageBox.Show($"namespaceName: {pre}");
-            MessageBox.Show(regular.Name.LocalName);
-            MessageBox.Show(regular.Name.NamespaceName);
-
-
-            return;
-
-            
-            string strr = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\xml\\fsdmNews.xml");
-
+          
          
 
-            string str =""+
-                $"PrimaryScreenHeight:{SystemParameters.PrimaryScreenHeight}\n" +
-                $"FullPrimaryScreenHeight:{SystemParameters.FullPrimaryScreenHeight}\n" +
-                $"MaximizedPrimaryScreenHeight:{SystemParameters.MaximizedPrimaryScreenHeight}\n" +
-                $"MenuBarHeight:{SystemParameters.MenuBarHeight}\n" +
-                $"CaptionHeight:{SystemParameters.CaptionHeight}\n" +
-                $"MaximumWindowTrackHeight:{SystemParameters.MaximumWindowTrackHeight}\n" +
-                $"VirtualScreenHeight:{SystemParameters.VirtualScreenHeight}\n" +
-                $"FixedFrameHorizontalBorderHeight:{SystemParameters.FixedFrameHorizontalBorderHeight}\n" +
-
-
-               "";
-
-           
-           // MessageBox.Show(str);
-            
-            NotificationWindowMi nm = new NotificationWindowMi();
-            nm.Left = SystemParameters.PrimaryScreenWidth - nm.Width;
-            nm.Top = SystemParameters.PrimaryScreenHeight 
-            ;
-
-            nm.Show();
 
 
 
@@ -944,15 +842,7 @@ namespace fbhd
             string p = "DL% UL%  Dled  Uled  Xfers  Live   Qd Total     Current  Left    Speed";
                string p2 ="100 --  3906k     0     4     0     0  0:00:17  0:00:23 --:--:--  223k";
             string p3 = p + "\n" + p2;
-            var cpp2 = new WebClient.cURL().parseProgress(p2);
-            
-            if (cpp2.HasValue)
-                MessageBox.Show(cpp2.Value.ToString());
-            else
-            {
-                MessageBox.Show("has no cale");
-            }
-            return;
+          
             
         
         }
@@ -999,17 +889,22 @@ namespace fbhd
             mainSession.MainSearch.IsQueryUiEmpty = e;
         }
 
+
+
         private void OutpuFolderButt_Click(object sender, RoutedEventArgs e)
         {
             VistaFolderBrowserDialog picker = new VistaFolderBrowserDialog();
             picker.ShowNewFolderButton = true;
             picker.UseDescriptionForTitle = true;
-            picker.Description = "FBHD Global Output Directoty";
+            picker.Description = "FBHD Output Directoty";
             picker.ShowDialog(this);
+            
 
-            mainSession.GlobalOutputFolder = picker.SelectedPath;
+            string pickedDir = picker.SelectedPath;
+            mainSession.SetOutputDirectory(pickedDir);
 
-           
+
+
         }
 
         private void importListButt_Click(object sender, RoutedEventArgs e)
@@ -1019,7 +914,7 @@ namespace fbhd
             fd.CheckFileExists = true;
             fd.CheckPathExists = true;
             fd.DefaultExt = "txt";
-            fd.InitialDirectory = "C:\\TOOLS\\fbhd-gui";
+            fd.InitialDirectory = MI.MAIN_PATH;
             fd.Title = "Import Tasks";
             if (fd.ShowDialog().Value == true)
             {
@@ -1077,38 +972,16 @@ namespace fbhd
 
         private void fsdmnewswatchButt_Checked(object sender, RoutedEventArgs e)
         {
-           // mainSession.fsdmNewsWatcher.Interval = 10000;
            
-            mainSession.FsdmNewsWatcher.StartWatching();
         }
 
         private void fsdmnewswatchButt_Unchecked(object sender, RoutedEventArgs e)
         {
-            mainSession.FsdmNewsWatcher.StopWatching();
+            
 
         }
 
-        private void pinWindowButt_Click(object sender, RoutedEventArgs e)
-        {
-            string bluePinIcon= "file:///C:/TOOLS/fbhd-gui/fbhd/fbhd/media/pin-2-13BRIGHT-blue.png";
-            string whitePinIcon = "file:///C:/TOOLS/fbhd-gui/fbhd/fbhd/media/pin-2-13BRIGHT.png";
-            if (this.Topmost)
-            {
-                this.Topmost = false;
-                pinWindowButt.iconSource = new System.Windows.Media.Imaging.BitmapImage(new Uri(whitePinIcon));
-                
-            }
-            else
-            {
-                this.Topmost = true;
-                pinWindowButt.iconSource = new System.Windows.Media.Imaging.BitmapImage(new Uri(bluePinIcon));
-
-            }
-
-
-        }
-
-
+      
 
          public void ShowNotificationNews(IEnumerable<INotifableItem> news, IWatch listWathcer)
         {
@@ -1175,20 +1048,19 @@ namespace fbhd
 
         private void intervalIncTb_OnDecrease(object sender, RoutedEventArgs e)
         {
-            mainSession.FsdmNewsWatcher.Interval -= 30000;
+           
         }
 
      
 
         private void intervalIncTb_OnIncrease(object sender, RoutedEventArgs e)
         {
-            mainSession.FsdmNewsWatcher.Interval += 30000;
+           
 
         }
 
         private void UnreadNewsButt_Click(object sender, RoutedEventArgs e)
         {
-            PopupNews(mainSession.FsdmNewsWatcher.UnreadNews, mainSession.FsdmNewsWatcher, "News",false);
         }
 
        
@@ -1206,15 +1078,7 @@ namespace fbhd
 
         private void devRemoveLatestNewsItem_Click(object sender, RoutedEventArgs e)
         {
-            string c = File.ReadAllText(MI.FSDM_News_Ref_PATH);
-
-            string pre_triming = Regex.Match(c, "<ul class=\"list contact-details\">(.*?)<div class=\"paginationx\">", RegexOptions.Singleline).Value;
-            //MessageBox.Show(pre_triming.Length.ToString());
-
-            string mc = Regex.Match(pre_triming, "<li>.\\s*<div>.?(.*?)</li>", RegexOptions.Singleline).Value;
-
-            c=c.Replace(mc, "");
-            File.WriteAllText(MI.FSDM_News_Ref_PATH, c);
+           
 
         }
 
@@ -1353,6 +1217,375 @@ namespace fbhd
                     TaskWiewTabSwitch.IsChecked = true;
                 }
             }
+        }
+
+        private void button1_Click_1(object sender, RoutedEventArgs e)
+        {
+            devregex.Text = MI.regexTestPattern;
+        }
+
+        private void showMainath_Click(object sender, RoutedEventArgs e)
+        {
+            string s1 = System.IO.Path.GetDirectoryName(
+                System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            string s2 = System.IO.Path.GetDirectoryName(
+                System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            MessageBox.Show(MI.MAIN_PATH);
+            //MessageBox.Show(s2);
+
+
+        }
+
+        private void NewItemDefinitionToolButton1_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OutputDirectoryMenuItem_ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            int i;
+            for( i = 0; i < mainSession.MainConfig.RecentGlobalDirectories.Count; i++)
+            {
+                ((MenuItem)OutputDirectoryMenuItem.FindName($"recentOutputDir{i + 1}")).Visibility = Visibility.Visible;
+                ((MenuItem)OutputDirectoryMenuItem.FindName($"recentOutputDir{i + 1}")).Header = mainSession.MainConfig.RecentGlobalDirectories[i];
+
+            }
+            while (i<5)
+            {
+                ((MenuItem)OutputDirectoryMenuItem.FindName($"recentOutputDir{i + 1}")).Visibility = Visibility.Collapsed;
+
+                i++;
+            }
+
+        }
+
+        private void OutputDirectoryMenuItem_SubmenuOpened(object sender, RoutedEventArgs e)
+        {
+            int i;
+            for (i = 0; i < mainSession.MainConfig.RecentGlobalDirectories.Count; i++)
+            {
+                ((MenuItem)OutputDirectoryMenuItem.FindName($"recentOutputDir{i + 1}")).Visibility = Visibility.Visible;
+                ((MenuItem)OutputDirectoryMenuItem.FindName($"recentOutputDir{i + 1}")).Header = mainSession.MainConfig.RecentGlobalDirectories[i];
+
+            }
+            while (i < 5)
+            {
+                ((MenuItem)OutputDirectoryMenuItem.FindName($"recentOutputDir{i + 1}")).Visibility = Visibility.Collapsed;
+
+                i++;
+            }
+
+        }
+
+        private void recentOutputDir_Click(object sender, RoutedEventArgs e)
+        {
+            string RecentdirPath = (string) ((MenuItem)sender).Header;// todo, use Tag instead
+            mainSession.SetOutputDirectory(RecentdirPath);
+            
+        }
+
+        private void setRangePickerValue_Click(object sender, RoutedEventArgs e)
+        {
+            rangepcker.Max = 0.8;
+
+            rangepcker.Min = 0.2;
+        }
+
+        private void rangepcker_RangeChanged(object sender, RangeChangedEventArgs e)
+        {
+
+            if (!mainSession.SelectedTask.IsResolved) return;
+            var ts = mainSession.SelectedTask.TaskProperties.trimmingSettings;
+
+            ts.NormalizedRange = e.NewValue;
+
+            return;
+            TimeSpan totalDuration = mainSession.SelectedTask.Post.HasValue? mainSession.SelectedTask.Post.Value.Duration: new TimeSpan(0, 3, 14);
+            var from = new TimeSpan((long)(totalDuration.Ticks * e.NewValue.Min));
+
+            var to = new TimeSpan((long)(totalDuration.Ticks * e.NewValue.Max));
+
+            string klk = Fucs.TimeSpanToString(to);
+
+            crop_start_tb.Text = $"{(from.Hours > 0 ? from.Hours.ToString() + ":" : "")}{from.Minutes}:{from.Seconds}.{from.Milliseconds}";
+            crop_to_tb.Text = $"{(to.Hours>0?to.Hours.ToString()+":":"")}{to.Minutes}:{to.Seconds}.{to.Milliseconds}";
+
+        }
+
+        private async void dev_show_range_Click(object sender, RoutedEventArgs e)
+        {
+
+
+
+
+
+            MessageBox.Show($"{(DateTime.Now.ToString("d/M/yyyy hh:mm:ss"))}");
+            return;
+            //var url = linklbl.Text;
+            var url = "http://fsdmfes.ac.ma/uploads/Docs/Files/2021-05-20-01-54-05_183bddf1b0d6b398ccf9be4dfe32f87bb0364a09.pdf";
+
+            Uri asUri;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out asUri))
+            {
+                MessageBox.Show("bad url"); return;
+            }
+           
+
+            var filename = asUri.LocalPath;
+            filename = Path.GetFileName(filename);
+            //MessageBox.Show(filename);
+
+            var save = new Ookii.Dialogs.Wpf.VistaSaveFileDialog();
+            save.FileName = filename;
+            save.ShowDialog();
+
+            filename = save.FileName;
+            MessageBox.Show(filename);
+
+
+            return;
+
+            DownloadQueue aq = new DownloadQueue();
+            int i = 0;
+            foreach (var item in mainSession.Tasks)
+            {
+
+           
+                int cc = i;
+                
+                
+
+            aq.Add(item );
+                   // MI.ConsoleLog("end");
+
+
+
+               
+            }
+
+
+            return;
+            MI.ConsoleLog("Started Raw Text");
+            mainSession.SelectedTask.StartDownloadRawStreams();
+           
+        }
+
+        private void rangepcker_Loaded(object sender, RoutedEventArgs e)
+        {
+            mainSession.PropertyChanged += (s, ee) =>
+            {
+                if (ee.PropertyName == nameof(Session.SelectedTask))
+                {
+                    try
+                    {
+                        if (mainSession.SelectedTask == null) return;
+                        if (mainSession.SelectedTask.IsResolved == false) return;
+                        rangepcker.Range = mainSession.SelectedTask.TaskProperties.trimmingSettings.NormalizedRange;
+                       
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
+            };
+        }
+
+        private void Dev_Apply_testing_function_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                devresult.Text = MI.TestingFunc(devregex_iinput.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                
+            }
+        }
+
+        private void Dev_RunMassTeser_Click(object sender, RoutedEventArgs e)
+        {
+            Dev_Tester dt = new Dev_Tester();
+
+
+            var res= dt.RunMassTest("C:\\TOOLS\\fbhd-gui\\fbhd analysis\\testing data",dt.DashManifestTester);
+            res.DumpToFile("file: {0},  resultString: {1}"+Environment.NewLine, "file: {0},  error: {1}"+Environment.NewLine, "C:\\TOOLS\\fbhd-gui\\fbhd analysis\\massTestResults.txt");
+            MessageBox.Show("dumped ");
+        }
+
+        private void terminal_Click(object sender, RoutedEventArgs e)
+        {
+            
+                Show_Console.IsChecked = !Show_Console.IsChecked;
+            
+        }
+
+        private void Show_Console_Checked(object sender, RoutedEventArgs e)
+        {
+            consoleGrdWraper.Visibility = Visibility.Visible;
+        }
+
+        private void Show_Console_Unchecked(object sender, RoutedEventArgs e)
+        {
+            consoleGrdWraper.Visibility = Visibility.Collapsed;
+        }
+
+        private void taskInfo_ClickedUrl(object sender, EventArgs e)
+        {
+            string UrlToCopy = mainSession.SelectedTask?.Url;
+            if (string.IsNullOrWhiteSpace(UrlToCopy)) return;
+            Clipboard.SetText(UrlToCopy);
+            MI.Verbose("Url Copied", 2);
+        }
+
+        private void taskInfo_ClickedOutputPath(object sender, EventArgs e)
+        {
+            string PathToCopy = mainSession.SelectedTask?.OutputFile;
+            if (string.IsNullOrWhiteSpace(PathToCopy)) return;
+            Clipboard.SetText(PathToCopy);
+            MI.Verbose("Path Copied", 2);
+        }
+
+        private void taskInfo_ClickedInfo(object sender, EventArgs e)
+        {
+            if (mainSession.SelectedTask ==null) return;
+            if (mainSession.SelectedTask.Post.HasValue == false) return;
+
+            var infoWin = new PostInfoWindow()
+            {Owner=this };
+            infoWin.PostObject =  mainSession.SelectedTask.Post.Value;
+            infoWin.Init(mainSession.SelectedTask.Post.Value);
+            infoWin.Show();
+        }
+
+        private void Crop_expander_Expanded(object sender, RoutedEventArgs e)
+        {
+            PropertiesScrollView.ScrollToBottom();
+        }
+
+        private void Clear_Console_Click(object sender, RoutedEventArgs e)
+        {
+            ConsoleRTB.Document = new System.Windows.Documents.FlowDocument();
+        }
+
+        private void TasksListBox_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            TasksListBox.UnselectAll();
+        }
+
+        private void controls_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            TasksListBox.UnselectAll();
+
+        }
+
+        private void tb_property_title_ToolTipClosing(object sender, ToolTipEventArgs e)
+        {
+            tb_property_title.ToolTip = mainSession.SelectedTask?.TaskProperties.titleSettings.getResult();
+        }
+
+        private void tb_property_title_Copy_ToolTipOpening(object sender, ToolTipEventArgs e)
+        {
+
+            if (mainSession.SelectedTask == null) return;
+            if (mainSession.SelectedTask.Post.HasValue == false) return;
+            Post post = mainSession.SelectedTask.Post.Value;
+            string ResultThumbUri = Fucs.getFirstNonNull(post.Images.ToList().ConvertAll<string>((item) => item.Value).ToArray());
+            MI.ConsoleLog(ResultThumbUri);
+            var imProp= post.Images.ToList().Find((i) => i.Value == ResultThumbUri);
+            string propName = imProp.Key.name;
+            var img = new System.Windows.Media.Imaging.BitmapImage(new Uri(
+                    ResultThumbUri));
+            double ratio = ((double)img.PixelWidth) / img.Height;
+            
+            ProgressBar pbar =  new ProgressBar()
+            {
+                
+                Width = 120,
+            Height = 8
+            };
+            tb_property_title_Copy.ToolTip = pbar;
+            pbar.Maximum = 1;
+            img.DownloadProgress += (s, ee) =>
+            {
+                pbar.Value = ((double)ee.Progress) / 100;
+                
+                MI.ConsoleLog(pbar.Value.ToString());
+            };
+            img.DownloadFailed+=
+                (s, ee) =>
+                {
+                    
+
+                    MI.ConsoleLog("failed");
+                };
+            img.DownloadCompleted += (s, ee) =>
+            {
+                StackPanel wraperGrd = new StackPanel() { Width = 120, Orientation= Orientation.Vertical };
+                TextBlock caption = new TextBlock() { Width = 120,Text=propName,Foreground=new SolidColorBrush(Colors.DarkMagenta) };
+
+                wraperGrd.Children.Add(caption);
+                
+                 Image image= new Image()
+                {
+                    Source = img,
+                    Width = 120
+                };
+                wraperGrd.Children.Add(image);
+                tb_property_title_Copy.ToolTip = wraperGrd;
+            };
+           
+        }
+
+        private void searchQueryControl2_onGo(object sender, string e)
+        {
+            searchViewTabSwitch.IsChecked = true;
+            
+            mainSession.MainSearch.Query = e;
+            if (string.IsNullOrWhiteSpace(e)) return;
+            mainSession.MainSearch.StartSearch(true);
+
+        }
+
+        private void ResolveAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            ResolveQueue rq = new ResolveQueue();
+            foreach (var task in mainSession.Tasks)
+            {
+                rq.Add(task);
+            }
+            //rq.Start();
+
+        }
+
+        private void DownloadAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            DownloadQueue dq = new DownloadQueue();
+            foreach (var task in mainSession.Tasks)
+            {
+                dq.Add(task);
+            }
+           // dq.Start();
+        }
+
+        private void DeleteAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainSession.Tasks.Clear();
+        }
+
+        private async void StartToolButton_Click(object sender, RoutedEventArgs e)
+        {
+            mainSession.SelectedTask?.StartStart();
+        }
+
+        private async void DownloadRawStreamsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (mainSession.SelectedTask == null) return;
+            if (mainSession.SelectedTask.IsResolved == false) return;
+            var res = await mainSession.SelectedTask?.StartDownloadRawStreams();
+            MessageBox.Show($"{res.SuccessfullyDownloadedCC}/{res.totalResourcesCC} resources were successfully downloaded.", "download completed", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 

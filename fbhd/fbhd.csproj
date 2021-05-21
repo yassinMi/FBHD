@@ -119,7 +119,13 @@
     <Compile Include="PopupPickerMiItem.xaml.cs">
       <DependentUpon>PopupPickerMiItem.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PostInfoWindow.xaml.cs">
+      <DependentUpon>PostInfoWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ProgressInfoUI.cs" />
+    <Compile Include="RangePickerMi.xaml.cs">
+      <DependentUpon>RangePickerMi.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ResolutionPicker.xaml.cs">
       <DependentUpon>ResolutionPicker.xaml</DependentUpon>
     </Compile>
@@ -185,6 +191,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PostInfoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RangePickerMi.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ResolutionPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -228,14 +242,18 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="media\24px.svg" />
-    <None Include="release-planned.md">
+    <None Include="curl\curl-ca-bundle.crt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="media\24px.svg" />
+    <None Include="Readme.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="release-planned.md" />
     <None Include="releases-notes.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <SplashScreen Include="media\Mi-logo-orange-sblackbg-lessglow-nostroke-200x158.png" />
+    <None Include="media\Mi-logo-orange-sblackbg-lessglow-nostroke-200x158.png" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -652,6 +670,9 @@
     <Resource Include="down-tri-10x8-orange.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="SFX\mi-notif-5th.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Resource Include="media\parse-16-white-blue.png" />
     <Resource Include="media\parse-all-16-white-blue-yellow.png" />
     <Resource Include="media\delete-all-16-white.png" />
@@ -670,6 +691,19 @@
     <Resource Include="ffmpeg\readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <EmbeddedResource Include="media\FB-ICO.ico" />
+    <None Include="icons\CLW-ICO.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="icons\FB-ICO.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="media\mi-logo-blue-transparent-bck.png" />
+    <None Include="media\blue-transparent-bck-white-outline-233x121.png" />
+    <SplashScreen Include="media\blue-transparent-bck-white-outline-233x121 -2.png" />
+    <Resource Include="3dots-16-white.png" />
+    <Resource Include="media\3dots-vertical-16-white.png" />
+    <Resource Include="media\3dots-16-white.png" />
     <Content Include="scripts\server-python.py">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -684,11 +718,15 @@
     <Content Include="curl\curl.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="curl\note.txt" />
+    <None Include="curl\note.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="ffmpeg\ffmpeg.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="ffmpeg\note.txt" />
+    <None Include="ffmpeg\note.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="media\Mi-logo-blue-lessglow-nostroke-200x158.png" />
     <Resource Include="media\minus-16-white.png" />
     <Resource Include="minus-16-white.png" />

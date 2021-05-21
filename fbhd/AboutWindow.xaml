@@ -6,7 +6,10 @@
         xmlns:local="clr-namespace:fbhd"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" x:Class="fbhd.AboutWindow"
         mc:Ignorable="d"
-        Title="About FBHD" Height="284" Width="300" Background="#FF282828" TextOptions.TextFormattingMode="Display" ResizeMode="NoResize" WindowStyle="None" Foreground="#FFF0F0F0" WindowStartupLocation="CenterOwner" BorderBrush="#FF6A6A6A" BorderThickness="1">
+        Title="About FBHD" Height="284" Width="300" Background="#FF282828" TextOptions.TextFormattingMode="Display" ResizeMode="NoResize" WindowStyle="None" Foreground="#FFF0F0F0" WindowStartupLocation="CenterOwner" BorderBrush="#FF6A6A6A" BorderThickness="1"
+    
+        d:DataContext="{x:Type local:ApplicationInfo}"
+    >
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -22,8 +25,8 @@
             <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="About" Foreground="#FF929292" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
 
         </Grid>
-        <TextBlock x:Name="nameVerison" Margin="14,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="FBHD Downloader v1.0" FontSize="16" VerticalAlignment="Top" Height="21" HorizontalAlignment="Left" Width="161" d:LayoutOverrides="TopMargin, BottomMargin"/>
-        <TextBlock x:Name="copyright" Margin="14,36,11.38,0" Grid.Row="1" TextWrapping="Wrap" Text="© Mi 2021 " FontSize="13.333" Height="17" VerticalAlignment="Top" d:LayoutOverrides="TopMargin, BottomMargin"/>
+        <TextBlock x:Name="nameVerison" Margin="14,10,0,0" Grid.Row="1" TextWrapping="Wrap" Text="{Binding FBHD_APP_TITLE, FallbackValue=FBHD Downloader 1.0}" FontSize="16" VerticalAlignment="Top" Height="21" HorizontalAlignment="Left" Width="161" d:LayoutOverrides="TopMargin, BottomMargin"/>
+        <TextBlock x:Name="copyright" Margin="14,36,11.38,0" Grid.Row="1" TextWrapping="Wrap" Text="{Binding FBHD_APP_SUB_TITLE, FallbackValue='© Mi 2021 '}" FontSize="13.333" Height="17" VerticalAlignment="Top" d:LayoutOverrides="TopMargin, BottomMargin"/>
         <Path x:Name="line" Data="M21,86.42 L251,86.42" Height="1" Margin="14,60,22,0" Grid.Row="1" Stretch="Fill" Stroke="#FF454551" VerticalAlignment="Top" d:LayoutOverrides="TopMargin, BottomMargin"/>
         <Grid Margin="21,75,10,16" Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -36,15 +39,15 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <TextBlock x:Name="versionLabel" TextWrapping="Wrap" Text="Version" Foreground="#FFB6B6B6" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBlock x:Name="version" Margin="0" TextWrapping="Wrap" Text="0.3.0-beta (30-04-2021)" Foreground="#FFE2E2E2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBlock x:Name="version" Margin="0" TextWrapping="Wrap" Text="{Binding FBHD_VERSION}" Foreground="#FFE2E2E2" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <TextBlock x:Name="developerLabel" Margin="0" TextWrapping="Wrap" Text="Developer:" Foreground="#FFB6B6B6" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBlock x:Name="developer" Margin="0" TextWrapping="Wrap" Text="Yass.Mi" Foreground="#FFE2E2E2" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"/>
-            <TextBlock x:Name="email" Margin="47,3,0,2" TextWrapping="Wrap" Text="dir16cat17@gmail.com" Foreground="#FF0097FF" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <TextBlock x:Name="developer" Margin="0" TextWrapping="Wrap" Text="{Binding FBHD_DEVELOPER, FallbackValue=Yass.Mi}" Foreground="#FFE2E2E2" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"/>
+            <TextBlock x:Name="email" Margin="47,3,0,2" TextWrapping="Wrap" Text="{Binding FBHD_DEVELOPER_EMAIL, FallbackValue=yass@gmail.com}" Foreground="#FF0097FF" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <TextBlock x:Name="UI_Graphics_designerlabel" TextWrapping="Wrap" Text="UI/Graphics:" Foreground="#FFB6B6B6" Grid.Row="2" Margin="0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <TextBlock x:Name="graphicsdesigner" Margin="0" TextWrapping="Wrap" Text="Yass.Mi" Foreground="#FFE2E2E2" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"/>
+            <TextBlock x:Name="graphicsdesigner" Margin="0" TextWrapping="Wrap" Text="{Binding FBHD_GUI_DESIGNER, FallbackValue=Yass.Mi}" Foreground="#FFE2E2E2" HorizontalAlignment="Left" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center"/>
         </Grid>
         <TextBlock x:Name="reportBugsLabel" Margin="21,6,0,0" TextWrapping="Wrap" Text="Report Issue or contribute at:" HorizontalAlignment="Left" Width="172" Foreground="#FFB6B6B6" Grid.Row="2" Height="19" VerticalAlignment="Top"/>
-        <TextBlock x:Name="githubLink" Margin="21,0,62,10" Grid.Row="2" TextWrapping="Wrap" Text="https://github.com/UndefinedYass/fbhd" Grid.ColumnSpan="2" Foreground="#FF0097FF" Cursor="Hand" VerticalAlignment="Bottom" Height="15" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
+        <TextBlock x:Name="githubLink" Margin="21,0,0,10" Grid.Row="2" TextWrapping="Wrap" Text="{Binding FBHD_GITHUB_URL, FallbackValue=mi_github_url}" Grid.ColumnSpan="2" Foreground="#FF0097FF" Cursor="Hand" VerticalAlignment="Bottom" Height="15" HorizontalAlignment="Left">
     		<i:Interaction.Triggers>
     			<i:EventTrigger EventName="MouseLeftButtonDown">
     				<ei:LaunchUriOrFileAction Path="https://github.com/UndefinedYass/fbhd"/>

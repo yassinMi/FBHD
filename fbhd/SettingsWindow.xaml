@@ -468,8 +468,8 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="31"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="PresetPathTB" Grid.Column="1" Margin="0,4,10,4" TextWrapping="Wrap" Text="{Binding GlobalOutputDirectory, Mode=TwoWay}" Style="{DynamicResource SimpleTextBox}" Background="Black" Foreground="#FFBDBDBD" BorderBrush="#FF2F2F37"/>
-                    <Button x:Name="BrowseButton" Content="···" Grid.Column="2" Margin="0" Template="{DynamicResource FlatButt}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="28"/>
+                    <TextBox x:Name="OutputDirectoryTB" Grid.Column="1" Margin="0,4,10,4" TextWrapping="Wrap" Text="{Binding GlobalOutputDirectory, Mode=TwoWay}" Style="{DynamicResource SimpleTextBox}" Background="Black" Foreground="#FFBDBDBD" BorderBrush="#FF2F2F37"/>
+                    <Button x:Name="outputDirectoryBrowseButton" Content="···" Grid.Column="2" Margin="0" Template="{DynamicResource FlatButt}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="28" Click="outputDirectoryBrowseButton_Click"/>
                     <TextBlock x:Name="textBlock7" Margin="0" TextWrapping="Wrap" Text="Global Output" Foreground="#FFDEDEDE" VerticalAlignment="Center"/>
                 </Grid>
                 <Grid Height="31" Margin="0,4,122,4" VerticalAlignment="Top">
@@ -539,7 +539,7 @@
             </ScrollViewer>
         </Grid>
         <StackPanel x:Name="TabsSwitchGrd" Margin="0,7,0,0" Orientation="Horizontal" Grid.Row="2">
-            <local:RadioWithIcon x:Name="GeneralTab" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/code-in-square-16-white-small.png" Content="General" BorderBrush="{x:Null}" Margin="4,0" d:LayoutOverrides="LeftPosition, RightPosition"/>
+            <local:RadioWithIcon x:Name="GeneralTab" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/code-in-square-16-white-small.png" Content="General" BorderBrush="{x:Null}" Margin="4,0" d:LayoutOverrides="LeftPosition, RightPosition" IsChecked="True"/>
             <local:RadioWithIcon x:Name="SearshTab" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/search-in-square-16-white2.png" Content="Search" BorderBrush="{x:Null}" d:LayoutOverrides="LeftPosition, RightPosition" Margin="4,0"/>
             <local:RadioWithIcon x:Name="CLWTab" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/search-in-square-16-white2.png" Content="CLW" BorderBrush="{x:Null}" Margin="4,0" d:LayoutOverrides="LeftPosition, RightPosition" IsChecked="True"/>
             <local:RadioWithIcon x:Name="searchViewTabSwitch_Copy1" Template="{DynamicResource RadioTabSwitchMi}" HorizontalAlignment="Left" Background="#FF303030" Foreground="#FFF0EFF1" Icon="media/search-in-square-16-white2.png" Content="Server" BorderBrush="{x:Null}" Margin="4,0" d:LayoutOverrides="LeftPosition, RightPosition"/>

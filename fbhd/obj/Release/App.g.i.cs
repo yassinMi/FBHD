@@ -102,7 +102,7 @@ namespace fbhd {
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
         public static void Main() {
-            SplashScreen splashScreen = new SplashScreen("media/mi-logo-orange-sblackbg-lessglow-nostroke-200x158.png");
+            SplashScreen splashScreen = new SplashScreen("media/blue-transparent-bck-white-outline-233x121%20-2.png");
             splashScreen.Show(true);
             fbhd.App app = new fbhd.App();
             app.InitializeComponent();

@@ -412,5 +412,10 @@ namespace fbhd
         {
            ((FBHDTask) this.DataContext). Type = Fucs.MediaTypeToType(  MediaTypeSwitch.shiftValue() );
         }
+
+        private void lblUrl_Drop(object sender, DragEventArgs e)
+        {
+
+        }
     }
 }

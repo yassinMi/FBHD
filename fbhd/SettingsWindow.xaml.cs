@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Ookii.Dialogs.Wpf;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -48,7 +50,28 @@ namespace fbhd
 
         private void SaveConfig_Click(object sender, RoutedEventArgs e)
         {
+            if (!((!string.IsNullOrWhiteSpace(OutputDirectoryTB.Text))&&(Directory.Exists(OutputDirectoryTB.Text))))
+            {
+                MessageBox.Show($"Error: '{OutputDirectoryTB.Text}' is not a valid directory");
+                return;
+            }
+            ConfigObj.StackRecentDirectory(OutputDirectoryTB.Text);
             ConfigObj.Save();
+        }
+
+        private void outputDirectoryBrowseButton_Click(object sender, RoutedEventArgs e)
+        {
+            VistaFolderBrowserDialog picker = new VistaFolderBrowserDialog();
+            picker.ShowNewFolderButton = true;
+            picker.UseDescriptionForTitle = true;
+            picker.Description = "FBHD Output Directoty";
+            picker.ShowDialog(this);
+
+
+            string pickedDir = picker.SelectedPath;
+            if (string.IsNullOrWhiteSpace(pickedDir)) return;
+            OutputDirectoryTB.Text = pickedDir;
+
         }
     }
 }

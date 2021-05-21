@@ -28,9 +28,9 @@
     </Window.Resources>
     <Border BorderThickness="1" Margin="0">
         <Border.BorderBrush>
-            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="#FFFF8A15" Offset="0"/>
-                <GradientStop Color="#7FF98B1E" Offset="1"/>
+            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                <GradientStop Color="#FFD6D6D6" Offset="0"/>
+                <GradientStop Color="#7FD3D3D3" Offset="1"/>
             </LinearGradientBrush>
         </Border.BorderBrush>
         <Grid x:Name="FSDM_NEWS_POPUP_MODEL">
@@ -53,8 +53,8 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
-            <Button x:Name="ok_Butt" Content="OK" HorizontalAlignment="Right" Margin="0,0,20,0" Grid.Row="2" Width="70" Template="{DynamicResource FlatButt}" Height="26" VerticalAlignment="Center" Background="{x:Null}" Click="ok_Butt_Click"/>
-            <Button x:Name="MarkAsRead_Butt" Content="MARK AS READ" Margin="0,7.5,95,7.5" Grid.Row="2" Template="{DynamicResource FlatButt}" Height="26" VerticalAlignment="Center" HorizontalAlignment="Right" Width="95" Foreground="#FF878787" BorderBrush="{x:Null}" Click="MarkAsRead_Butt_Click"/>
+            <Button x:Name="ok_Butt" Content="Close" HorizontalAlignment="Right" Margin="0,0,20,0" Grid.Row="2" Width="70" Template="{DynamicResource FlatButt}" Height="26" VerticalAlignment="Center" Background="{x:Null}" Click="ok_Butt_Click"/>
+            <Button x:Name="MarkAsRead_Butt" Content="Mark as read" Margin="0,7.5,95,7.5" Grid.Row="2" Template="{DynamicResource FlatButt}" Height="26" VerticalAlignment="Center" HorizontalAlignment="Right" Width="95" Foreground="#FF878787" BorderBrush="{x:Null}" Click="MarkAsRead_Butt_Click"/>
 
         </Grid>
     </Border>

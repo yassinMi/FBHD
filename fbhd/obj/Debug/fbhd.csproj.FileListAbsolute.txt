@@ -114,3 +114,14 @@ C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\scripts\server-python.py
 C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\curl\curl.exe
 C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\ffmpeg\ffmpeg.exe
 C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\releases-notes.md
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\Readme.md
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\icons\CLW-ICO.ico
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\icons\FB-ICO.ico
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\curl\note.txt
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\ffmpeg\note.txt
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\curl\curl-ca-bundle.crt
+C:\TOOLS\fbhd-gui\fbhd\fbhd\bin\Debug\SFX\mi-notif-5th.wav
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\RangePickerMi.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\RangePickerMi.baml
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\PostInfoWindow.g.cs
+C:\TOOLS\fbhd-gui\fbhd\fbhd\obj\Debug\PostInfoWindow.baml

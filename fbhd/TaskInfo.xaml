@@ -142,6 +142,34 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="MiTB_Highlightable" TargetType="{x:Type TextBlock}">
+            <Style.Resources>
+                <Storyboard x:Key="zaga"/>
+                <Storyboard x:Key="Highlight">
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" >
+                        <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#FFFFFF"/>
+                    </ColorAnimationUsingKeyFrames>
+                </Storyboard>
+                <Storyboard x:Key="uNHighlight">
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" >
+                        <EasingColorKeyFrame KeyTime="0:0:0.2" Value="#FFC1C1C1"/>
+                    </ColorAnimationUsingKeyFrames>
+                </Storyboard>
+            </Style.Resources>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="FrameworkElement.Loaded"/>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard x:Name="Highlight_BeginStoryboard" Storyboard="{StaticResource Highlight}"/>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard  Storyboard="{StaticResource uNHighlight}"/>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+            <Setter Property="TextTrimming" Value="None"/>
+        </Style>
     </UserControl.Resources>
 
     <StackPanel>
@@ -158,15 +186,22 @@
                 <Grid x:Name="grd_type" Grid.ColumnSpan="2" Margin="0,0,0,6" d:LayoutOverrides="Height" Grid.Row="1" Grid.Column="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="40"/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="100*"/>
+                        <ColumnDefinition Width="39*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="lbl_type" Margin="0,3.5" TextWrapping="Wrap" Text="Type:" VerticalAlignment="Center" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" HorizontalAlignment="Left"/>
-                    <local:TypeComboBox x:Name="typePickerCombo" Background="Black" BorderBrush="#FF2F2F37" Style="{DynamicResource ComboBoxFlatStyle_miVersion}" ToolTip="Overriding behaviour" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="58"  TextOptions.TextFormattingMode="Display" Foreground="#FFDAD7D7" SelectedIndex="{Binding SelectedTask.Type, Converter={StaticResource TypeToIntConverter}, FallbackValue=0, Mode=TwoWay}" >
+                    <TextBlock x:Name="lbl_type" Margin="0,2" TextWrapping="Wrap" Text="Type:" VerticalAlignment="Center" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" HorizontalAlignment="Left"/>
+                    <local:TypeComboBox x:Name="typePickerCombo" Background="Black" BorderBrush="#FF2F2F37" Style="{DynamicResource ComboBoxFlatStyle_miVersion}" ToolTip="Task Type" VerticalAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="58"  TextOptions.TextFormattingMode="Display" Foreground="#FFDAD7D7" SelectedIndex="{Binding SelectedTask.Type, Converter={StaticResource TypeToIntConverter}, FallbackValue=0, Mode=TwoWay}" >
                         <ComboBoxItem Content="MP3" TextOptions.TextFormattingMode="Display" />
                         <ComboBoxItem Content="MP4" Foreground="#FFC5C5C5" Style="{x:Null}" TextOptions.TextFormattingMode="Display" />
                         <ComboBoxItem Content="MKV" TextOptions.TextFormattingMode="Display"/>
                         <ComboBoxItem Content="JPG" TextOptions.TextFormattingMode="Display"/>
                     </local:TypeComboBox>
+                    <Button x:Name="ShowInfoWindowButton" Grid.Column="2" HorizontalAlignment="Right" Margin="0,0,10,0" Style="{DynamicResource SimplerStyleMi}" BorderBrush="{x:Null}" Background="#00000000" Width="16" Height="16" VerticalAlignment="Center" ToolTip="Show Post Info" Click="ShowInfoWindowButton_Click" IsEnabled="{Binding coreTaskObject.IsResolved, ElementName=userControl}">
+                        <Image x:Name="info" Source="information-b-on-w-13-large.png" Width="13" Height="13"   />
+                    </Button>
+                    <Button x:Name="CopyLinkButt" Grid.Column="2" Margin="31,2,31,1" Style="{DynamicResource SimplerStyleMi}" BorderBrush="{x:Null}" Background="#00000000" Height="16" Visibility="Collapsed">
+                        <Image x:Name="info1" Source="information-b-on-w-13-large.png" Width="13" Height="13"   />
+                    </Button>
 
                 </Grid>
                 <Grid x:Name="grd_urle" Margin="0" d:LayoutOverrides="Height" Grid.Column="1" VerticalAlignment="Center">
@@ -174,8 +209,8 @@
                         <ColumnDefinition Width="40"/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="URL_" Margin="0,3.5" TextWrapping="Wrap" Text="URL:" VerticalAlignment="Center" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" HorizontalAlignment="Left"/>
-                    <TextBlock x:Name="lblTaskName" TextWrapping="WrapWithOverflow" Foreground="#FFC1C1C1" TextOptions.TextFormattingMode="Display" VerticalAlignment="Center" Text="{Binding coreTaskObject.Url, ConverterParameter=50, Converter={StaticResource URLtoVideoID}, ElementName=userControl, FallbackValue=-}" Grid.ColumnSpan="2" Grid.Column="1" TextTrimming="CharacterEllipsis" MinWidth="270"/>
+                    <TextBlock x:Name="URL_" Margin="0,3.5" TextWrapping="Wrap" Text="URL:" VerticalAlignment="Center" Foreground="#FFD5D5D5" TextOptions.TextFormattingMode="Display" HorizontalAlignment="Left" Style="{DynamicResource MiTB_Highlightable}"/>
+                    <TextBlock x:Name="lblTaskName" TextWrapping="WrapWithOverflow" Foreground="#FFC1C1C1" TextOptions.TextFormattingMode="Display" VerticalAlignment="Center" Text="{Binding coreTaskObject.Url, ConverterParameter=50, Converter={StaticResource URLtoVideoID}, ElementName=userControl, FallbackValue=-}" Grid.ColumnSpan="2" Grid.Column="1" TextTrimming="CharacterEllipsis" MinWidth="270" MouseUp="lblTaskName_MouseUp" ToolTip="{Binding coreTaskObject.Url, ElementName=userControl}" Style="{DynamicResource MiTB_Highlightable}"/>
                 </Grid>
                 <Grid x:Name="typeIcon" Margin="0" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Width="48" Height="48">
                     <Image x:Name="image" Margin="0" Source="{Binding Image, ElementName=userControl, UpdateSourceTrigger=PropertyChanged}" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="None"/>
@@ -216,7 +251,7 @@
                         </Grid>
                         <Image x:Name="dowloadAnim_drive" Margin="0" Source="media/32-down-white.png" Opacity="0.7" HorizontalAlignment="Left" VerticalAlignment="Top"/>
                     </Grid>
-                    <TextBlock x:Name="lbl_Status" Margin="0" TextWrapping="Wrap" Text="{Binding coreTaskObject.IsDownloading, ConverterParameter=1:Downloading..; 0:Wait..;, Converter={StaticResource boolToStringsMI}, ElementName=userControl}" Foreground="#FFBDBDBD" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Grid.Column="1"/>
+                    <TextBlock x:Name="lbl_Status" Margin="0" TextWrapping="Wrap" Text="{Binding coreTaskObject.ProgressCaption,  ElementName=userControl}" Foreground="#FFBDBDBD" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Grid.Column="1"/>
                     <ProgressBar x:Name="progressBar_download" Margin="2,0" Style="{DynamicResource ProgressBarStyle1}" Background="#FF3E3D3D" BorderBrush="#0004B081" Foreground="#FF9C9C9C" Value="{Binding coreTaskObject.downloadingPercent, ElementName=userControl, Mode=OneWay}" Maximum="1" Grid.ColumnSpan="2" Grid.Row="1" Height="6"/>
                     <local:ProgressInfoUI Progress="{Binding coreTaskObject.FfmpegProgress, ElementName=userControl}" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,10,0">
                         <local:ProgressInfoUI.Template>
@@ -225,8 +260,8 @@
                             </ControlTemplate>
                         </local:ProgressInfoUI.Template>
                     </local:ProgressInfoUI>
-                    <local:ButtonMi x:Name="kill_butt" Margin="0,1,15,0" Width="Auto" HorizontalAlignment="Right" textcaption="Kill" iconSource="media/x-16-white.png" captionMargin="3,0,0,0" Click="kill_butt_Click"  Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
-                    <local:ButtonMi x:Name="pauseButt" Margin="0,1,70,0" Width="Auto" HorizontalAlignment="Right" textcaption="Abort" iconSource="media/pause16white-perfect.png" Click="abort_butt_Click" Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
+                    <local:ButtonMi x:Name="kill_butt" ToolTip="Kill Process" Margin="0,1,15,0" Width="Auto" HorizontalAlignment="Right" textcaption="Kill" iconSource="media/x-16-white.png" captionMargin="3,0,0,0" Click="kill_butt_Click"  Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
+                    <local:ButtonMi x:Name="pauseButt" ToolTip="Stop" Margin="0,1,70,0" Width="Auto" HorizontalAlignment="Right" textcaption="Stop" iconSource="media/pause16white-perfect.png" Click="abort_butt_Click" Grid.Column="1" Grid.Row="2" captionVisibility="Visible"/>
                     <TextBlock x:Name="elapsed_time" Margin="81,1,0,0" TextWrapping="Wrap" Foreground="#FFBDBDBD" FontSize="10.667" VerticalAlignment="Top" TextOptions.TextFormattingMode="Display" PreviewMouseLeftButtonDown="progress_info_PreviewMouseLeftButtonDown" Tag="0" Text="(Elapsed time: 0:56)" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="2" Visibility="Hidden"/>
                 </Grid>
                 <Grid x:Name="graphics_done" Margin="0" Visibility="{Binding coreTaskObject.Status, ConverterParameter=done, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl, FallbackValue=visible}" VerticalAlignment="Top" d:IsHidden="True">
@@ -244,9 +279,9 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <TextBlock x:Name="lbl_outputPath" Margin="0" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Text="{Binding coreTaskObject.OutputFile, ConverterParameter=40, Converter={StaticResource URLtoVideoID1}, ElementName=userControl, FallbackValue=FILENAME}"/>
+                        <TextBlock x:Name="lbl_outputPath" Margin="0" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" HorizontalAlignment="Left" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Text="{Binding coreTaskObject.OutputFile, ConverterParameter=40, Converter={StaticResource URLtoVideoID1}, ElementName=userControl, FallbackValue=FILENAME}" ToolTip="{Binding coreTaskObject.OutputFile, ElementName=userControl}" MouseUp="lbl_outputPath_MouseUp" Style="{DynamicResource MiTB_Highlightable}"/>
                         <TextBlock x:Name="lbl_size" TextWrapping="Wrap" Text="{Binding coreTaskObject.OutputFileSize, ElementName=userControl, FallbackValue=Size: -, StringFormat=Size: \{0\}}" Foreground="#FFBDBDBD" FontSize="10.667" HorizontalAlignment="Left" TextOptions.TextFormattingMode="Display" Margin="0" Grid.Row="1" d:LayoutOverrides="Height" VerticalAlignment="Center"/>
-                        <local:ButtonMi x:Name="resetTask" Margin="117,0,5,0" iconSource="new-task-lite-16-white.png" textcaption="New Task" VerticalAlignment="Center" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Right" Height="18" Click="resetTask_Click" captionVisibility="Visible" d:LayoutOverrides="Width" Grid.Row="1"/>
+                        <local:ButtonMi x:Name="resetTask" Margin="117,0,5,0" iconSource="new-task-lite-16-white.png" textcaption="Reset Task" VerticalAlignment="Center" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Right" Height="18" Click="resetTask_Click" captionVisibility="Visible" d:LayoutOverrides="Width" Grid.Row="1"/>
                     </Grid>
                     <Border x:Name="Actions" Grid.ColumnSpan="2" Margin="0" Grid.Row="1" VerticalAlignment="Bottom" BorderBrush="#FF2D2D30" BorderThickness="1" Padding="4,2">
                         <Grid>
@@ -255,9 +290,9 @@
                                 <ColumnDefinition Width="16"/>
                                 <ColumnDefinition Width="85*"/>
                             </Grid.ColumnDefinitions>
-                            <local:ButtonMi x:Name="miOpenFile" iconSource="media/play-in-circle-white-16-larger.png" textcaption="Open file" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" Height="18" PreviewMouseLeftButtonUp="miOpenFile_PreviewMouseLeftButtonUp" captionVisibility="Visible"/>
-                            <local:ButtonMi x:Name="miOpenLocation" Margin="14,0,104,0" iconSource="media/folder-open-property-16-white-cyan.png" textcaption="Show in Folder" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Stretch" Height="18" d:LayoutOverrides="Width" Click="miOpenLocation_Click" Grid.Column="2" captionVisibility="Visible"/>
-                            <local:ButtonMi x:Name="miDeleteFile" iconSource="media/delete-16-white.png" textcaption="Delete File" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Right" Height="18" Click="miDeleteFile_Click" Grid.Column="2" captionVisibility="Visible"/>
+                            <local:ButtonMi x:Name="miOpenFile" iconSource="media/play-in-circle-white-16-larger.png" textcaption="Open file" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" Height="18" PreviewMouseLeftButtonUp="miOpenFile_PreviewMouseLeftButtonUp" captionVisibility="Visible" ToolTip="Open Output File"/>
+                            <local:ButtonMi x:Name="miOpenLocation" Margin="14,0,104,0" iconSource="media/folder-open-property-16-white-cyan.png" textcaption="Show in Folder" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Stretch" Height="18" d:LayoutOverrides="Width" Click="miOpenLocation_Click" Grid.Column="2" captionVisibility="Visible" ToolTip="Open output location"/>
+                            <local:ButtonMi x:Name="miDeleteFile" iconSource="media/delete-16-white.png" textcaption="Delete File" VerticalAlignment="Stretch" Width="Auto" captionMargin="4,0,0,0" HorizontalAlignment="Right" Height="18" Click="miDeleteFile_Click" Grid.Column="2" captionVisibility="Visible" ToolTip="Delete Output file"/>
                             <Grid x:Name="missingFileFlag" Grid.Column="1" Margin="0" Width="10" Height="10" HorizontalAlignment="Center" ToolTip="missing file" Visibility="Hidden">
                                 <Image x:Name="image1" Margin="0" Source="media/error1.png" Width="10" Height="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Grid>

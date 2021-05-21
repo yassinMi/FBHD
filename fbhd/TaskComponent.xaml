@@ -351,7 +351,7 @@
                 <VisualState x:Name="Resolved">
                     <Storyboard>
                         <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="lblUrl">
-                            <EasingColorKeyFrame KeyTime="0" Value="#FF6EBBFF"/>
+                            <EasingColorKeyFrame KeyTime="0" Value="#FFF3F3F3"/>
                         </ColorAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
@@ -390,7 +390,7 @@
                         </Grid>
                     </Grid>
                     <Border x:Name="url_border" Margin="0" BorderThickness="1" CornerRadius="2" BorderBrush="#FF2F2F37"   Grid.ColumnSpan="2" Grid.Column="{Binding taskStatus, ConverterParameter=url_column, Converter={StaticResource TaskStatusToUIvisibility}, ElementName=userControl}" >
-                        <TextBlock x:Name="lblUrl" d:Text="yizeuyiu iueziuyzeiufg zioh ohzoeih oiiuzegiuhgzueigfiugzeuifhpizgefpu"  TextWrapping="WrapWithOverflow" Text="{Binding url, Converter={StaticResource URLtoVideoID}, ElementName=userControl, FallbackValue=https://www.facebook.com/DUMMYking.net/videos/575243946572618/?sfnsn\=mo, Mode=OneWay}" Margin="1,0" Foreground="#FFA4A4A4" ClipToBounds="True"/>
+                        <TextBlock x:Name="lblUrl" d:Text="yizeuyiu iueziuyzeiufg zioh ohzoeih oiiuzegiuhgzueigfiugzeuifhpizgefpu"  TextWrapping="WrapWithOverflow" Text="{Binding url, Converter={StaticResource URLtoVideoID}, ElementName=userControl, FallbackValue=https://www.facebook.com/DUMMYking.net/videos/575243946572618/?sfnsn\=mo, Mode=OneWay}" Margin="1,0" Foreground="#FFA4A4A4" ClipToBounds="True" Drop="lblUrl_Drop"/>
                     </Border>
                 </Grid>
                 <Grid x:Name="typeSwitch" Grid.Column="1" Margin="0,4,3.965,3" Visibility="Collapsed">

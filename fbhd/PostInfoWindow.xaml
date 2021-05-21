@@ -1,0 +1,624 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:fbhd"
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="fbhd.PostInfoWindow"
+        mc:Ignorable="d"
+        Title="Post Info" Height="300" Width="458" Foreground="LightGray" Background="Black" SnapsToDevicePixels="True" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display" Style="{DynamicResource WindowFlat4}" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="None"
+        d:DataContext="{x:Type local:Post}"
+    >
+    <Window.Resources>
+
+        <local:VideoRepresentationToDimentionsStrng x:Key="VideoRepresentationToDimentionsStrng"/>
+
+        <local:taskToAvailableResolutions x:Key="taskToAvailableResolutions"/>
+
+        <ControlTemplate x:Key="butt_open_title_piker" TargetType="{x:Type Button}">
+            <Grid x:Name="grid" Width="16" Height="16" Background="#00040405">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal"/>
+                        <VisualState x:Name="MouseOver">
+                            <Storyboard>
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="grid">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#FF333333"/>
+                                </ColorAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="Pressed"/>
+                        <VisualState x:Name="Disabled"/>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Grid Margin="0" Width="5" HorizontalAlignment="Center" VerticalAlignment="Center" Height="5" Background="{TemplateBinding Foreground}" RenderTransformOrigin="0.5,0.5">
+                    <Grid.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform/>
+                            <SkewTransform/>
+                            <RotateTransform Angle="0"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Grid.RenderTransform>
+                </Grid>
+            </Grid>
+        </ControlTemplate>
+        <ControlTemplate x:Key="Button_image" TargetType="{x:Type Button}">
+            <Grid x:Name="grid" Width="16" Height="16" Background="#00040405">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal"/>
+                        <VisualState x:Name="MouseOver">
+                            <Storyboard>
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="grid">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#00333333"/>
+                                </ColorAnimationUsingKeyFrames>
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="grid1">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#00000000"/>
+                                </ColorAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="Pressed"/>
+                        <VisualState x:Name="Disabled"/>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Image x:Name="image" Source="media/image-16-16.png" ScrollViewer.VerticalScrollBarVisibility="Hidden" Stretch="None" ClipToBounds="True" ToolTip="mp3 task"/>
+                <Grid x:Name="grid1" Margin="0" Background="#4C000000"/>
+            </Grid>
+        </ControlTemplate>
+        <ItemsPanelTemplate x:Key="LBResolutionPickerPanelTemplate">
+            <WrapPanel IsItemsHost="True" MaxWidth="289"/>
+        </ItemsPanelTemplate>
+        <DataTemplate DataType="local:Resolution" x:Key="LBResolutionPickerItemTemplate">
+            <Grid Margin="4,2" Background="#00000000">
+                <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="{Binding}" Width="Auto" Margin="4,2"/>
+            </Grid>
+        </DataTemplate>
+        <Style x:Key="LBResolutionPickerItemContainerTemplate" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="Padding" Value="2,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <ControlTemplate.Resources>
+                            <Storyboard x:Key="Highlight">
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="Bd">
+                                    <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#FF05E4B1"/>
+                                </ColorAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Bd">
+                                    <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                            <Storyboard x:Key="UnHighlight">
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(SolidColorBrush.Color)" Storyboard.TargetName="Bd">
+                                    <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#7F959595"/>
+                                </ColorAnimationUsingKeyFrames>
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="Bd">
+                                    <EasingDoubleKeyFrame KeyTime="0:0:0.1" Value="0.85"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </ControlTemplate.Resources>
+                        <Border x:Name="Bd" BorderThickness="1" Background="#0005E4B1" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true" BorderBrush="#7F959595" Margin="6,4" Opacity="0.85">
+                            <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="4,2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard x:Name="UnHighlight_BeginStoryboard" Storyboard="{StaticResource UnHighlight}"/>
+                                </Trigger.ExitActions>
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard x:Name="Highlight_BeginStoryboard" Storyboard="{StaticResource Highlight}"/>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="ListBorder" Color="#828790"/>
+        <Style x:Key="ListBoxResolutionPicker" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ListBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+            <Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" d:LayoutOverrides="Width"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsGrouping" Value="true"/>
+                                    <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="false"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <ControlTemplate x:Key="MiExpanderFlat_ToggleButton" TargetType="{x:Type ToggleButton}">
+            <ControlTemplate.Resources>
+                <Storyboard x:Key="Storyboard1"/>
+            </ControlTemplate.Resources>
+            <Grid Background="#00000000">
+                <Path HorizontalAlignment="Center" x:Name="Down_Arrow" VerticalAlignment="Center" Fill="Gainsboro" Data="M7.4785256,292.92325C7.9194977,292.48228 8.3604698,292.04131 8.8014412,291.60034 8.8014412,292.04131 8.8014412,292.48228 8.8014412,292.92325 8.3604698,292.92325 7.9194977,292.92325 7.4785256,292.92325z" Stroke="Gainsboro"  UseLayoutRounding="True" SnapsToDevicePixels="True" Width="7" Height="7" Margin="0" Stretch="Fill" Visibility="Collapsed"/>
+                <Path Visibility="Visible" HorizontalAlignment="Center" x:Name="Up_Arrow" VerticalAlignment="Center" Fill="#00444444" Data="M66.145833,156.77083L80.830213,171.4552 66.145833,186.13958z" Width="5" Height="9" Stroke="Gainsboro" Margin="0" Stretch="Fill"/>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Setter Property="Stroke" TargetName="Up_Arrow" Value="#FF06FFA4"/>
+                    <Setter Property="Stroke" TargetName="Down_Arrow" Value="#FF06FFA4"/>
+                    <Setter Property="Fill" TargetName="Down_Arrow" Value="#FF06FFA4"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="true"/>
+                <Trigger Property="IsChecked" Value="true">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard Storyboard="{StaticResource Storyboard1}"/>
+                    </Trigger.EnterActions>
+                    <Setter Property="Visibility" TargetName="Up_Arrow" Value="Collapsed"/>
+                    <Setter Property="Visibility" TargetName="Down_Arrow" Value="Visible"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                    <Setter Property="Fill" Value="{DynamicResource DisabledForegroundBrush}" TargetName="Down_Arrow"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <Style x:Key="MiExpanderFlat" TargetType="{x:Type Expander}">
+            <Setter Property="Background" Value="{DynamicResource LightBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Expander}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*" x:Name="ContentRow"/>
+                            </Grid.RowDefinitions>
+                            <Border Grid.Row="0" x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2,2,0,0">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleButton Template="{DynamicResource MiExpanderFlat_ToggleButton}" Background="{DynamicResource NormalBrush}" IsChecked="{Binding IsExpanded, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" OverridesDefaultStyle="True"/>
+                                    <ContentPresenter Grid.Column="1" Margin="4" RecognizesAccessKey="True" ContentSource="Header"/>
+                                </Grid>
+                            </Border>
+                            <Border Visibility="Collapsed" Grid.Row="1" x:Name="ExpandSite" Background="#00000000" BorderThickness="1,0,1,1" CornerRadius="0,0,2,2">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Focusable="false"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter Property="Visibility" Value="Visible" TargetName="ExpandSite"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Border"/>
+                                <Setter Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" TargetName="Border"/>
+                                <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <local:TimeSpanToStringMi x:Key="TimeSpanToStringMi"/>
+
+        <Style x:Key="ScrollBarStyle3" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Background" Value="{StaticResource VerticalScrollBarBackground}"/>
+            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="Width" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="MinWidth" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="Bg" SnapsToDevicePixels="true">
+                            <Grid.RowDefinitions>
+                                <RowDefinition MaxHeight="{DynamicResource {x:Static SystemParameters.VerticalScrollBarButtonHeightKey}}"/>
+                                <RowDefinition Height="0.00001*"/>
+                                <RowDefinition MaxHeight="{DynamicResource {x:Static SystemParameters.VerticalScrollBarButtonHeightKey}}"/>
+                            </Grid.RowDefinitions>
+                            <RepeatButton Command="{x:Static ScrollBar.LineUpCommand}" IsEnabled="{TemplateBinding IsMouseOver}" Style="{StaticResource ScrollBarButton}" Themes:ScrollChrome.ScrollGlyph="UpArrow"/>
+                            <Track x:Name="PART_Track" IsDirectionReversed="true" IsEnabled="{TemplateBinding IsMouseOver}" Grid.Row="1">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Style="{StaticResource VerticalScrollBarPageButton}"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}" Style="{StaticResource VerticalScrollBarPageButton}"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{DynamicResource SimpleThumbStyle}" Themes:ScrollChrome.ScrollGlyph="VerticalGripper" Template="{DynamicResource ThumbControlTemplate1}" Background="#00F0F0F0"/>
+                                </Track.Thumb>
+                            </Track>
+                            <RepeatButton Command="{x:Static ScrollBar.LineDownCommand}" IsEnabled="{TemplateBinding IsMouseOver}" Grid.Row="2" Style="{StaticResource ScrollBarButton}" Themes:ScrollChrome.ScrollGlyph="DownArrow" RenderTransformOrigin="0.5,0.5">
+                                <RepeatButton.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform ScaleY="-1" ScaleX="1"/>
+                                        <SkewTransform AngleY="0" AngleX="0"/>
+                                        <RotateTransform Angle="0"/>
+                                        <TranslateTransform/>
+                                    </TransformGroup>
+                                </RepeatButton.RenderTransform>
+                            </RepeatButton>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="Bg" Value="{StaticResource ScrollBarDisabledBackground}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="MinWidth" Value="0"/>
+                    <Setter Property="Height" Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"/>
+                    <Setter Property="MinHeight" Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"/>
+                    <Setter Property="Background" Value="{StaticResource HorizontalScrollBarBackground}"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ScrollBar}">
+                                <Grid x:Name="Bg" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition MaxWidth="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarButtonWidthKey}}"/>
+                                        <ColumnDefinition Width="0.00001*"/>
+                                        <ColumnDefinition MaxWidth="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarButtonWidthKey}}"/>
+                                    </Grid.ColumnDefinitions>
+                                    <RepeatButton Command="{x:Static ScrollBar.LineLeftCommand}" IsEnabled="{TemplateBinding IsMouseOver}" Style="{StaticResource ScrollBarButton}" Themes:ScrollChrome.ScrollGlyph="LeftArrow"/>
+                                    <Track x:Name="PART_Track" Grid.Column="1" IsEnabled="{TemplateBinding IsMouseOver}">
+                                        <Track.DecreaseRepeatButton>
+                                            <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}" Style="{StaticResource HorizontalScrollBarPageButton}"/>
+                                        </Track.DecreaseRepeatButton>
+                                        <Track.IncreaseRepeatButton>
+                                            <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}" Style="{StaticResource HorizontalScrollBarPageButton}"/>
+                                        </Track.IncreaseRepeatButton>
+                                        <Track.Thumb>
+                                            <Thumb Style="{StaticResource ScrollBarThumb}" Themes:ScrollChrome.ScrollGlyph="HorizontalGripper"/>
+                                        </Track.Thumb>
+                                    </Track>
+                                    <RepeatButton Grid.Column="2" Command="{x:Static ScrollBar.LineRightCommand}" IsEnabled="{TemplateBinding IsMouseOver}" Style="{StaticResource ScrollBarButton}" Themes:ScrollChrome.ScrollGlyph="RightArrow"/>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsEnabled" Value="false">
+                                        <Setter Property="Background" TargetName="Bg" Value="{StaticResource ScrollBarDisabledBackground}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="ScrollBarStyle2" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Background" Value="{StaticResource VerticalScrollBarBackground}"/>
+            <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false"/>
+            <Setter Property="Stylus.IsFlicksEnabled" Value="false"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="Width" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="MinWidth" Value="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="Bg" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                            <Grid.RowDefinitions>
+                                <RowDefinition MaxHeight="{DynamicResource {x:Static SystemParameters.VerticalScrollBarButtonHeightKey}}"/>
+                                <RowDefinition Height="0.00001*"/>
+                                <RowDefinition MaxHeight="{DynamicResource {x:Static SystemParameters.VerticalScrollBarButtonHeightKey}}"/>
+                            </Grid.RowDefinitions>
+                            <RepeatButton Command="{x:Static ScrollBar.LineUpCommand}" IsEnabled="{TemplateBinding IsMouseOver}" Style="{StaticResource ScrollBarButton}" Themes:ScrollChrome.ScrollGlyph="UpArrow"/>
+                            <Track x:Name="PART_Track" IsDirectionReversed="true" IsEnabled="{TemplateBinding IsMouseOver}" Grid.Row="1">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Style="{StaticResource VerticalScrollBarPageButton}"/>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}" Style="{StaticResource VerticalScrollBarPageButton}"/>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb Style="{StaticResource ScrollBarThumb}" Themes:ScrollChrome.ScrollGlyph="VerticalGripper"/>
+                                </Track.Thumb>
+                            </Track>
+                            <RepeatButton Command="{x:Static ScrollBar.LineDownCommand}" IsEnabled="{TemplateBinding IsMouseOver}" Grid.Row="2" Style="{StaticResource ScrollBarButton}" Themes:ScrollChrome.ScrollGlyph="DownArrow"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="Bg" Value="{StaticResource ScrollBarDisabledBackground}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="Orientation" Value="Horizontal">
+                    <Setter Property="Width" Value="Auto"/>
+                    <Setter Property="MinWidth" Value="0"/>
+                    <Setter Property="Height" Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"/>
+                    <Setter Property="MinHeight" Value="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarHeightKey}}"/>
+                    <Setter Property="Background" Value="{StaticResource HorizontalScrollBarBackground}"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ScrollBar}">
+                                <Grid x:Name="Bg" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition MaxWidth="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarButtonWidthKey}}"/>
+                                        <ColumnDefinition Width="0.00001*"/>
+                                        <ColumnDefinition MaxWidth="{DynamicResource {x:Static SystemParameters.HorizontalScrollBarButtonWidthKey}}"/>
+                                    </Grid.ColumnDefinitions>
+                                    <RepeatButton Command="{x:Static ScrollBar.LineLeftCommand}" IsEnabled="{TemplateBinding IsMouseOver}" Style="{StaticResource ScrollBarButton}" Themes:ScrollChrome.ScrollGlyph="LeftArrow"/>
+                                    <Track x:Name="PART_Track" Grid.Column="1" IsEnabled="{TemplateBinding IsMouseOver}">
+                                        <Track.DecreaseRepeatButton>
+                                            <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}" Style="{StaticResource HorizontalScrollBarPageButton}"/>
+                                        </Track.DecreaseRepeatButton>
+                                        <Track.IncreaseRepeatButton>
+                                            <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}" Style="{StaticResource HorizontalScrollBarPageButton}"/>
+                                        </Track.IncreaseRepeatButton>
+                                        <Track.Thumb>
+                                            <Thumb Style="{StaticResource ScrollBarThumb}" Themes:ScrollChrome.ScrollGlyph="HorizontalGripper"/>
+                                        </Track.Thumb>
+                                    </Track>
+                                    <RepeatButton Grid.Column="2" Command="{x:Static ScrollBar.LineRightCommand}" IsEnabled="{TemplateBinding IsMouseOver}" Style="{StaticResource ScrollBarButton}" Themes:ScrollChrome.ScrollGlyph="RightArrow"/>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsEnabled" Value="false">
+                                        <Setter Property="Background" TargetName="Bg" Value="{StaticResource ScrollBarDisabledBackground}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <ControlTemplate x:Key="scrolfalt" TargetType="{x:Type ScrollViewer}">
+            <Grid x:Name="Grid" Background="{TemplateBinding Background}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
+                <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
+                <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}" Background="#FF040405" Style="{DynamicResource ScrollBarStyle3}"/>
+                <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}" Style="{DynamicResource ScrollBarStyle2}"/>
+            </Grid>
+        </ControlTemplate>
+        <BorderGapMaskConverter x:Key="BorderGapMaskConverter"/>
+        <Style x:Key="GroupBoxStyle1" TargetType="{x:Type GroupBox}">
+            <Setter Property="BorderBrush" Value="#D5DFE5"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GroupBox}">
+                        <Grid SnapsToDevicePixels="true">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="6"/>
+                            </Grid.RowDefinitions>
+                            <Border BorderBrush="{x:Null}" BorderThickness="{TemplateBinding BorderThickness}" Grid.ColumnSpan="4" CornerRadius="4" Grid.Row="1" Grid.RowSpan="3">
+                                <Border.OpacityMask>
+                                    <MultiBinding ConverterParameter="7" Converter="{StaticResource BorderGapMaskConverter}">
+                                        <Binding ElementName="Header" Path="ActualWidth"/>
+                                        <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}"/>
+                                        <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}"/>
+                                    </MultiBinding>
+                                </Border.OpacityMask>
+                                <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3"/>
+                            </Border>
+                            <Border x:Name="Header" Grid.Column="1" Padding="3,1,3,0" Grid.Row="0" Grid.RowSpan="2">
+                                <ContentPresenter ContentSource="Header" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                            <ContentPresenter Grid.ColumnSpan="2" Grid.Column="1" Margin="{TemplateBinding Padding}" Grid.Row="2" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="MiTB_Highlightable" TargetType="{x:Type TextBlock}">
+            <Style.Resources>
+                <Storyboard x:Key="zaga"/>
+                <Storyboard x:Key="Highlight">
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" >
+                        <EasingColorKeyFrame KeyTime="0:0:0.1" Value="#FFFFFF"/>
+                    </ColorAnimationUsingKeyFrames>
+                </Storyboard>
+                <Storyboard x:Key="uNHighlight">
+                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)" >
+                        <EasingColorKeyFrame KeyTime="0:0:0.2" Value="#FFC1C1C1"/>
+                    </ColorAnimationUsingKeyFrames>
+                </Storyboard>
+            </Style.Resources>
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+            <Setter Property="TextTrimming" Value="None"/>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="FrameworkElement.Loaded"/>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard x:Name="Highlight_BeginStoryboard" Storyboard="{StaticResource Highlight}"/>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard  Storyboard="{StaticResource uNHighlight}"/>
+                    </Trigger.ExitActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <local:URLtoVideoID x:Key="URLtoVideoID1"/>
+        <DataTemplate x:Key="VideoStreamInfoItemTemplate" DataType="{x:Type local:VideoRepresentation}">
+            <Grid x:Name="stream_Entry" Margin="2" Height="80" d:LayoutOverrides="LeftPosition, RightPosition">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="52"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="Header" Height="20" VerticalAlignment="Top" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Width="44">
+                    <TextBlock x:Name="textBlock" TextWrapping="Wrap" Text="{Binding FBQualityLabel, FallbackValue=3140p}" d:LayoutOverrides="Height" HorizontalAlignment="Left" VerticalAlignment="Center" Width="38" Margin="8,0,0,0"/>
+                    <Path Data="M1,1L2,1 2,2 1,2" Fill="#FFF4F4F5" HorizontalAlignment="Left" Margin="0" Stretch="Fill" Stroke="Black" UseLayoutRounding="False" Width="6" Height="6" VerticalAlignment="Center"/>
+                </Grid>
+                <StackPanel Grid.Column="1" Margin="0,0,9,0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
+                    <Grid x:Name="keyVal" Height="20" d:LayoutOverrides="Width, LeftPosition, RightPosition, TopPosition, BottomPosition" Margin="10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="59"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="label_Propery2" VerticalAlignment="Center" Text="codecs" TextWrapping="Wrap" Margin="4,0,0,0" HorizontalAlignment="Left" Foreground="#FFCFCFCF"/>
+                        <TextBlock x:Name="codecsValue" Margin="0" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Style="{DynamicResource MiTB_Highlightable}" d:LayoutOverrides="Width" Grid.Column="1" Text="{Binding codecs, FallbackValue=-}" HorizontalAlignment="Left"/>
+                    </Grid>
+                    <Grid x:Name="keyVal_Copy" Height="20" d:LayoutOverrides="Width, LeftPosition, RightPosition, TopPosition, BottomPosition" Margin="10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="59"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="label_Propery3" Text="dim" TextWrapping="Wrap" Margin="4,2,0,2" Foreground="#FFCFCFCF" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                        <TextBlock x:Name="DimensionsVale" Margin="0" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" TextOptions.TextFormattingMode="Display"  Style="{DynamicResource MiTB_Highlightable}" d:LayoutOverrides="Width" Grid.Column="1" Text="{Binding Converter={StaticResource VideoRepresentationToDimentionsStrng}, FallbackValue=-, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Grid x:Name="keyVal_Copy1" d:LayoutOverrides="Width, LeftPosition, RightPosition, TopPosition, BottomPosition" Margin="10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="59"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="label_Propery4" VerticalAlignment="Top" Text="BaseURL" TextWrapping="Wrap" Margin="4,0,0,0" HorizontalAlignment="Left" Foreground="#FFCFCFCF"/>
+                        <TextBlock x:Name="BaseUrlVlue" Margin="0" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display"  Style="{DynamicResource MiTB_Highlightable}" d:LayoutOverrides="Width" Grid.Column="1" Text="{Binding BaseUrl, FallbackValue=https://video.fcmn1-1.fna.fbcdn.net/v/t42.1790-2/10000000_113476854118559_8530497262393228175_n.mp4?_nc_cat\=1&amp;amp;ccb\=1-3&amp;amp;_nc_sid\=5aebc0&amp;amp;efg\=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfYXVkaW9fYWFjcF82NF9mcmFnXzJfYXVkaW8ifQ%3D%3D&amp;amp;_nc_ohc\=M3F0d4jg3SMAX9cf1zR&amp;amp;_nc_ht\=video.fcmn1-1.fna&amp;amp;oh\=5ff2a7e47bcef0c0e6d1b07a542e55ac&amp;amp;oe\=6093476C, Mode=OneWay}" MaxHeight="40" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="AudioStreamsItemsTemplate" DataType="{x:Type local:AudioRepresentation}">
+            <Grid x:Name="stream_Entry" Margin="2" Height="80" d:LayoutOverrides="LeftPosition, RightPosition">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="52"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid x:Name="Header" Height="Auto" VerticalAlignment="Top" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin" Width="44">
+                    <TextBlock x:Name="textBlock" TextWrapping="Wrap" d:LayoutOverrides="Height" HorizontalAlignment="Left" VerticalAlignment="Top" Width="38" Margin="8,0,0,0" Text="{Binding mimeType, FallbackValue=Audio}" Foreground="LightGray"/>
+                    <Path Data="M1,1L2,1 2,2 1,2" Fill="#FFF4F4F5" HorizontalAlignment="Left" Margin="0" Stretch="Fill" Stroke="Black" UseLayoutRounding="False" Width="6" Height="6" VerticalAlignment="Center"/>
+                </Grid>
+                <StackPanel Grid.Column="1" Margin="0,0,9,0" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin">
+                    <Grid x:Name="keyVal" Height="20" d:LayoutOverrides="Width, LeftPosition, RightPosition, TopPosition, BottomPosition" Margin="10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="59"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="label_Propery2" VerticalAlignment="Center" Text="codecs" TextWrapping="Wrap" Margin="4,0,0,0" HorizontalAlignment="Left" Foreground="#FFCFCFCF"/>
+                        <TextBlock x:Name="codecsValue" Margin="0" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" Style="{DynamicResource MiTB_Highlightable}" d:LayoutOverrides="Width" Grid.Column="1" Text="{Binding codecs, FallbackValue=-}" HorizontalAlignment="Left"/>
+                    </Grid>
+                    <Grid x:Name="keyVal_Copy" Height="20" d:LayoutOverrides="Width, LeftPosition, RightPosition, TopPosition, BottomPosition" Margin="10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="59"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="label_Propery3" Text="SampRate" TextWrapping="Wrap" Margin="4,2,0,2" Foreground="#FFCFCFCF" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                        <TextBlock x:Name="SampRate" Margin="0" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" TextOptions.TextFormattingMode="Display"  Style="{DynamicResource MiTB_Highlightable}" d:LayoutOverrides="Width" Grid.Column="1" Text="{Binding samplingRate,  FallbackValue=-, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Grid x:Name="keyVal_Copy1" d:LayoutOverrides="Width, LeftPosition, RightPosition, TopPosition, BottomPosition" Margin="10,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="59"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="label_Propery4" VerticalAlignment="Top" Text="BaseURL" TextWrapping="Wrap" Margin="4,0,0,0" HorizontalAlignment="Left" Foreground="#FFCFCFCF"/>
+                        <TextBlock x:Name="BaseUrlVlue" Margin="0" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" VerticalAlignment="Center" TextOptions.TextFormattingMode="Display"  Style="{DynamicResource MiTB_Highlightable}" d:LayoutOverrides="Width" Grid.Column="1" Text="{Binding BaseUrl, FallbackValue=https://video.fcmn1-1.fna.fbcdn.net/v/t42.1790-2/10000000_113476854118559_8530497262393228175_n.mp4?_nc_cat\=1&amp;amp;ccb\=1-3&amp;amp;_nc_sid\=5aebc0&amp;amp;efg\=eyJ2ZW5jb2RlX3RhZyI6ImRhc2hfYXVkaW9fYWFjcF82NF9mcmFnXzJfYXVkaW8ifQ%3D%3D&amp;amp;_nc_ohc\=M3F0d4jg3SMAX9cf1zR&amp;amp;_nc_ht\=video.fcmn1-1.fna&amp;amp;oh\=5ff2a7e47bcef0c0e6d1b07a542e55ac&amp;amp;oe\=6093476C, Mode=OneWay}" MaxHeight="40" TextTrimming="CharacterEllipsis" HorizontalAlignment="Left"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid Margin="0,24,0,10">
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Template="{DynamicResource scrolfalt}">
+            <StackPanel x:Name="stack_properties" Orientation="Vertical">
+                <Grid x:Name="UrlGrd" Margin="10,2" Height="34">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="63"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="label_Propery" Text="URL" TextWrapping="Wrap" Margin="4,10,0,10" HorizontalAlignment="Left" Foreground="#FFCFCFCF" Width="21" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                    <TextBlock x:Name="UrlLbl" Margin="0,4" TextWrapping="Wrap" Foreground="#FFD5D5D5" FontSize="10.667" TextOptions.TextFormattingMode="Display" Style="{DynamicResource MiTB_Highlightable}" d:LayoutOverrides="Width, LeftMargin, RightMargin, TopMargin, BottomMargin" Grid.Column="1" Text="https://web.facebook.com/slanderofficial/videos/2192468374337641/" HorizontalAlignment="Left" VerticalAlignment="Center" MouseUp="UrlLbl_MouseUp"/>
+                </Grid>
+                <Grid x:Name="MoreInfo" Margin="10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid x:Name="DurationGrd" Height="34" VerticalAlignment="Top" Margin="0" HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="63"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="label_Propery1" Text="Duration" TextWrapping="Wrap" Margin="4,10,0,10" Foreground="#FFCFCFCF" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                        <TextBlock x:Name="DurationValue" Text="{Binding Duration, Converter={StaticResource TimeSpanToStringMi}, FallbackValue=3:14:00}" TextWrapping="Wrap" Margin="0" Foreground="#FFCFCFCF" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    </Grid>
+                    <Grid x:Name="OwnerInfo" Height="34" VerticalAlignment="Top" Margin="0" Grid.Column="1" HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="63"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="label_Propery2" Text="Owner" TextWrapping="Wrap" Margin="4,10,0,10" Foreground="#FFCFCFCF" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                        <TextBlock x:Name="DurationValue1" TextWrapping="Wrap" Margin="0" Foreground="#FFCFCFCF" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="-"/>
+                    </Grid>
+                    <Grid x:Name="DatePostedGrd" Height="34" VerticalAlignment="Top" Margin="0" Grid.Column="2" HorizontalAlignment="Left">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="63"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="label_Propery3" Text="DatePosted" TextWrapping="Wrap" Margin="4,10,0,10" Foreground="#FFCFCFCF" d:LayoutOverrides="LeftMargin, RightMargin, TopMargin, BottomMargin"/>
+                        <TextBlock x:Name="DurationValue2" TextWrapping="Wrap" Margin="0" Foreground="#FFCFCFCF" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Text="-"/>
+                    </Grid>
+                </Grid>
+                <Expander x:Name="TitlesSection" Style="{DynamicResource MiExpanderFlat}" Margin="0" IsExpanded="True" Header="Titles" Foreground="#FFDCD9D9" Background="Black" BorderBrush="{x:Null}">
+                    <Grid x:Name="grd_resolution_settings1" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition" VerticalAlignment="Bottom" Visibility="{Binding SelectedTask.HasVideo, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}" Margin="0" Height="Auto">
+                        <!--<local:ResolutionPicker x:Name="resolutionPicker" Height="Auto" Width="Auto" d:LayoutOverrides="Height" Margin="0,26,0,0" Resolutions="{Binding SelectedTask, Converter={StaticResource taskToAvailableResolutions}, Mode=OneWay}" selectedResolution="{Binding SelectedTask.TaskProperties.resolutionSettings.UserPicked, Mode=TwoWay}" PickedResolutionChanged="resolutionPicker_ResolutionPicked" ForegroundPicked="#FF20C9BF" Visibility="Collapsed" d:IsHidden="True"/>-->
+                    </Grid>
+                </Expander>
+                <Expander x:Name="VideoStreamsSection" Style="{DynamicResource MiExpanderFlat}" Margin="0" IsExpanded="True" Header="Video Sources" Foreground="#FFDCD9D9" Background="Black" BorderBrush="{x:Null}">
+                    <Grid x:Name="VideosStreams" Margin="0" VerticalAlignment="Bottom" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition" >
+                        <ItemsControl ItemTemplate="{DynamicResource VideoStreamInfoItemTemplate}" ItemsSource="{Binding DashManifest.VideoRepresentations}" MinHeight="20" Margin="20,0,10,0" d:LayoutOverrides="Height"/>
+                    </Grid>
+                </Expander>
+                <Expander x:Name="AudioStreamsSection" Style="{DynamicResource MiExpanderFlat}" Margin="0" Header="Audio Sources" Foreground="#FFDCD9D9" Background="Black" BorderBrush="{x:Null}">
+                    <Grid x:Name="AudioStreams" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition" VerticalAlignment="Bottom" Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <ItemsControl x:Name="AudStreamsControl" ItemTemplate="{DynamicResource AudioStreamsItemsTemplate}" ItemsSource="{Binding DashManifest.AudioRepresentations}" MinHeight="20" Margin="20,0,10,0" Grid.ColumnSpan="2"/>
+                    </Grid>
+                </Expander>
+                <Expander x:Name="ImagesSection" Style="{DynamicResource MiExpanderFlat}" Margin="0" IsExpanded="True" Header="Image Sources" Foreground="#FFDCD9D9" Background="Black" BorderBrush="{x:Null}">
+                    <Grid x:Name="grd_resolution_settings2" d:LayoutOverrides="LeftPosition, RightPosition, TopPosition, BottomPosition" VerticalAlignment="Bottom" Visibility="{Binding SelectedTask.HasVideo, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Visible}" Margin="0" Height="Auto">
+                        <!--<local:ResolutionPicker x:Name="resolutionPicker" Height="Auto" Width="Auto" d:LayoutOverrides="Height" Margin="0,26,0,0" Resolutions="{Binding SelectedTask, Converter={StaticResource taskToAvailableResolutions}, Mode=OneWay}" selectedResolution="{Binding SelectedTask.TaskProperties.resolutionSettings.UserPicked, Mode=TwoWay}" PickedResolutionChanged="resolutionPicker_ResolutionPicked" ForegroundPicked="#FF20C9BF" Visibility="Collapsed" d:IsHidden="True"/>-->
+                    </Grid>
+                </Expander>
+            </StackPanel>
+        </ScrollViewer>
+
+    </Grid>
+</Window>

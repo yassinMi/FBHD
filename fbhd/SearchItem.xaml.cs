@@ -43,7 +43,7 @@ namespace fbhd
         {
             if (DataContext == null) return;
             if (string.IsNullOrWhiteSpace(((SearchElement)DataContext).Url)) return;
-            mw.addNewFBHDTask(((SearchElement)DataContext).Url, TaskType.mp4Task);
+            mw.addNewFBHDTask(((SearchElement)DataContext).Url, TaskType.mp4Task, false); // add task and do not auto select it, avoiding the view to switch to the tasks view averytime
         }
 
         private async void copHrefButt_Click(object sender, RoutedEventArgs e)

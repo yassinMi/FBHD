@@ -22,12 +22,42 @@ using System.Xml;
 using System.Security.Policy;
 using System.Dynamic;
 using System.Xml.Serialization;
+using System.Windows.Documents;
 
 namespace fbhd
 {
 
 
 
+
+    public class VideoRepresentationToDimentionsStrng : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return "";
+            return ((VideoRepresentation)value).width+"x"+ ((VideoRepresentation)value).height;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
+    public class TimeSpanToStringMi : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value == null) return "";
+            return Fucs.TimeSpanToString((TimeSpan)value);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 
     public class BooleanToVisibilityInverted : IValueConverter
@@ -511,21 +541,48 @@ namespace fbhd
 
 
 
+
+    public class ApplicationInfo
+    {
+
+        public ApplicationInfo()
+        {
+          // Environment.CurrentDirectory
+        }
+        private static string oldfbhdgit = "https://github.com/Mi1016/FBHD";
+
+        private static string fbhdgit = "https://github.com/UndefinedYass/FBHD";
+        public static bool IsDev { get; set; } = false;
+        public static string FBHD_APP_TITLE { get; set; } = "FBHD Downloader 1.0";
+        public static string FBHD_APP_SUB_TITLE { get; set; } = "© Mi 2021 ";
+        public static string FBHD_VERSION { get; set;} = "0.6.0-beta (21-05-2021 5:21AM)" + (IsDev?" [dev]":"");
+        public static string FBHD_DEVELOPER { get; set; } = "Yass.Mi";
+        public static string FBHD_GUI_DESIGNER { get; set; } = "Yass.Mi";
+        public static string FBHD_GITHUB_URL { get; set; } = fbhdgit;
+
+
+        //FBHD_GITHUB_URL
+        public static string FBHD_DEVELOPER_EMAIL { get; set; } = "DIR16CAT17@gmail.com";
+    }
     public class MI
     {
-        public static string FFMPEG_PATH =  Environment.CurrentDirectory+"\\ffmpeg\\ffmpeg.exe";
-        public static string CURL_PATH = Environment.CurrentDirectory + "\\curl\\curl.exe";
+        public static string MAIN_PATH = Path.GetDirectoryName(
+           System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+        public static string FFMPEG_PATH = MAIN_PATH+"\\ffmpeg\\ffmpeg.exe";
+        public static string CURL_PATH = MAIN_PATH+"\\curl\\curl.exe";
         public static string APP_DATA = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Mi\\FBHD";
         public static MainWindow mw = (MainWindow)Application.Current.MainWindow;
-        public static string MAIN_PATH = Environment.CurrentDirectory;
-        internal const string FSDM_News_Ref_PATH = "C:\\TOOLS\\fbhd-gui\\fbhd-fsdm-news-watcher-reference.html";
-        //public const string DEFAULT_GLOBAL_OUTPUT_DIR = "C:\\TOOLS\\fbhd-gui\\output\\";
+       
         public static string DEFAULT_GLOBAL_OUTPUT_DIR = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)+"\\FBHD Output" ;
 
         public static string CLW_PRESETS_DIR= MAIN_PATH +  "\\CLW Presets";
         public static string APP_CONFIG_FILE =  APP_DATA + "\\config.mi.xml";
         internal static string TEMP_HTML_FILES = APP_DATA +  "\\Temp HTML";
-        internal static string SCRIPTS_DIR = Environment.CurrentDirectory + "\\scripts";
+        internal static string SCRIPTS_DIR = MAIN_PATH+ "\\scripts";
+        internal static string regexTestPattern= "\\\\x3CPeriod duration=\\\\\\\"PT(.*?)H(.*?)M(.*?)S\\\">";
+        internal static object SFX_DIRECTORY = MAIN_PATH+"\\SFX";
+        internal static string ERRORS_LOG_FILE = APP_DATA+ @"\Errors.log";
 
         public static List<Resolution> standardResolutionSet {
             get
@@ -554,9 +611,36 @@ namespace fbhd
 
         }
 
+        [Obsolete("",true)]
+        public static string FSDM_News_Ref_PATH { get; internal set; }
+
+        public static async void ConsoleLog(string Message, Brush Color = null, bool autoScrollToEnd=true)
+        {
+             mw.Dispatcher.Invoke( () =>
+            {
+                if (Color == null)
+                {
+                    Color = new SolidColorBrush(Colors.LightGray);
+                }
+                mw.ConsoleRTB.Document.Blocks.Add(new Paragraph(new Run(Message) { Foreground = Color }));
+
+                if (autoScrollToEnd)
+                {
+                    mw.consoleScrollView.ScrollToEnd();
+                }
+            });
+        }
+
+
+        public static async void DumpError( Exception exception, string source )
+        {
+            File.AppendAllText(MI.ERRORS_LOG_FILE, $"Error, {DateTime.Now.ToString("d/MM/yyyy hh:mm:ss")}, In [{source}] : '{exception.Message}'{Environment.NewLine}");
+        }
+
+
+
         public static async void Verbose(string VerboseStatus, int DurationInSeconds=-1)
         {
-
            await  mw.Dispatcher.Invoke(async () =>
             {
                 if (VerboseStatus == null)
@@ -566,11 +650,8 @@ namespace fbhd
                     return;
                 }
                 mw.verboseStatusStack.Add(VerboseStatus);
-                
                 mw.verboseStatus = mw.verboseStatusStack.Last();
-               
-               
-                if (DurationInSeconds != -1)
+               if (DurationInSeconds != -1)
                 {
                     await Task.Delay(1000 * DurationInSeconds);
                     mw.verboseStatusStack.Remove(VerboseStatus);
@@ -584,11 +665,7 @@ namespace fbhd
                         mw.verboseStatus = null;
                     }
                 }
-               
-
-
             });
-
         }
 
         public static void updateLogger(string VerboseStatus)
@@ -601,8 +678,10 @@ namespace fbhd
 
         }
 
-
-
+        internal static string TestingFunc(string text)
+        {
+            return TimeSpan.Parse(text).ToString();
+        }
     }
 
 
@@ -824,36 +903,79 @@ namespace fbhd
             PropertyGroup = "general",
         };
 
+        public static PostProperty<bool> isSomethingWentWrongPage = new PostProperty<bool>()
+        {
+            MainExtractor = (data) => {
+                return Regex.Match(data,
+                "Sorry, something went wrong.").Success;
+            },
 
+            name = "isSomethingWentWrongPage",
+            PropertyGroup = "general",
+        };
+
+
+
+
+        /// <summary>
+        /// \"thumbnailUrl\":.... 
+        /// Note all exceptions are handled, returning Null string on failure
+        /// </summary>
         public static PostProperty<string> thumbnail = new PostProperty<string>()
         {
             MainExtractor = new PostProperty<string>.Extractor((data) =>
             {
-                return Regex.Match(data, "\"thumbnailUrl\":\"([^\"]*)\"")
-                .Groups[1].Value.Replace("\\", "");
+                Match m = Regex.Match(data, "\"thumbnailUrl\":\"([^\"]*)\"");
+                return m.Success ? m.Groups[1].Value.Replace("\\", "") : null;
             }),
             name = "thumbnailUrl",
             PropertyGroup = "image",
             Precedence = 1
         };
-
+        /// <summary>
+        /// meta property="og:image" content="([^\"]*)" */>
+        /// Note all exceptions are handled, returning Null string on failure
+        /// </summary>
         public static PostProperty<string> ogImage = new PostProperty<string>()
         {
             MainExtractor = (data) => {
-                return Regex.Match(data,
-                "<meta property=\"og:image\" content=\"([^\"]*)\" */>")
-                .Groups[1].Value.Replace("&amp;", "&");
+                Match m = Regex.Match(data,
+                "<meta property=\"og:image\" content=\"([^\"]*)\" */>");
+                return m.Success ?
+                m.Groups[1].Value.Replace("&amp;", "&") : null;
+
             },
             name = "og:image",
             PropertyGroup = "image",
             Precedence = 0
         };
+        /// <summary>
+        /// thumbnailImage\":\..
+        /// Note all exceptions are handled, returning Null string on failure
+        /// </summary>
+        public static PostProperty<string> ThumbnailImage = new PostProperty<string>()
+        {
+            MainExtractor = (data) => {
+
+                Match m = Regex.Match(data, "\"thumbnailImage\":\\{\"uri\":\"(.*?)\"\\}");
+                return m.Success? m.Groups[1].Value.Replace("&amp;", "&").Replace("\\/", "/")
+                :  null;
+            },
+            name = "ThumbnailImage",
+            PropertyGroup = "image",
+            Precedence = 2
+        };
+
+
+        //"thumbnailImage":{"uri":"https:\/\/scontent.frba1-1.fna.fbcdn.net\/v\/t15.5256-10\/168972512_247262700530615_7284988788914798377_n.jpg?_nc_cat=100&ccb=1-3&_nc_sid=1055be&_nc_ohc=BjepuqYtHrIAX95uEZg&_nc_ht=scontent.frba1-1.fna&oh=4326b02809ad37b67b44b1ae2aa0dd28&oe=60B956DB"}
 
         public static List<PostProperty<string>> stdImages = new List<PostProperty<string>>()
         {
-          thumbnail, ogImage
+          thumbnail, ogImage, ThumbnailImage
         };
 
+
+        [Obsolete("Use dashManifest instead", true)]
         public static PostProperty<string> audioUrl = new PostProperty<string>()
         {
             MainExtractor = (data) => {
@@ -868,6 +990,94 @@ namespace fbhd
         };
 
 
+
+        /// <summary>
+        /// does all the parsing in one go, dealing with fb's xml model dash_manifest
+        /// added on 11-05-2021 11:49
+        /// use this instead of the old extractors, 
+        /// returns null on missmatch
+        /// tested over 201 posts
+        /// Note: this throws exceptions on failures
+        /// </summary>
+        public static PostProperty<FBDashManifest> DashManifest = new PostProperty<FBDashManifest>()
+        {
+            MainExtractor = new PostProperty<FBDashManifest>.Extractor((data) =>
+            {
+                Match wrap = Regex.Match(data, "dash_manifest\"?:\"(.*?[^\\\\])\"");
+                if (wrap.Success == false)
+                {
+                    throw new Exception("couldn't match dash_manifest content ");
+                }
+
+                string rawDashManifest = wrap.Groups[1].Value;
+                rawDashManifest = rawDashManifest.Replace("\\\"", "\"")
+                    .Replace("\\n", "\n")
+                    .Replace("\\x3C", "<")
+                    .Replace("\\u003C", "<")
+                    .Replace("\\/", "/");
+
+                XDocument doc;
+                try
+                {
+                    doc = XDocument.Parse(rawDashManifest);
+                }
+                catch (Exception xmlParsingException)// handle errors
+                {
+                    throw new Exception("Error: Couldn't parse the DashManifest data: this error occured:"+Environment.NewLine + xmlParsingException.Message + Environment.NewLine+ "The full DashManifest data is dumped at debug_dash_manifest.log");
+                }
+                XElement mdpElem = (XElement)doc.FirstNode;
+                if (mdpElem == null) // handle errors
+                {
+                    throw new Exception("Error: Parsed DashManifest XDocument does not have a FirstNode."+Environment.NewLine+"The full DashManifest data is dumped at debug_dash_manifest.log ");
+                }
+                FBDashManifest dsh = new FBDashManifest(mdpElem);
+                return dsh;
+            }),
+            name = "DashManifest",
+            PropertyGroup = "Main",
+            Precedence = 0
+        };
+
+        /// <summary>
+        /// tested over 201 posts
+        /// </summary>
+        [Obsolete("Use dashManifest instead",true)]
+        public static PostProperty<TimeSpan> duration = new PostProperty<TimeSpan>()
+        {
+            //    \x3CPeriod id=\"0\" duration=\"PT690.04S\">\x3C
+            //    \x3CPeriod duration=\"PT0H14M16.445S\">
+            MainExtractor = (data) => {
+                //# known formats: //PT690.04S //PT0H3M31.441S  
+
+                //# wierd results (fixed)
+                //'0H4M16.743S' , result: 00:04:16.7420000
+                //'0H1M43.891S' , result: 00:01:43.8900000
+
+                //  fixed fractional digits problem using rounding
+                // all moved to fucs.FBDurationToTimeSpan
+                Match wrap = Regex.Match(data,
+                " duration=\\\\\\\"PT(.*?)\\\\\">");
+
+
+                Trace.Assert(wrap.Success, "Duration parser failed, no wrap match, a zero TimeSpan value will be returned");
+                if (!wrap.Success)
+                {
+                    return new TimeSpan();
+                }
+
+                string durationStr = wrap.Groups[1].Value;
+
+
+                var outp = Fucs.FBDurationToTimeSpan(durationStr);
+                return outp;
+            },
+            name = "Duration",
+            PropertyGroup = "General",
+            Precedence = 0
+        };
+
+
+        [Obsolete("Use dashManifest instead", true)]
         public static PostProperty<List<QualityLabel>> qualityLabels = new PostProperty<List<QualityLabel>>()
         {
             name = "qualityLabelsList",
@@ -898,6 +1108,7 @@ namespace fbhd
         public string url;
         public string audioUrl { set; get; }
         public string audioSize { set; get; }
+        public TimeSpan Duration { set; get; }
         public List<QualityLabel> QualityLabels { set; get; }
 
         public Dictionary<PostProperty<string>, string> Titles { get; set; }
@@ -925,6 +1136,9 @@ namespace fbhd
             }
         }
 
+        public FBDashManifest DashManifest { get; private set; }
+        public bool isSomethingWentWrongPage { get; private set; }
+
 
 
 
@@ -939,11 +1153,19 @@ namespace fbhd
         {
 
             Post post = new Post();
+
             post.Titles = new Dictionary<PostProperty<string>, string>();
             post.Images = new Dictionary<PostProperty<string>, string>();
             post.QualityLabels = new List<QualityLabel>();
+            // #### isSomethingWentWrongPage (added on 11-05-2021) ####     
+            post.isSomethingWentWrongPage = StandardPostProperties.isSomethingWentWrongPage.Extract(rawHTMLContent);
             // #### isPrivate ####     
             post.isPrivate = StandardPostProperties.isPrivate.Extract(rawHTMLContent);
+            // validate
+            if (post.isPrivate | post.isSomethingWentWrongPage) return post;
+            // #### DashManifest (added on 11-05-2021) ####     
+            post.DashManifest = StandardPostProperties.DashManifest.Extract(rawHTMLContent);
+
             // #### titles ####
             foreach (PostProperty<string> item in TitleProperties)
                 post.Titles.Add(item, Fucs.decodeUtf(item.Extract(rawHTMLContent)));
@@ -951,11 +1173,14 @@ namespace fbhd
             foreach (PostProperty<string> item in ImagesProperties)
                 post.Images.Add(item, item.Extract(rawHTMLContent));
             // #### audioUrl ####
-            post.audioUrl = StandardPostProperties.audioUrl.Extract(rawHTMLContent);
+            //post.audioUrl = StandardPostProperties.audioUrl.Extract(rawHTMLContent);
+            post.audioUrl = post.DashManifest.AudioRepresentations[0].BaseUrl;
             // #### available resolutions ####
-            post.QualityLabels = StandardPostProperties.qualityLabels.Extract(rawHTMLContent);
-
-
+               //post.QualityLabels = StandardPostProperties.qualityLabels.Extract(rawHTMLContent);
+            post.QualityLabels = Fucs.temporaryDashManifestToQualityLabelsConverter(post.DashManifest.VideoRepresentations);
+            // #### Duration [add on 10-05-2021] ####
+               //post.Duration = StandardPostProperties.duration.Extract(rawHTMLContent);
+            post.Duration = post.DashManifest.PeriodDuration;
             return post;
 
         }
@@ -1020,7 +1245,9 @@ namespace fbhd
 
 
         /// <summary>
+        /// todo: move to fucs
         /// experimental: this is how the ssl connection problem was solved, basically adding the port component to the uri 
+        /// Note the input string is suppost to be a valide URL otherwise unhandled exceptions will be raised
         /// </summary>
         public static string UrlAdd443Port(string url)
         {
@@ -1065,6 +1292,13 @@ namespace fbhd
 
             string resolutionstr = taskProperties.resolutionSettings.getResult().serialized;
 
+
+            bool UseTrimmingSart = (true|taskProperties.trimmingSettings.Enabled) && taskProperties.trimmingSettings.NormalizedRange.Min != 0;
+            bool UseTrimmingTo = (true|taskProperties.trimmingSettings.Enabled) && taskProperties.trimmingSettings.NormalizedRange.Max != 1;
+
+            string TrimmingStartArg = Fucs.TimeSpanToString( taskProperties.trimmingSettings.Start);
+            string TrimmingToArg = Fucs.TimeSpanToString(taskProperties.trimmingSettings.To);
+
             string
                 videoStream = post.QualityLabels.Find((Q) =>
                 (Q.qualityName ==
@@ -1074,8 +1308,13 @@ namespace fbhd
                 audioStram = post.audioUrl,
                 metatitle = "",
                 outputFile = task.OutputFile,
-                thumb = post.Images.First().Value;
+                thumb = Fucs.getFirstNonNull(post.Images.ToList().ConvertAll<string>((item) => item.Value).ToArray());
+            // thumb = post.Images.First().Value;
             // ## 27-04-2021 ssl connection problem: experimental fix
+            if(thumb == null)
+            {
+                throw new Exception("No thumbnail url was found");
+            }
             videoStream = UrlAdd443Port(videoStream);
             audioStram = UrlAdd443Port(audioStram);
             thumb = UrlAdd443Port(thumb);
@@ -1087,8 +1326,13 @@ namespace fbhd
                 Args mp4args = new FFMPEG.Args(100);
 
                 mp4args = mp4args.add("-v 32")
+                    .add("-multiple_requests 1") //04-05-2021 solved the connection issue// still in test 
+                    .add("-ss ", TrimmingStartArg, UseTrimmingSart)
+                    .add("-to ", TrimmingToArg, UseTrimmingTo)
                     .add("-vn -i", Fucs.qoute(audioStram))
                     .add("-an -i", Fucs.qoute(thumb))
+                    .add("-ss ", TrimmingStartArg, UseTrimmingSart)
+                    .add("-to ", TrimmingToArg, UseTrimmingTo)
                     .add("-an -i", Fucs.qoute(videoStream))
                     .add("-map 0 -map 1 -map 2")
                     .add("-c:v:0 mjpeg")
@@ -1112,7 +1356,10 @@ namespace fbhd
                 Args mp3args = new FFMPEG.Args(100);
 
                 mp3args = mp3args.add("-v 32")
+                    .add("-multiple_requests 1")
                     .add("-hide_banner")
+                    .add("-ss ", TrimmingStartArg, UseTrimmingSart)
+                    .add("-to ", TrimmingToArg, UseTrimmingTo)
                     .add("-vn -i", Fucs.qoute(audioStram))
                     .add("-an -i", Fucs.qoute(thumb))
                     .add("-map 0 -map 1")
@@ -1303,6 +1550,17 @@ namespace fbhd
 
             }
 
+            if (data.ToLower().Contains("the push function"))
+            {
+                return new Exception("Error in the push fucntion");
+
+            }
+            if (data.ToLower().Contains("the pull function"))
+            {
+                return new Exception("Error in the pull fucntion, try again");
+
+            }
+
 
             return null;
         }
@@ -1330,10 +1588,10 @@ namespace fbhd
                 {
                     if (!Fucs.GenerateConsoleCtrlEvent(Fucs.CTRL_C_EVENT, 0))
                         return false;
-                    await Task.Run(() =>
-                    {
-                        Process.WaitForExit();
-                    });
+                    await Task.Delay(1);
+                    if(!Process.HasExited);
+                    Process.WaitForExit(5000);
+                    
 
 
                 }
@@ -1584,7 +1842,69 @@ namespace fbhd
 
 
 
+    public class TrimmingSettings : INotifyPropertyChanged
+    {
+        public TrimmingSettings(TimeSpan TotalDuration_)
+        {
+            TotalDuration = TotalDuration_;
+            To = TotalDuration;
+            Start = new TimeSpan(0);
+        }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void notif(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        public bool Enabled { get; set; }
+
+
+
+        public Range NormalizedRange
+        {
+            set {
+                To = Fucs.TimeSpanMultipler(TotalDuration, value.Max);
+                Start = Fucs.TimeSpanMultipler(TotalDuration, value.Min);
+
+                notif(nameof(NormalizedRange));
+            }
+            get { return new Range(((double) Start.Ticks)/ TotalDuration.Ticks, ((double)To.Ticks)/ TotalDuration.Ticks ); }
+        }
+
+
+
+        private TimeSpan start;
+        public TimeSpan Start
+        {
+            set { start = value; notif(nameof(Start));
+                notif(nameof(NormalizedRange));
+            }
+            get { return start; }
+        }
+
+
+        private TimeSpan to;
+        public TimeSpan To
+        {
+            set { to = value; notif(nameof(To));
+                notif(nameof(NormalizedRange));
+            }
+            get { return to; }
+        }
+
+
+        private TimeSpan totalDuration;
+        public TimeSpan TotalDuration
+        {
+            set { totalDuration = value; notif(nameof(TotalDuration)); }
+            get { return totalDuration; }
+        }
+
+
+
+
+
+    }
 
 
     public class TitleSettings : INotifyPropertyChanged
@@ -1601,6 +1921,7 @@ namespace fbhd
             set {
                 updateQuery(value);
                 query = value;
+                notif(nameof(Query));
             } }
 
         public override string ToString()
@@ -1943,7 +2264,7 @@ namespace fbhd
             //startInfo.WindowStyle = ProcessWindowStyle.Normal;
             startInfo.FileName = filename;
             startInfo.Arguments = args;
-            startInfo.WorkingDirectory = "C:\\TOOLS\\fbhd-gui";
+            startInfo.WorkingDirectory = MI.MAIN_PATH;
             startInfo.CreateNoWindow = true;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
@@ -2020,7 +2341,7 @@ namespace fbhd
             string outputFile = url.AbsoluteUri.GetHashCode() + ".html";
             string python_args = ".\\scripts\\fetch-python.py " + url.AbsoluteUri + " " +$"{MI.TEMP_HTML_FILES}\\{outputFile}";
             Process process = constructProcess("python.exe", python_args);
-            process.StartInfo.WorkingDirectory = "C:\\TOOLS\\fbhd-gui";
+            process.StartInfo.WorkingDirectory = "C:\\TOOLS\\fbhd-obsolete-gui";
             DataReceivedEventHandler py_hndl = ((sender, args) =>
             {
                 html_content.AppendLine(args.Data);
@@ -2104,6 +2425,61 @@ namespace fbhd
             return (((XText)ElemWithTextNode.FirstNode).Value);
             
         }
+
+
+        /// <summary>
+        /// mutiplies a timspan 
+        /// Note: the value may not be 100% acurate as the ticks property of TimeSpan only accepts integeres
+        /// </summary>
+        internal static TimeSpan TimeSpanMultipler(TimeSpan input, double multiplier)
+        {
+           return new TimeSpan((long)(Math.Truncate( input.Ticks * multiplier)));
+        }
+
+        internal static string TimeSpanToString(TimeSpan input)
+        {
+           return $"{(input.Hours > 0 ? input.Hours.ToString() + ":" : "")}{input.Minutes}:{input.Seconds}.{input.Milliseconds}";
+
+        }
+
+        /// <summary>
+        /// parses fb duration format into a timespan instance, 
+        /// returns zero timespan on errors
+        /// supported formats:  //# known formats: //PT690.04S //PT0H3M31.441S    /// </summary>
+        /// Note: the "PT" part is not important
+        /// <param name="durationStr"></param>
+        /// <returns></returns>
+        internal static TimeSpan FBDurationToTimeSpan(string durationStr)
+        {
+           
+
+            Match H = Regex.Match(durationStr, "(\\d*?)H");
+            Match M = Regex.Match(durationStr, "(\\d*?)M");
+            Match S = Regex.Match(durationStr, "(\\d*\\.\\d*)S");
+            double hours = H.Success ? double.Parse(H.Groups[1].Value) : 0;
+            double minutes = M.Success ? double.Parse(M.Groups[1].Value) : 0;
+            double seconds = double.Parse(S.Groups[1].Value);
+            //  fixed fractional digits problem using rounding
+            int millis = (int)(Math.Round(seconds - Math.Truncate(seconds), 3) * 1000.0);
+            var outp = new TimeSpan(0, (int)hours, (int)minutes, (int)Math.Truncate(seconds), millis);
+            return outp;
+        }
+
+        /// <summary>
+        /// his method temporary converts between the new DahManifest class model and the legacy QualityLabels, as deprecating QualityLabels needs a lot of adjustment
+        /// </summary>
+        /// <param name="videoRepresentations"></param>
+        /// <returns></returns>
+        internal static List<QualityLabel> temporaryDashManifestToQualityLabelsConverter(List<VideoRepresentation> videoRepresentations)
+        {
+
+            List<QualityLabel> outp = new List<QualityLabel>();
+            foreach (var item in videoRepresentations)
+            {
+                outp.Add(new QualityLabel(new Resolution(item.FBQualityLabel), item.BaseUrl));
+            }
+            return outp;
+        }
     }
 
 
@@ -2136,7 +2512,7 @@ namespace fbhd
 
         public TitleSettings titleSettings { get; set; }
         public ResolutionSettings resolutionSettings { get; set; }
-
+        public TrimmingSettings trimmingSettings { get; set; }
         public OverrideBehaviour overridingBehaviour { get; set; }
 
         public ThumbnailSettings thumbnailSettings { get; set; }
@@ -2409,6 +2785,7 @@ namespace fbhd
 
         public abstract string makeArgs(string url, Headers headers, string outputFile, bool followRedirects);
         public abstract bool success(int exitCode);
+        public abstract string AfterArgs { get; set; }
 
 
 
@@ -2513,6 +2890,8 @@ namespace fbhd
 
 
         internal event EventHandler<string> DateRecieved;
+        internal event EventHandler<int> ProcessExited;
+
 
         public struct DownloadResult
         {
@@ -2538,9 +2917,11 @@ namespace fbhd
         public async Task<DownloadResult> DownloadBinary(string url,  string saveAs, Headers headers = null )
         {
             string args = makeArgsBinary(url, saveAs, headers);
-            MessageBox.Show(args);
+            //MI.ConsoleLog(args);
             Process webClientProcess = Fucs.constructProcess(ProcessFileName, args);
             StringBuilder cachedStdout = new StringBuilder();
+            
+
             webClientProcess.OutputDataReceived += (s, e) => {
                 cachedStdout.Append(e.Data);
                 if(!string.IsNullOrWhiteSpace(e.Data))
@@ -2549,10 +2930,23 @@ namespace fbhd
                     {
                         DateRecieved(this, e.Data);
                     }
+                    
                 }
                 
                 };
-            webClientProcess.StartInfo.WorkingDirectory = "C:\\TOOLS\\fbhd-gui\\";
+            webClientProcess.ErrorDataReceived += (s, e) => {
+                cachedStdout.Append(e.Data);
+                if (!string.IsNullOrWhiteSpace(e.Data))
+                {
+                    if (DateRecieved != null)
+                    {
+                        DateRecieved(this, e.Data);
+                    }
+
+                }
+
+            };
+            webClientProcess.StartInfo.WorkingDirectory = MI.MAIN_PATH;
             /// ## RUNNING ##
             MI.Verbose($"starting {Name}..");
             await Task.Run(new Action(() =>
@@ -2567,8 +2961,10 @@ namespace fbhd
                 webClientProcess.WaitForExit();
             }));
             MI.Verbose(null);
-
-
+            webClientProcess.Exited += (s, e) => {
+                
+                ProcessExited.Invoke(s, webClientProcess.ExitCode);
+            };
             /// ## ##
 
 
@@ -2583,6 +2979,7 @@ namespace fbhd
         }
 
         internal abstract string makeArgsBinary(string url, string saveAs, Headers headers);
+
 
         public class cURL : WebClient
         {
@@ -2604,7 +3001,7 @@ namespace fbhd
             }
 
 
-            public  curlProgress? parseProgress(string rawLine)
+            public bool TryParseProgressInfo(string rawLine, out curlProgress progInfo)
             {
                 curlProgress outp = new curlProgress();
                 //DL% UL%  Dled  Uled  Xfers  Live   Qd Total     Current  Left    Speed
@@ -2613,7 +3010,10 @@ namespace fbhd
                 {
                     Regex re = new Regex("(\\d{1,3}) (\\S{1,3}) +(\\S{1,8}) +(\\S{1,8}) +(\\S{1,8}) +(\\S{1,8}) +(\\S{1,8}) +(\\S{1,8}) +(\\S{1,8}) +(\\S{1,8}) +(\\S{1,8})");
                     Match m = re.Match(rawLine);
-                    if(!m.Success) return null;
+                    if (!m.Success) {
+                        progInfo = outp;
+                        return false;
+                     }
 
                     string rawPercent = m.Groups[1].Value;
                     string rawDled = m.Groups[3].Value;
@@ -2632,13 +3032,13 @@ namespace fbhd
                     outp.Left = Fucs.TimeSpanFromString(rawLeft);
                     outp.Speed = new Size(rawSpeed + "b").bytes;
                     //MessageBox.Show("787");
-
-                    return outp;
+                    progInfo = outp;
+                    return true;
                 }
                 catch (Exception)
                 {
-
-                    return null;
+                    progInfo = new curlProgress();
+                    return false;
                 }
 
             }
@@ -2648,15 +3048,17 @@ namespace fbhd
             {
                 base.DateRecieved += (s, e) =>
                 {
-                    curlProgress? cp = parseProgress(e);
-
-                    if (cp.HasValue)
+                    if (onProgress != null)
                     {
-                        if (onProgress != null)
+                        curlProgress cp;
+                        if (TryParseProgressInfo(e,out cp))
                         {
-                            onProgress(this, cp.Value);
+                            onProgress(this, cp);
                         }
+                       
                     }
+                   
+                    
                 };
             }
             public override Headers DefaultHeaders
@@ -2670,6 +3072,19 @@ namespace fbhd
             public override string ProcessFileName { get { return MI.CURL_PATH; } }
 
             public override string Name{ get {   return "cURL";}}
+
+            private string afterArgs = "";
+            public override string AfterArgs
+            {
+                set
+                {
+                    afterArgs = value;
+                }
+                get
+                {
+                    return afterArgs;
+                }
+            }
 
 
             /// <summary>
@@ -2695,7 +3110,7 @@ namespace fbhd
                 {
                     args += $" -H \"{h.Key}:{h.Value}\" ";
                 }
-
+                args += $" {AfterArgs}";
                 return args;
 
             }
@@ -2718,8 +3133,10 @@ namespace fbhd
                     }
 
                 }
+                args += $" {AfterArgs}";
 
-                Clipboard.SetText(args);
+
+               // Clipboard.SetText(args);
                 return args;
             }
         }
@@ -2963,7 +3380,7 @@ namespace fbhd
 
                 }
                 else
-                    return new System.Windows.Media.Imaging.BitmapImage(new Uri("file:///C:/TOOLS/fbhd-gui/fbhd/fbhd/media/video-48-white.png"));//
+                    return new System.Windows.Media.Imaging.BitmapImage(new Uri("file:///./media/video-48-white.png"));// todo
             }
 
         }
@@ -3631,6 +4048,23 @@ namespace fbhd
         }
 
 
+        /// <summary>
+        /// updates the RecentGlobalDirectories list adding the new entry at the top and removing excess entries if any
+        /// </summary>
+        /// <param name="pickedDir"></param>
+        internal void StackRecentDirectory(string pickedDir)
+        {
+            RecentGlobalDirectories.Remove(pickedDir);
+            RecentGlobalDirectories.Insert(0, pickedDir);
+            int excess = RecentGlobalDirectories.Count - 5;
+            if (excess > 0)
+            {
+                RecentGlobalDirectories.RemoveRange(5, excess);
+
+            }
+        }
+
+
     }
 
 
@@ -3643,16 +4077,21 @@ namespace fbhd
             return sf.ToString() + ": " + Environment.GetFolderPath(sf); 
         }
 
+        public ApplicationInfo AppInfo { get; set; } = new ApplicationInfo();
+
+
         public Session()
         {
+            AppInfo = new ApplicationInfo();
+            OnPropertyChanged(nameof(AppInfo));
 
             if (!Directory.Exists(MI.TEMP_HTML_FILES)) Directory.CreateDirectory(MI.TEMP_HTML_FILES);
-            bool curlExists = File.Exists(  Environment.CurrentDirectory+ "\\curl\\curl.exe");
-            bool ffmpegExists = File.Exists(Environment.CurrentDirectory + "\\ffmpeg\\ffmpeg.exe");
-
+            bool curlExists = File.Exists(  MI.CURL_PATH);
+            bool ffmpegExists = File.Exists(MI.FFMPEG_PATH);
+            
           Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\mi\\fbhd");
             
-            Trace.Assert(curlExists, "couldnt find the curl executable at .\\curl\\curl.exe the wpp will not work correctely unless another location is specidied in the settings or it is included in the path.");
+            Trace.Assert(curlExists, $"couldnt find the curl executable at {MI.CURL_PATH} the wpp will not work correctely unless another location is specidied in the settings or it is included in the path.");
             Trace.Assert(ffmpegExists, "couldnt find the ffmpeg executable at .\\ffmpeg\\ffmpeg.exe the wpp will not work correctely unless another location is specified or it is included in the path.");
 
             MainConfig = Config.Load();
@@ -3662,30 +4101,10 @@ namespace fbhd
             if (MainConfig == null) MainConfig = Config.FactoryConfig();
 
             MainSearch = new Search();
-           // mp.Open(new Uri("C:\\TOOLS\\fbhd-gui\\notif-5th.wav"));
-            mp.Open(new Uri("C:\\TOOLS\\fbhd-gui\\mi-notif-5th.wav"));
+            mp.Open(new Uri($"{MI.SFX_DIRECTORY}\\mi-notif-5th.wav"));
 
-            FsdmNewsWatcher.OnError += (s, err) => {
 
-                MI.Verbose ( "Couldn't connect");
 
-            };
-            FsdmNewsWatcher.NewItems += (s, news) =>
-            {
-                string appended = "";
-                foreach (FsdmNew item in news)
-                {
-                    appended += item.PopupMessageString + "\n\n";
-                }
-                appended = appended.Substring(0, appended.Length - 2);
-                // Application.Current.MainWindow.Activate();
-
-                // mw. PopupNews(news);
-                PlayNotification();
-                IEnumerable<INotifableItem> AsINotifable = news.Cast<INotifableItem>();
-                mw.ShowNotificationNews(AsINotifable, FsdmNewsWatcher);
-                //MessageBox.Show($"{appended}","fsdm news", MessageBoxButton.OK, MessageBoxImage.Asterisk);
-            };
 
             CustomListWatchers = new BindingList<CustomLW>();
             foreach (var presetDeclaration in MainConfig.CLWPresetsDeclarations)
@@ -3711,6 +4130,26 @@ namespace fbhd
                 }
 
             }
+            /// starting the clw file passed by the commandline if any
+
+            if (Environment.GetCommandLineArgs().Length > 1)
+            {
+            string maybeFile = Environment.GetCommandLineArgs()[1];
+            if (File.Exists(maybeFile) && (Path.GetExtension(maybeFile).ToLower() == ".clw"))
+            {
+                CustomLW CommandlineCLW = null;
+                Task.Run(async () =>
+                {
+                    CommandlineCLW = await LoadXMLLW(Path.GetFullPath( maybeFile));
+                }).GetAwaiter().GetResult();
+                if (CommandlineCLW != null)
+                {
+                }
+
+                CommandlineCLW.StartWatching();
+            }
+            }
+
             OnPropertyChanged(nameof(ExistLoadedCLWatchers));
            // Tasks = new BindingList<FBHDTask>();
             //SelectedTask = null;
@@ -3751,11 +4190,7 @@ namespace fbhd
 
 
 
-        private FSDMNewsWatcher fsdmNewsWatcher= new FSDMNewsWatcher(File.ReadAllText(MI.FSDM_News_Ref_PATH)) { Interval = 3 * 60 * 1000 };
-        public FSDMNewsWatcher FsdmNewsWatcher 
-        {
-            get { return fsdmNewsWatcher; }
-        }
+
 
 
 
@@ -3954,6 +4389,43 @@ namespace fbhd
             CustomListWatchers.Add(newCustomLW);
             OnPropertyChanged(nameof(ExistLoadedCLWatchers));
             return newCustomLW;
+
+        }
+
+
+
+
+       
+
+        /// <summary>
+        /// changes the current output directory and,
+        /// and updates the recentOutputDirecories list calling StackRecentDirectory
+        /// and saves changes 
+        /// 
+        /// </summary>
+        /// <param name="pickedDir">string specifying the path</param>
+        internal void SetOutputDirectory(string pickedDir)
+        {
+            if (string.IsNullOrWhiteSpace(pickedDir)) return;
+            if (!Directory.Exists(pickedDir))
+            {
+                //this is nreached code because pickes doesn't allow the user to select a non exstent directory path
+                var yesNo = MessageBox.Show("Picked directory does not exist, do you want to create it?", "Directory does not exist", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (yesNo == MessageBoxResult.Yes)
+                {
+                    // todo: creat output folder
+                    Directory.CreateDirectory(pickedDir);
+
+                }
+                else
+                {
+                    return;
+                }
+            }
+            GlobalOutputFolder = pickedDir;
+            MainConfig.GlobalOutputDirectory = pickedDir;
+            MainConfig.StackRecentDirectory(pickedDir);
+            MainConfig.Save();
 
         }
     }
@@ -4492,6 +4964,8 @@ namespace fbhd
 
     }
 
+
+    [Obsolete("obsolete",true)]
     public class FSDMNewsWatcher : ListWatcher<FsdmNew>, IWatch
     {
         public FSDMNewsWatcher(string initialReferenceContent)
@@ -4708,7 +5182,6 @@ namespace fbhd
 
             XDocument d = XDocument.Parse(PrestXmldata);
             
-           // File.WriteAllText("C:\\TOOLS\\fbhd-gui\\xml\\fsdmNews.xml", d.ToString());
             XElement listWatcher = null;
             foreach (var item in d.Nodes())
             {
@@ -5874,6 +6347,390 @@ namespace fbhd
 
     }
 
+
+
+
+
+
+
+
+    public class Dev_Tester
+    {
+
+        public delegate TestResult Tester(string data);
+
+
+        public TestResult DashManifestTester(string data)
+        {
+           // data = File.ReadAllText("C:\\TOOLS\\fbhd-gui\\fbhd analysis\\MessedUpDashManifest.txt");
+
+            var res = new TestResult();
+            // do the testing
+            try
+            {
+               
+                Match wrap = Regex.Match(data,"dash_manifest\"?:\"(.*?[^\\\\])\"");
+                if (wrap.Success == false)
+                {
+                    res.success = false;
+                    res.errorMessage = "wrap failed";
+                    return res;
+                }
+
+                string rawDashManifest = wrap.Groups[1].Value;
+                rawDashManifest = rawDashManifest.Replace("\\\"", "\"")
+                    .Replace("\\n", "\n")
+                    .Replace("\\x3C", "<")
+                   //.Replace("", "")
+
+                   .Replace("\\u003C", "<")
+                   .Replace("\\/", "/");
+
+
+                XDocument doc = XDocument.Parse(rawDashManifest);
+                var representations = doc.Descendants().ToList();
+
+                var mdpElem = (XElement)doc.FirstNode;
+                FBDashManifest dsh = new FBDashManifest(mdpElem);
+
+                // MessageBox.Show(dsh.PeriodDuration.ToString());
+                res.resultString += " " + dsh.PeriodDuration.ToString();
+                foreach (var item in dsh.VideoRepresentations)
+                {
+                    res.resultString += $" {item.codecs} {item.FBQualityLabel} {item.frameRate} {item.BaseUrl}  " ;
+                }
+                res.success = true;
+            }
+            catch (Exception ex)
+            {
+                res.errorMessage = ex.Message;
+                res.success = false;
+            }
+
+            return res;
+        }
+
+
+        /// <summary>
+        /// selects files from a drectory,
+        ///  used with RunMassTest
+        public List<string> SelectFiles(string directory)
+        {
+            List<string> files = new List<string>();
+
+            files= Directory.EnumerateFiles(directory).ToList();
+            //Sorry, something went wrong.
+            files = files.Where((file) => 
+            StandardPostProperties.isPrivate.Extract(File.ReadAllText(file))|
+            StandardPostProperties.isSomethingWentWrongPage.Extract(File.ReadAllText(file))
+            == false).ToList();
+
+            return files;
+        }
+
+
+        public MassTestResultStats RunMassTest(string directory, Tester tester)
+        {
+            return RunMassTest(SelectFiles(directory),tester);
+        }
+
+        public MassTestResultStats RunMassTest( List<string> paths_list, Tester tester)
+        {
+            MassTestResultStats outp = new MassTestResultStats() { SuccessResults = new List<TestResult>(), FailedResults = new List<TestResult>() };
+
+            foreach (var p in paths_list)
+            {
+                TestResult testResult = new TestResult() { path=p};
+
+                testResult = tester(File.ReadAllText(p));
+                testResult.path = p;
+                outp.totalTestsCount++;
+                if (testResult.success == false)
+                {
+                    outp.FailedResults .Add( testResult);
+                    Trace.WriteLine("positive " + p);
+                }
+                else
+                {
+                    outp.SuccessResults.Add(testResult);
+                    Trace.WriteLine("negative " + p);
+
+                }
+
+            }
+
+
+            return outp;
+        }
+
+
+        public struct TestResult
+        {
+            public bool success { get; set; }
+            public string errorMessage { get; set; }
+            public string resultString { get; internal set; }
+            public string path { get; internal set; }
+        }
+
+
+        public struct MassTestResultStats
+        {
+            internal int totalTestsCount;
+
+            public List<TestResult> FailedResults { get; set; } 
+            public List<TestResult> SuccessResults { get; set; } 
+
+            public void DumpToFile(string successItemFormatter, string failedItemLineFormatter, string outputFile)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.AppendLine($"Total tests:{totalTestsCount}, Succeed:{SuccessResults.Count}, Failed:{FailedResults.Count}, SuccssRatio:{((double)SuccessResults.Count) * 100.0 / (totalTestsCount)}%");
+                sb.AppendLine("[Failed Tests]"+ Environment.NewLine);
+                foreach (var failed in FailedResults)
+                {
+                    sb.AppendFormat(failedItemLineFormatter, Path.GetFileName(failed.path), failed.errorMessage);
+                }
+
+                sb.AppendLine("[Succeed Tests]"+Environment.NewLine);
+
+                foreach (var successfull in SuccessResults)
+                {
+                    sb.AppendFormat(successItemFormatter, Path.GetFileName(successfull.path), successfull.resultString);
+
+                }
+
+                File.WriteAllText(outputFile, sb.ToString());
+            }
+
+
+        }
+
+
+    }
+
+
+
+
+
+    public class FBDashManifest
+    {
+        
+
+        public FBDashManifest(XElement MDPelement)
+        {
+            MDP = MDPelement;
+            ResolveProperties();
+        }
+
+        /// <summary>
+        /// extract video and audio propetries from the source of information: MDP
+        /// </summary>
+        private void ResolveProperties()
+        {
+            //# PeriodDuration
+            var PeriodElem = MDP.Elements(). ToList().Find((elem)=> elem.Name.LocalName=="Period");
+            Trace.Assert(PeriodElem != null, "ResolvingProperties failed: Null PeriodElement ");
+            var durationAttr = PeriodElem.Attribute("duration");
+            Trace.Assert(PeriodElem != null, "ResolvingProperties failed: Null DurationAttribute");
+            PeriodDuration = Fucs.FBDurationToTimeSpan(durationAttr.Value);
+
+
+            //# VideoRepresentations
+            var FirstAdaptationSet = PeriodElem.Elements().First();
+            //asert
+            var VideorepresentationElements = FirstAdaptationSet.Elements();
+            foreach (var representationElem in VideorepresentationElements)
+            {
+                VideoRepresentations.Add(new VideoRepresentation(representationElem));
+            }
+
+            //# AudioRepresentations
+            var secondtAdaptationSet = (XElement) FirstAdaptationSet.NextNode;
+
+            var AudiorepresentationElements = secondtAdaptationSet.Elements();
+            foreach (var representationElem in AudiorepresentationElements)
+            {
+                AudioRepresentations.Add(new AudioRepresentation(representationElem));
+            }
+
+
+
+
+        }
+
+        /// <summary>
+        /// MDP xml element as is
+        /// </summary>
+        public XElement MDP { get; set; }
+
+        public List<VideoRepresentation> VideoRepresentations { get; set; } = new List<VideoRepresentation>();
+        public List<AudioRepresentation> AudioRepresentations { get; set; } = new List<AudioRepresentation>();
+        public TimeSpan PeriodDuration { get; set; }
+
+
+
+
+    }
+
+
+    /// <summary>
+    /// video representation 
+    /// </summary>
+    public struct VideoRepresentation
+    {
+
+        public VideoRepresentation(XElement RepresentationElem)
+        {
+            codecs = RepresentationElem.Attribute("codecs")?.Value;
+            mimeType = RepresentationElem.Attribute("mimeType")?.Value;
+            width = RepresentationElem.Attribute("width")?.Value;
+            height = RepresentationElem.Attribute("height")?.Value;
+            frameRate = RepresentationElem.Attribute("frameRate")?.Value;
+            FBQualityLabel = RepresentationElem.Attribute("FBQualityLabel")?.Value;
+            Trace.Assert(codecs != null, "Null codecs ");
+            Trace.Assert(mimeType != null, "Null mimeType ");
+            Trace.Assert(FBQualityLabel != null, "Null FBQualityLabel");
+            //# BaseUrl
+            var baseUrlElem = RepresentationElem.Elements().ToList().Find((elem) => elem.Name.LocalName == "BaseURL");
+            Trace.Assert(baseUrlElem != null, "Null BaseURL element");
+            BaseUrl = baseUrlElem.Value.Replace("&amp;", "&");
+        }
+        public string codecs { get; set; }
+        public string mimeType { get; set; }
+        public string width { get; set; }
+        public string height { get; set; }
+        public string frameRate { get; set; }
+        public string FBQualityLabel { get; set; }
+        //public object SegmentBase { get; set; }
+        public string BaseUrl { get; set; }
+
+
+    }
+
+    /// <summary>
+    /// audio representation 
+    /// </summary>
+    public struct AudioRepresentation
+    {
+
+        public AudioRepresentation(XElement representationElem) : this()
+        {
+
+            codecs = representationElem.Attribute("codecs")?.Value;
+            mimeType = representationElem.Attribute("mimeType")?.Value;
+            audioSamplingRate =  representationElem.Attribute("audioSamplingRate")?.Value;
+            Trace.Assert(codecs != null, "Null codecs ");
+            Trace.Assert(mimeType != null, "Null mimeType ");
+            Trace.Assert(audioSamplingRate != null, "Null audioSamplingRate");
+
+            //# BaseUrl
+            var baseUrlElem = representationElem.Elements().ToList().Find((elem) => elem.Name.LocalName == "BaseURL");
+            Trace.Assert(baseUrlElem != null, "Null BaseURL element");
+            BaseUrl = baseUrlElem.Value.Replace("&amp;", "&");
+        }
+
+        public string codecs { get; set; }
+        public string mimeType { get; set; }
+        public string audioSamplingRate { get; set; }
+        //public object SegmentBase { get; set; }
+        public string BaseUrl { get; set; }
+
+
+    }
+
+
+    
+
+    public abstract class ActionsQueue 
+    {
+        public ActionsQueue()
+        {
+
+            Queue = new Queue<FBHDTask>();
+        }
+
+        //public int Limit { get; set; }
+        private bool isRunning;
+        public bool IsRunning { get { return isRunning; } }
+
+        private Queue<FBHDTask> queue ;
+        public Queue<FBHDTask> Queue 
+        {
+            set { queue = value;}
+            get { return queue; }
+        }
+       
+        //public List<FBHDTask> CurrentlyRunning {set;get;}
+        //public int CurrentlyRunningCC { set; get; }
+
+
+
+        public abstract  Task PerformeAction(FBHDTask targetFBHDTask);
+        
+
+        public async void Start( )
+        {
+            bool FatalError = false;
+            isRunning = true;
+            while (Queue.Count >0)
+            {
+                
+                FBHDTask tsk = Queue.Dequeue();
+                await PerformeAction(tsk);
+
+            }
+            isRunning = false;
+        }
+        public void Stop()
+        {
+
+        }
+
+       
+
+
+        public void Add(FBHDTask action)
+        {
+            queue.Enqueue(action);
+            if (isRunning == false) Start();
+        }
+
+
+
+    }
+
+
+
+    
+
+    public class DownloadQueue : ActionsQueue
+    {
+
+       
+        public override async Task PerformeAction(FBHDTask targetFBHDTask)
+        {
+            if(targetFBHDTask.IsResolved&&targetFBHDTask.Post.HasValue)
+             await targetFBHDTask.StartDownload(targetFBHDTask.Post.Value);
+
+            return;
+        }
+
+        
+    }
+
+    public class ResolveQueue : ActionsQueue
+    {
+
+     
+
+        public override async Task PerformeAction(FBHDTask targetFBHDTask)
+        {
+            targetFBHDTask.Post= await targetFBHDTask.StartResolve();
+
+            return;
+        }
+
+
+    }
 
 
 
