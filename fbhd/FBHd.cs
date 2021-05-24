@@ -552,10 +552,10 @@ namespace fbhd
         private static string oldfbhdgit = "https://github.com/Mi1016/FBHD";
 
         private static string fbhdgit = "https://github.com/UndefinedYass/FBHD";
-        public static bool IsDev { get; set; } = false;
+        public static bool IsDev { get; set; } = true;
         public static string FBHD_APP_TITLE { get; set; } = "FBHD Downloader 1.0";
         public static string FBHD_APP_SUB_TITLE { get; set; } = "© Mi 2021 ";
-        public static string FBHD_VERSION { get; set;} = "0.6.0-beta (21-05-2021 5:21AM)" + (IsDev?" [dev]":"");
+        public static string FBHD_VERSION { get; set;} = "0.?.?-beta (?)" + (IsDev?" [dev]":"");
         public static string FBHD_DEVELOPER { get; set; } = "Yass.Mi";
         public static string FBHD_GUI_DESIGNER { get; set; } = "Yass.Mi";
         public static string FBHD_GITHUB_URL { get; set; } = fbhdgit;
@@ -4347,10 +4347,17 @@ namespace fbhd
 
                 if (string.IsNullOrEmpty(newCustomLW.InitialReferenceContent))
                 {
-                    MessageBox.Show($"Empty initial data! XMLLW-Loader will attemp to fetch data from {newCustomLW.Href} and override the file:\n {newCustomLW.ReferenceFilePath}  ");
+                    MessageBox.Show($"Empty ref file! FBHD will attemp to fetch content from {newCustomLW.Href} and override the file:\n {newCustomLW.ReferenceFilePath}  ");
+                    var userConfirmation = MessageBox.Show($"Empty ref file! FBHD will attemp to fetch content from {newCustomLW.Href} and override the file:\n {newCustomLW.ReferenceFilePath}  "
+                        , "Empty ref file", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                    if (userConfirmation == MessageBoxResult.Cancel)
+                    {
+                        return null;
+                    }
                     var data = await WebClient.cURL.GetTextStatic(newCustomLW.Href, Headers.FakeUserAgentHeaders, true);
                     if (data.Success)
                     {
+                        
                         File.WriteAllText(newCustomLW.ReferenceFilePath, data.Text);
                         newCustomLW.InitialReferenceContent = data.Text;
                     }
@@ -4364,10 +4371,21 @@ namespace fbhd
 
             else
             {
-                MessageBox.Show($"Reference file does not exist at {newCustomLW.Href}!\n XMLLW-Loader will attemp to create one with initial data from {newCustomLW.Href} ");
+                var userConfirmation = MessageBox.Show($@"Reference file does not exist at {newCustomLW.ReferenceFilePath}{Environment.NewLine}
+                FBHD will attempt to create one with initial data from {newCustomLW.Href}", "Missing ref", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                if(userConfirmation== MessageBoxResult.Cancel)
+                {
+                    return null;
+                }
                 var data = await WebClient.cURL.GetTextStatic(newCustomLW.Href, Headers.FakeUserAgentHeaders, true);
+
                 if (data.Success)
                 {
+                    // create the directory first if it does not exist
+                    if (Directory.Exists(Path.GetDirectoryName(newCustomLW.ReferenceFilePath)) == false)
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(newCustomLW.ReferenceFilePath));
+                    }
                     File.WriteAllText(newCustomLW.ReferenceFilePath, data.Text);
                     newCustomLW.InitialReferenceContent = data.Text;
 
